@@ -18,6 +18,7 @@ export interface PNodeTemplate {
 export interface PNode {
   id: PNodeId;
   name?: string;
+  shape?: Shape;
   templateId?: number;
   dim?: Dim;
 }
@@ -48,4 +49,10 @@ export type DesignerProps = {
 export enum Shape {
   Rect,
   Circle
+}
+
+export interface OrphanNodeInfo {
+  cx: number;
+  cy: number;
+  node?: PNode;
 }

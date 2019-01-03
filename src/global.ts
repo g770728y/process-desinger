@@ -1,4 +1,4 @@
-import { Shape } from './index.type';
+import { Shape, PNodeTemplate } from './index.type';
 
 // 开始节点id
 export const StartId = 0;
@@ -9,16 +9,18 @@ export const EndId = 1000000;
 export const NodeTemplatesPanelWidth = 200;
 
 // 开始与结束结点, 可以覆盖
-export const defaultNodeTemplates = [
+export const defaultNodeTemplates: PNodeTemplate[] = [
   {
     id: StartId,
+    name: '开始',
     shape: Shape.Circle,
-    size: { r: 30 }
+    dim: { r: 30 }
   },
   {
     id: EndId,
+    name: '结束',
     shape: Shape.Circle,
-    size: { r: 30 }
+    dim: { r: 30 }
   }
 ];
 

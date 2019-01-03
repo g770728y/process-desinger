@@ -7,8 +7,7 @@ import {
 } from 'process-designer';
 
 export const nodeTemplates: PNodeTemplate[] = [
-  { id: 1, name: '操作', shape: Shape.Rect, dim: { w: 100, h: 30 } },
-  { id: 2, name: '操作2', shape: Shape.Circle, dim: { r: 100 } }
+  { id: 1, name: '操作', shape: Shape.Rect, dim: { w: 100, h: 30 } }
 ];
 
 export const processData: DesignData = {

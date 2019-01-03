@@ -23,7 +23,8 @@
   },
   "dependencies": {
     "mobx": "^5.8.0",
-    "mobx-react": "^5.4.3"
+    "mobx-react": "^5.4.3",
+    "rxjs": "^6.3.3"
   },
   "peerDependencies": {
     "prop-types": "^15.5.4",

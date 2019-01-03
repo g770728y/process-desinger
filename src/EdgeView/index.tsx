@@ -2,27 +2,26 @@ import * as React from 'react';
 import { PNode, PEdge, DesignData, Config } from '../index.type';
 import { observer, inject } from 'mobx-react';
 import { anchorXY } from '../helper';
+import DesignDataStore from '../store/DesignDataStore';
+import ConfigStore from '../store/ConfigStore';
 
 type IProps = {
   edge: PEdge;
-  data?: DesignData;
-  config?: Config;
+  dataStore?: DesignDataStore;
 };
 
-@inject(({ data, config }) => ({ data, config }))
+@inject(({ dataStore }) => ({ dataStore }))
 @observer
 class EdgeView extends React.Component<IProps> {
   render() {
-    const { edge, data, config } = this.props;
+    const { edge, dataStore } = this.props;
     const { id, from, to } = edge;
 
-    const { nodeTemplates } = config!;
+    const fromNode = dataStore!.nodes.find(({ id }) => id === from.id);
+    const toNode = dataStore!.nodes.find(({ id }) => id === to.id);
 
-    const fromNode = data!.nodes.find(({ id }) => id === from.id);
-    const toNode = data!.nodes.find(({ id }) => id === to.id);
-
-    const fromXY = anchorXY(fromNode!, from.anchor, nodeTemplates);
-    const toXY = anchorXY(toNode!, to.anchor, nodeTemplates);
+    const fromXY = anchorXY(fromNode!, from.anchor);
+    const toXY = anchorXY(toNode!, to.anchor);
 
     if (!fromNode || !toNode) {
       throw new Error('没有找到fromNode 或 toNode');
