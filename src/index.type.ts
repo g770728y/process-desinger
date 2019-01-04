@@ -23,13 +23,15 @@ export interface PNode {
   dim?: Dim;
 }
 
-export type PAnchorType = 'tc' | 'bc' | 'lc' | 'rc';
+export type PElement = PNode | PEdge;
 
 export interface PEdge {
   id: PEdgeId;
   from: { id: number; anchor: PAnchorType };
   to: { id: number; anchor: PAnchorType };
 }
+
+export type PAnchorType = 'tc' | 'bc' | 'lc' | 'rc';
 
 export type Config = {
   canvas?: { background?: string };

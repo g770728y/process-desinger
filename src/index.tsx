@@ -6,7 +6,6 @@ import Painter from './Painter';
 import { configure } from 'mobx';
 import { Provider, observer } from 'mobx-react';
 import UIStore from './store/UIStore';
-import { defaultNodeTemplates } from './global';
 import ConfigStore from './store/ConfigStore';
 import DesignDataStore from './store/DesignDataStore';
 import OrphanNode from './NodeView/OrphanNode';

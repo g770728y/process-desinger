@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { PNode, RectSize } from '../index.type';
 import { observer } from 'mobx-react';
+import { NodeClass, DataNodeType } from '../global';
 
 type IProps = {
   node: PNode;
@@ -17,7 +18,18 @@ class RectNode extends React.Component<IProps> {
     const x = cx - w / 2;
     const y = cy - h / 2;
 
-    return <rect x={x} y={y} width={w} height={h} fill="#cccccc" />;
+    return (
+      <rect
+        className={NodeClass}
+        data-type={DataNodeType}
+        data-id={node.id}
+        x={x}
+        y={y}
+        width={w}
+        height={h}
+        fill="#cccccc"
+      />
+    );
   }
 }
 

@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { PNode, PEdge, DesignData, Config } from '../index.type';
+import { PEdge } from '../index.type';
 import { observer, inject } from 'mobx-react';
 import { anchorXY } from '../helper';
 import DesignDataStore from '../store/DesignDataStore';
-import ConfigStore from '../store/ConfigStore';
+import { EdgeClass, DataNodeType } from '../global';
 
 type IProps = {
   edge: PEdge;
@@ -29,6 +29,9 @@ class EdgeView extends React.Component<IProps> {
 
     return (
       <line
+        className={EdgeClass}
+        data-type={DataNodeType}
+        data-id={id}
         x1={fromXY.x}
         y1={fromXY.y}
         x2={toXY.x}

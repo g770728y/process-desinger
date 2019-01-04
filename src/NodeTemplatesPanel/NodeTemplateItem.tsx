@@ -92,10 +92,8 @@ class NodeTemplateItem extends React.Component<IProps> {
       };
 
       if (isBoxInRange(nodeDim, painterDim)) {
-        const node = getNodeInstance(nodeTemplate, {
-          cx: pos.x! - painterDim.x,
-          cy: pos.y! - (painterDim.y - painterScrollTop)
-        });
+        const { x: cx, y: cy } = uiStore!.clientXYToPainterXY(pos.x!, pos.y!);
+        const node = getNodeInstance(nodeTemplate, { cx, cy });
         dataStore!.addNode(node);
       }
     });
@@ -123,5 +121,4 @@ interface MouseEventData {
   y0?: number;
   x?: number;
   y?: number;
-  end?: boolean;
 }

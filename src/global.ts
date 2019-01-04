@@ -26,3 +26,26 @@ export const defaultNodeTemplates: PNodeTemplate[] = [
 
 // 缺省画布高度
 export const DefaultCanvasHeight = 5000;
+
+/////////////////////////////////////////////////////////////////////////////////////
+// 代表svg背景的rect的class
+export const SvgBackgroundRectClass = 'svg-background-rect';
+
+// 代表node的class
+export const NodeClass = 'pd-node';
+
+// 代表edge的class
+export const EdgeClass = 'pd-edge';
+
+/////////////////////////////////////////////////////////////////////////////////////
+// 将放在html上
+export const DataNodeType = 'node';
+export const DataEdgeType = 'edge';
+// 是否是正确的nodeTypes
+export function isDataType(type?: string): boolean {
+  return [DataNodeType, DataEdgeType].some(_type => type === _type);
+}
+// 是否是可拖放的nodeTypes (注意edge不可拖放)
+export function isDraggableDataType(type?: string): boolean {
+  return [DataNodeType].some(_type => _type === type);
+}

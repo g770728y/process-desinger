@@ -51,4 +51,12 @@ export default class UIStore {
     console.log(scrollTop + '!');
     this.painterScrollTop = scrollTop;
   }
+
+  // 全屏xy转化为painter内部xy
+  clientXYToPainterXY(x: number, y: number) {
+    return {
+      x: x - this.painterDim.x,
+      y: y - (this.painterDim.y - this.painterScrollTop)
+    };
+  }
 }

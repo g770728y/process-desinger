@@ -174,3 +174,14 @@ export function getNodeInstance(
     }
   };
 }
+
+// 抽取画布内元素的nodeType与nodeId属性
+export function extractDataAttrs(e: MouseEvent) {
+  const el = e.target! as HTMLElement;
+  const dataId = el.getAttribute('data-id');
+
+  return {
+    dataType: el.getAttribute('data-type') || undefined,
+    dataId: dataId ? parseInt(dataId) : undefined
+  };
+}
