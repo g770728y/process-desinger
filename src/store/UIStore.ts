@@ -14,30 +14,41 @@ export default class UIStore {
     height: window.innerHeight
   };
 
+  // 暂时不需要observable, 因为只是供 OrphanNode 拖动时临时使用
+  painterScrollTop = 0;
+
   @computed.struct get painterDim() {
     return {
-      width: this.windowDim.width - NodeTemplatesPanelWidth,
-      height: this.windowDim.height
+      x: NodeTemplatesPanelWidth,
+      y: 0,
+      w: this.windowDim.width - NodeTemplatesPanelWidth,
+      h: this.windowDim.height
     };
   }
 
   @action
-  onResize = () => {
+  resetWindowDim() {
     this.windowDim = {
       width: window.innerWidth,
       height: window.innerHeight
     };
-  };
+  }
 
   @observable.struct orphanNodeInfo: OrphanNodeInfo = defaultOrphanNodeInfo;
 
   @action
-  showOrphanNode = (orphanNodeInfo: OrphanNodeInfo) => {
+  showOrphanNode(orphanNodeInfo: OrphanNodeInfo) {
     this.orphanNodeInfo = orphanNodeInfo;
-  };
+  }
 
   @action
-  hideOrphanNode = () => {
+  hideOrphanNode() {
     this.orphanNodeInfo = defaultOrphanNodeInfo;
-  };
+  }
+
+  @action
+  resetPainterScrollTop(scrollTop: number) {
+    console.log(scrollTop + '!');
+    this.painterScrollTop = scrollTop;
+  }
 }

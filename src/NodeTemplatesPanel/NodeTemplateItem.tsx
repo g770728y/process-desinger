@@ -1,17 +1,24 @@
 import * as React from 'react';
 import { observer, inject } from 'mobx-react';
 import { PNodeTemplate, PNode, OrphanNodeInfo } from '../index.type';
-import { renderNodeTemplate } from '../helper';
+import {
+  renderNodeTemplate,
+  getNodeSize,
+  isBoxInRange,
+  getNodeInstance
+} from '../helper';
 import { fromEvent, Subscription } from 'rxjs';
 import { map, throttleTime, takeUntil, switchMap, take } from 'rxjs/operators';
 import UIStore from '../store/UIStore';
+import DesignDataStore from '../store/DesignDataStore';
 
 type IProps = {
   uiStore?: UIStore;
+  dataStore?: DesignDataStore;
   nodeTemplate: PNodeTemplate;
 };
 
-@inject(({ uiStore }) => ({ uiStore }))
+@inject(({ uiStore, dataStore }) => ({ uiStore, dataStore }))
 @observer
 class NodeTemplateItem extends React.Component<IProps> {
   ref = React.createRef<SVGSVGElement>();
@@ -29,7 +36,9 @@ class NodeTemplateItem extends React.Component<IProps> {
     this.props.uiStore!.showOrphanNode(orphanNodeInfo);
   }
 
-  hideOrphanNode() {}
+  hideOrphanNode() {
+    this.props.uiStore!.hideOrphanNode();
+  }
 
   componentDidMount() {
     const el = this.ref.current!;
@@ -66,8 +75,29 @@ class NodeTemplateItem extends React.Component<IProps> {
       });
     });
     drop$.subscribe((pos: MouseEventData) => {
-      console.log('hide orphan node', pos);
+      const { uiStore, nodeTemplate, dataStore } = this.props;
       this.hideOrphanNode();
+      const { painterDim, painterScrollTop } = uiStore!;
+
+      const floatingNode = getNodeInstance(nodeTemplate, {
+        cx: pos.x!,
+        cy: pos.y!
+      });
+      const { w, h } = getNodeSize(floatingNode);
+      const nodeDim = {
+        x: pos.x! - w / 2,
+        y: pos.y! - h / 2,
+        w,
+        h
+      };
+
+      if (isBoxInRange(nodeDim, painterDim)) {
+        const node = getNodeInstance(nodeTemplate, {
+          cx: pos.x! - painterDim.x,
+          cy: pos.y! - (painterDim.y - painterScrollTop)
+        });
+        dataStore!.addNode(node);
+      }
     });
   }
 

@@ -28,12 +28,12 @@
   flex-shrink: 1;
 }
 
-.pd-painter-container {
+.pd-painter-wrapper {
   position: relative;
   width: 100%;
   height: 100%;
   overflow-y: auto;
 }
-.pd-painter-container::-webkit-scrollbar {
+.pd-painter-wrapper::-webkit-scrollbar {
   width: 0 !important;
 }

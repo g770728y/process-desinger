@@ -20,7 +20,8 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
   uiStore: UIStore;
   configStore: ConfigStore;
   designDataStore: DesignDataStore;
-  onResize: VoidFunction;
+
+  painterWrapperRef = React.createRef<HTMLDivElement>();
 
   constructor(props: DesignerProps) {
     super(props);
@@ -32,7 +33,15 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
 
     this.designDataStore = new DesignDataStore(data, this.configStore);
 
-    this.onResize = this.uiStore.onResize;
+    this.onResize = this.onResize.bind(this);
+
+    this.handlePainterWrapperScroll = this.handlePainterWrapperScroll.bind(
+      this
+    );
+  }
+
+  onResize() {
+    this.uiStore.resetWindowDim();
   }
 
   render() {
@@ -45,10 +54,11 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
         <div className={styles['pd-container']}>
           <NodeTemplatesPanel />
           <div
-            className={styles['pd-painter-container']}
+            ref={this.painterWrapperRef}
+            className={styles['pd-painter-wrapper']}
             style={{
-              width: this.uiStore.painterDim.width,
-              height: this.uiStore.painterDim.height
+              width: this.uiStore.painterDim.w,
+              height: this.uiStore.painterDim.h
             }}
           >
             <Painter />
@@ -61,10 +71,22 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
 
   componentDidMount() {
     window.addEventListener('resize', this.onResize);
+    const painterWrpperEl = this.painterWrapperRef.current!;
+    painterWrpperEl.addEventListener('scroll', this.handlePainterWrapperScroll);
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.onResize);
+    const painterWrpperEl = this.painterWrapperRef.current!;
+    painterWrpperEl.removeEventListener(
+      'scroll',
+      this.handlePainterWrapperScroll
+    );
+  }
+
+  handlePainterWrapperScroll() {
+    const painterWrapperEl = this.painterWrapperRef.current!;
+    this.uiStore.resetPainterScrollTop(painterWrapperEl.scrollTop);
   }
 }
 

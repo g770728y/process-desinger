@@ -37,7 +37,7 @@ export default class Painter extends React.Component<IProps> {
   render() {
     const { uiStore, dataStore, configStore } = this.props;
     const { painterDim } = uiStore!;
-    const { width, height } = painterDim;
+    const { w: width, h: height } = painterDim;
     const { nodes, edges } = dataStore!;
 
     const { canvas } = configStore!;

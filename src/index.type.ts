@@ -56,3 +56,10 @@ export interface OrphanNodeInfo {
   cy: number;
   node?: PNode;
 }
+
+export interface PBox {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}

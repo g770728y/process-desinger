@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { inject, observer } from 'mobx-react';
 import UIStore from '../store/UIStore';
-import { renderNode } from '../helper';
+import { renderNode, wrapSvg, getNodeSize } from '../helper';
 import styles from './styles.css';
+import { RectSize } from '../index.type';
 
 interface IProps {
   uiStore?: UIStore;
@@ -11,17 +12,23 @@ interface IProps {
 @inject(({ uiStore }) => ({ uiStore }))
 @observer
 class OrphanNode extends React.Component<IProps> {
+  ref = React.createRef<SVGSVGElement>();
+
   render() {
     const { orphanNodeInfo } = this.props.uiStore!;
     const { cx, cy, node } = orphanNodeInfo;
 
     if (!node) return null;
+    const { w, h } = getNodeSize(node);
 
-    const _node = { ...node, dim: { ...node!.dim, cx, cy } };
+    const _node = { ...node, dim: { ...node!.dim, cx: w / 2, cy: h / 2 } };
 
     return (
-      <div className={styles['pd-orphan-node-container']}>
-        {renderNode(_node)}
+      <div
+        className={styles['pd-orphan-node-container']}
+        style={{ left: cx - w / 2, top: cy - h / 2 }}
+      >
+        {wrapSvg(w, h, renderNode(_node), this.ref)}
       </div>
     );
   }

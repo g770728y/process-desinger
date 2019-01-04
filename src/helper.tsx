@@ -7,7 +7,9 @@ import {
   Shape,
   Dim,
   CircleSize,
-  RectSize
+  RectSize,
+  PBox,
+  Position
 } from './index.type';
 import RectNode from './NodeView/RectNode';
 import CircleNode from './NodeView/CircleNode';
@@ -71,10 +73,40 @@ export function wrapSvg(
       version="1.1"
       xmlns="http://www.w3.org/2000/svg"
       ref={ref}
+      style={{ display: 'block' }}
     >
       {child}
     </svg>
   );
+}
+
+// 获取node宽高
+export function getNodeSize(node: PNode) {
+  const { dim, shape } = node;
+  if (shape === Shape.Rect) {
+    const _dim = dim as RectSize;
+    return { w: _dim.w!, h: _dim.h! };
+  } else if (shape === Shape.Circle) {
+    const _dim = dim as CircleSize;
+    return { w: _dim.r! * 2, h: _dim.r! * 2 };
+  } else {
+    throw new Error(`错误的nodeTemplate shape:${shape}`);
+  }
+}
+
+// 获取node左上角坐标
+export function getNodeXY(node: PNode) {
+  const { dim, shape } = node;
+  const { cx, cy } = dim!;
+  if (shape === Shape.Rect) {
+    const _dim = dim as RectSize;
+    return { x: cx - _dim.w! / 2, h: cy - _dim.h! / 2 };
+  } else if (shape === Shape.Circle) {
+    const _dim = dim as CircleSize;
+    return { x: cx - _dim.r!, y: cy - _dim.r! };
+  } else {
+    throw new Error(`错误的nodeTemplate shape:${shape}`);
+  }
 }
 
 export function renderNode(node: PNode) {
@@ -115,4 +147,30 @@ export function renderNodeTemplate(
   }
 
   return svg;
+}
+
+// box是否在container内
+export function isBoxInRange(box: PBox, boxContainer: PBox): boolean {
+  return (
+    box.x >= boxContainer.x &&
+    box.y >= boxContainer.y &&
+    box.x + box.w <= boxContainer.x + boxContainer.w &&
+    box.y + box.h <= boxContainer.y + boxContainer.h
+  );
+}
+
+// 将nodeTemplate拖到画布时, 返回实例
+export function getNodeInstance(
+  nodeTemplate: PNodeTemplate,
+  { cx, cy }: Position
+): PNode {
+  return {
+    ...nodeTemplate,
+    templateId: nodeTemplate.id,
+    dim: {
+      ...nodeTemplate.dim,
+      cx,
+      cy
+    }
+  };
 }
