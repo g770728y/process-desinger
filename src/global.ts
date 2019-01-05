@@ -49,3 +49,6 @@ export function isDataType(type?: string): boolean {
 export function isDraggableDataType(type?: string): boolean {
   return [DataNodeType].some(_type => _type === type);
 }
+
+/////////////////////////////////////////////////////////////////////////////////////
+export const DefaultGripRadius = 4;

@@ -48,7 +48,6 @@ export default class UIStore {
 
   @action
   resetPainterScrollTop(scrollTop: number) {
-    console.log(scrollTop + '!');
     this.painterScrollTop = scrollTop;
   }
 

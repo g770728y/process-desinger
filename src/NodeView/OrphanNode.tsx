@@ -3,7 +3,6 @@ import { inject, observer } from 'mobx-react';
 import UIStore from '../store/UIStore';
 import { renderNode, wrapSvg, getNodeSize } from '../helper';
 import styles from './styles.css';
-import { RectSize } from '../index.type';
 
 interface IProps {
   uiStore?: UIStore;

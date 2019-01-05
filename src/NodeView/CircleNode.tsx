@@ -1,31 +1,52 @@
 import * as React from 'react';
 import { PNode, CircleSize } from '../index.type';
-import { observer } from 'mobx-react';
+import { observer, inject } from 'mobx-react';
 import { NodeClass, DataNodeType } from '../global';
+import hoverable, { HoverableProps } from '../hoc/hoverable';
+import DesignDataStore from '../store/DesignDataStore';
+import { CircleGripGroup } from '../Grip';
 
 type IProps = {
   node: PNode;
+  dataStore?: DesignDataStore;
 };
 
+@inject(({ dataStore }) => ({ dataStore }))
 @observer
-class CircleNode extends React.Component<IProps> {
+class CircleNodeBase extends React.Component<IProps & HoverableProps> {
   render() {
-    const { node } = this.props;
-    const { dim } = node;
+    const { node, dataStore, _ref, hovered } = this.props;
+    const { id, dim } = node;
     const { cx, cy } = dim!;
     const r = (dim! as CircleSize).r || 30;
+    const x = cx - r;
+    const y = cy - r;
+
+    const showGrip =
+      hovered || ~(dataStore!.context.selectedNodeIds || []).indexOf(id);
+
     return (
-      <circle
-        className={NodeClass}
-        data-type={DataNodeType}
-        data-id={node.id}
-        cx={cx}
-        cy={cy}
-        r={r}
-        fill={'#999999'}
-      />
+      <g
+        ref={_ref}
+        transform={`translate(${x}, ${y})`}
+        width={2 * r}
+        height={2 * r}
+        onClick={() => dataStore!.selectNode(id)}
+      >
+        <circle
+          className={NodeClass}
+          data-type={DataNodeType}
+          data-id={node.id}
+          r={r}
+          cx={r}
+          cy={r}
+          fill={'#999999'}
+        />
+        {showGrip && <CircleGripGroup node={node} />}
+      </g>
     );
   }
 }
 
+const CircleNode = hoverable<IProps>(CircleNodeBase);
 export default CircleNode;

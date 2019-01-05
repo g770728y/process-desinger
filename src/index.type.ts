@@ -1,3 +1,7 @@
+export type PContext = {
+  selectedNodeIds?: PNodeId[];
+};
+
 export type RectSize = { w?: number; h?: number };
 export type CircleSize = { r?: number };
 export type Size = RectSize | CircleSize;

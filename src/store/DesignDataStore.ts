@@ -1,4 +1,12 @@
-import { PNode, PEdge, DesignData, PElement, Position } from '../index.type';
+import {
+  PNode,
+  PEdge,
+  DesignData,
+  PElement,
+  Position,
+  PNodeId,
+  PContext
+} from '../index.type';
 import { observable, computed, action } from 'mobx';
 import ConfigStore from './ConfigStore';
 import { DataNodeType, DataEdgeType } from '../global';
@@ -14,6 +22,9 @@ function nextNodeId(nodes: PNode[]): number {
 
 export default class DesignDataStore {
   configStore: ConfigStore;
+
+  @observable
+  context: PContext = {};
 
   @observable
   nodes: PNode[];
@@ -73,6 +84,12 @@ export default class DesignDataStore {
     } else {
       throw new Error(`错误的element type类型:${dataType}`);
     }
+  }
+
+  // 选择某个node
+  @action
+  selectNode(id: PNodeId) {
+    this.context.selectedNodeIds = [id];
   }
 
   //////////////////////////////////////////////  工具方法  /////////////////////////////////////////////////////
