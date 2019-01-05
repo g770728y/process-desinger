@@ -5,11 +5,15 @@ import {
   PElement,
   PPosition,
   PNodeId,
-  PContext
+  PContext,
+  PAnchorType,
+  OrphanEdge,
+  PEdgeId
 } from '../index.type';
 import { observable, computed, action } from 'mobx';
 import ConfigStore from './ConfigStore';
 import { DataNodeType, DataEdgeType } from '../global';
+import { nodeAnchorXY, xyOfCircleAnchor, xyOfRectAnchor } from '../helper';
 
 function nextNodeId(nodes: PNode[]): number {
   return (
@@ -31,6 +35,9 @@ export default class DesignDataStore {
 
   @observable
   edges: PEdge[];
+
+  @observable
+  orphanEdges: OrphanEdge[];
 
   @computed
   get data(): DesignData {
@@ -72,7 +79,7 @@ export default class DesignDataStore {
 
   // 移动节点或边
   @action
-  move(attrs: {
+  moveNode(attrs: {
     dataType: string;
     element: PElement;
     newPos: PPosition;
@@ -93,16 +100,32 @@ export default class DesignDataStore {
   // 选择某个node
   @action
   selectNode(id: PNodeId) {
+    this.context.selectedEdgeIds = [];
+    this.context.selectedOrphanEdgeIds = [];
     this.context.selectedNodeIds = [id];
+  }
+
+  @action
+  selectEdge(id: PEdgeId) {
+    this.context.selectedOrphanEdgeIds = [];
+    this.context.selectedNodeIds = [];
+    this.context.selectedEdgeIds = [id];
+  }
+
+  @action
+  selectOrphanEdge(id: PEdgeId) {
+    this.context.selectedOrphanEdgeIds = [id];
+    this.context.selectedNodeIds = [];
+    this.context.selectedEdgeIds = [];
   }
 
   //////////////////////////////////////////////  工具方法  /////////////////////////////////////////////////////
   // 根据类型和id反推节点或边
-  getElement(type: string, id: number): PElement | undefined {
+  getElement(type: string, id: number): PElement {
     if (type === DataNodeType) {
-      return this.nodes.find(node => node.id === id);
+      return this.nodes.find(node => node.id === id)!;
     } else if (type === DataEdgeType) {
-      return this.edges.find(edge => edge.id === id);
+      return this.edges.find(edge => edge.id === id)!;
     } else {
       throw new Error(`错误的element type类型:${type}`);
     }
@@ -117,5 +140,54 @@ export default class DesignDataStore {
     } else {
       throw new Error(`错误的element type类型:${type}`);
     }
+  }
+
+  // 获得node或edge上anchor的位置
+  anchorXY(
+    element: PElement,
+    hostType: string,
+    anchor: PAnchorType
+  ): PPosition {
+    if (hostType === DataNodeType) {
+      return nodeAnchorXY(element as PNode, anchor);
+    } else if (hostType === DataEdgeType) {
+      const edge = element as PEdge;
+      if (anchor === '0') {
+        // 边的起点
+        const { id, anchor } = edge.from;
+        const node = this.getNode(id);
+        return nodeAnchorXY(node!, anchor);
+      } else {
+        const { id, anchor } = edge.to;
+        const node = this.getNode(id);
+        return nodeAnchorXY(node!, anchor);
+      }
+    } else {
+      throw new Error(`错误的hostType:${hostType}`);
+    }
+  }
+
+  getNode(_id: PNodeId) {
+    return this.nodes.find(({ id }) => id === _id);
+  }
+
+  getEdgeEndPoints(edgeId: PEdgeId): { fromXY: PPosition; toXY: PPosition } {
+    const edge = this.edges.find(({ id }) => edgeId === id);
+    if (!edge) {
+      throw new Error(`edgeId无效:${edgeId}`);
+    }
+
+    const { from, to } = edge;
+
+    const fromNode = this.nodes.find(({ id }) => id === from.id);
+    const toNode = this.nodes.find(({ id }) => id === to.id);
+
+    const fromXY = nodeAnchorXY(fromNode!, from.anchor);
+    const toXY = nodeAnchorXY(toNode!, to.anchor);
+
+    return {
+      fromXY,
+      toXY
+    };
   }
 }

@@ -13,12 +13,12 @@ class CircleGripGroup extends React.Component<IProps> {
     const { id, dim } = node;
     const { r } = dim! as CircleSize;
     return [
-      { p: 'lc' as PAnchorType, cx: 0, cy: r! },
-      { p: 'tc' as PAnchorType, cx: r!, cy: 0 },
-      { p: 'rc' as PAnchorType, cx: 2 * r!, cy: r! },
-      { p: 'bc' as PAnchorType, cx: r!, cy: r! * 2 }
+      { anchor: 'lc' as PAnchorType, cx: 0, cy: r! },
+      { anchor: 'tc' as PAnchorType, cx: r!, cy: 0 },
+      { anchor: 'rc' as PAnchorType, cx: 2 * r!, cy: r! },
+      { anchor: 'bc' as PAnchorType, cx: r!, cy: r! * 2 }
     ].map(item => (
-      <Grip key={item.p} {...item} dataType={DataNodeType} dataId={id} />
+      <Grip key={item.anchor} {...item} dataType={DataNodeType} dataId={id} />
     ));
   }
 }

@@ -5,22 +5,23 @@ import {
   throttleTime,
   takeUntil
 } from 'rxjs/operators';
-import { extractDataAttrs } from '../../helper';
-import { PNode, PEdge, PPosition } from '../../index.type';
-import { isDraggableDataType } from '../../global';
+import { PNode, PEdge, PPosition, PAnchorType } from '../../index.type';
+import { isDraggableDataType, DataNodeType } from '../../global';
 import { Observable, Subscription } from 'rxjs';
 import UIStore from '../../store/UIStore';
 import DesignDataStore from '../../store/DesignDataStore';
+import { extractNodeAttrs } from './helper';
 
-interface MouseEventData {
+interface EventData {
   x0?: number;
   y0?: number;
   x?: number;
   y?: number;
+  pos0?: PPosition;
   dataType?: string;
   dataId?: number;
+  dataHost?: { type: string; id: number; p: PAnchorType };
   element?: PNode | PEdge;
-  elementPos0?: PPosition;
 }
 
 export function dragNode(
@@ -37,21 +38,21 @@ export function dragNode(
         e.clientY
       );
       return {
-        ...extractDataAttrs(e),
+        ...extractNodeAttrs(e),
         x0,
         y0
       };
     }),
-    filter((attrs: MouseEventData) => isDraggableDataType(attrs.dataType)),
-    map((attrs: MouseEventData) => {
+    filter((attrs: EventData) => attrs.dataType === DataNodeType),
+    map((attrs: EventData) => {
       const element = dataStore!.getElement(attrs.dataType!, attrs.dataId!);
       return {
         ...attrs,
         element,
-        elementPos0: dataStore!.getElementPos(element!, attrs.dataType!)
+        pos0: dataStore!.getElementPos(element!, attrs.dataType!)
       };
     }),
-    switchMap((attrs: MouseEventData) =>
+    switchMap((attrs: EventData) =>
       mousemove$.pipe(
         map((e: MouseEvent) => ({
           ...attrs,
@@ -63,14 +64,14 @@ export function dragNode(
     )
   );
 
-  const dragNode$ = drag$.subscribe((attrs: MouseEventData) => {
-    const { x0, x, y, y0, dataType, dataId, element, elementPos0 } = attrs;
-    dataStore!.move({
+  const dragNode$ = drag$.subscribe((attrs: EventData) => {
+    const { x0, x, y, y0, dataType, dataId, element, pos0 } = attrs;
+    dataStore!.moveNode({
       dataType: dataType!,
       element: element!,
       newPos: {
-        cx: elementPos0!.cx + (x! - x0!),
-        cy: elementPos0!.cy + (y! - y0!)
+        cx: pos0!.cx + (x! - x0!),
+        cy: pos0!.cy + (y! - y0!)
       }
     });
   });

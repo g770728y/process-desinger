@@ -1,16 +1,16 @@
 import * as React from 'react';
 import { PPosition, PAnchorType } from '../index.type';
-import { DefaultGripRadius } from '../global';
+import { DefaultGripRadius, GripType } from '../global';
 
 type IProps = PPosition & {
-  p: PAnchorType;
+  anchor: PAnchorType;
   dataType: 'node' | 'edge';
   dataId: number;
 };
 
 class Grip extends React.Component<IProps> {
   render() {
-    const { dataType, dataId, p, cx, cy } = this.props;
+    const { dataType, dataId, anchor, cx, cy } = this.props;
     return (
       <circle
         r={DefaultGripRadius}
@@ -19,9 +19,8 @@ class Grip extends React.Component<IProps> {
         strokeWidth={1}
         cx={cx}
         cy={cy}
-        data-type={dataType}
-        data-id={dataId}
-        data-p={p}
+        data-type={GripType}
+        data-host={`${dataType}:${dataId}:${anchor}`}
       />
     );
   }

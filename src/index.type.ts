@@ -1,5 +1,7 @@
 export type PContext = {
   selectedNodeIds?: PNodeId[];
+  selectedEdgeIds?: PEdgeId[];
+  selectedOrphanEdgeIds?: PEdgeId[];
 };
 
 export type RectSize = { w?: number; h?: number };
@@ -35,7 +37,14 @@ export interface PEdge {
   to: { id: number; anchor: PAnchorType };
 }
 
-export type PAnchorType = 'tc' | 'bc' | 'lc' | 'rc';
+export interface OrphanEdge {
+  id: PEdgeId;
+  from: PPosition;
+  to: PPosition;
+}
+
+// 0, 1 表示 edge的起点或终点
+export type PAnchorType = 'tc' | 'bc' | 'lc' | 'rc' | '0' | '1';
 
 export type Config = {
   canvas?: { background?: string };

@@ -1,28 +1,16 @@
 import * as React from 'react';
 import { inject, observer } from 'mobx-react';
 import UIStore from '../store/UIStore';
-import { PNode, PEdge, PPosition } from '../index.type';
-import {
-  DefaultCanvasHeight,
-  SvgBackgroundRectClass,
-  DataNodeType,
-  isDataType,
-  isDraggableDataType
-} from '../global';
-import EdgeView from '../EdgeView';
+import { PNode, PEdge, PPosition, OrphanEdge } from '../index.type';
+import { DefaultCanvasHeight, SvgBackgroundRectClass } from '../global';
+import { EdgeView } from '../EdgeView';
 import Defs from './defs';
 import DesignDataStore from '../store/DesignDataStore';
 import ConfigStore from '../store/ConfigStore';
-import { wrapSvg, renderNode, extractDataAttrs } from '../helper';
+import { wrapSvg, renderNode } from '../helper';
 import { fromEvent, Subscription } from 'rxjs';
-import {
-  filter,
-  map,
-  throttleTime,
-  switchMap,
-  takeUntil
-} from 'rxjs/operators';
 import { dragNode } from './events/dragNode';
+import OrphanEdgeView from '../EdgeView/OrphanEdgeView';
 
 type IProps = {
   dataStore?: DesignDataStore;
@@ -51,6 +39,12 @@ export default class Painter extends React.Component<IProps> {
     });
   }
 
+  getOrphanEdgesView(oedges: OrphanEdge[]) {
+    return (oedges || []).map(oedge => {
+      return <OrphanEdgeView key={oedge.id} oedge={oedge} />;
+    });
+  }
+
   componentDidMount() {
     const { uiStore, dataStore } = this.props;
     const el = this.ref.current!;
@@ -75,7 +69,7 @@ export default class Painter extends React.Component<IProps> {
     const { uiStore, dataStore, configStore } = this.props;
     const { painterDim } = uiStore!;
     const { w: width, h: height } = painterDim;
-    const { nodes, edges } = dataStore!;
+    const { nodes, edges, orphanEdges } = dataStore!;
 
     const { canvas } = configStore!;
     const background = canvas
@@ -84,6 +78,7 @@ export default class Painter extends React.Component<IProps> {
 
     const vnodes = this.getNodesView(nodes);
     const vedges = this.getEdgesView(edges);
+    const voedges = this.getOrphanEdgesView(orphanEdges);
 
     return wrapSvg(
       width,
@@ -100,6 +95,7 @@ export default class Painter extends React.Component<IProps> {
         )}
         {vnodes}
         {vedges}
+        {voedges}
       </>,
       this.ref
     );

@@ -41,13 +41,15 @@ export const EdgeClass = 'pd-edge';
 // 将放在html上
 export const DataNodeType = 'node';
 export const DataEdgeType = 'edge';
+export const DataOrphanEdgeType = 'oedge';
+export const GripType = 'Grip';
 // 是否是正确的nodeTypes
 export function isDataType(type?: string): boolean {
   return [DataNodeType, DataEdgeType].some(_type => type === _type);
 }
 // 是否是可拖放的nodeTypes (注意edge不可拖放)
 export function isDraggableDataType(type?: string): boolean {
-  return [DataNodeType].some(_type => _type === type);
+  return [DataNodeType, GripType].some(_type => _type === type);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

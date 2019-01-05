@@ -14,46 +14,46 @@ import {
 import RectNode from './NodeView/RectNode';
 import CircleNode from './NodeView/CircleNode';
 
-function _coordsByCircleAnchor(dim: Dim, anchor: PAnchorType) {
+export function xyOfCircleAnchor(dim: Dim, anchor: PAnchorType): PPosition {
   const { cx, cy } = dim!;
   const { r } = dim! as CircleSize;
   if (anchor === 'tc') {
-    return { x: cx, y: cy - r! };
+    return { cx, cy: cy - r! };
   } else if (anchor === 'bc') {
-    return { x: cx, y: cy + r! };
+    return { cx, cy: cy + r! };
   } else if (anchor === 'lc') {
-    return { x: cx - r!, y: cy };
+    return { cx: cx - r!, cy };
   } else if (anchor === 'rc') {
-    return { x: cx + r!, y: cy };
+    return { cx: cx + r!, cy };
   } else {
     throw new Error(`错误的anchor类型: ${anchor}`);
   }
 }
 
-function _coordsByRectAnchor(dim: Dim, anchor: PAnchorType) {
+export function xyOfRectAnchor(dim: Dim, anchor: PAnchorType): PPosition {
   const { cx, cy } = dim!;
   const { w, h } = dim! as RectSize;
   if (anchor === 'tc') {
-    return { x: cx, y: cy - h! / 2 };
+    return { cx, cy: cy - h! / 2 };
   } else if (anchor === 'bc') {
-    return { x: cx, y: cy + h! / 2 };
+    return { cx, cy: cy + h! / 2 };
   } else if (anchor === 'lc') {
-    return { x: cx - w! / 2, y: cy };
+    return { cx: cx - w! / 2, cy };
   } else if (anchor === 'rc') {
-    return { x: cx + w! / 2, y: cy };
+    return { cx: cx + w! / 2, cy };
   } else {
     throw new Error(`错误的anchor类型: ${anchor}`);
   }
 }
 
 // 根据节点与anchor类型, 推算anchor坐标
-export function anchorXY(node: PNode, anchor: PAnchorType) {
+export function nodeAnchorXY(node: PNode, anchor: PAnchorType): PPosition {
   const { dim, shape } = node;
 
   if (shape === Shape.Circle) {
-    return _coordsByCircleAnchor(dim!, anchor);
+    return xyOfCircleAnchor(dim!, anchor);
   } else if (shape === Shape.Rect) {
-    return _coordsByRectAnchor(dim!, anchor);
+    return xyOfRectAnchor(dim!, anchor);
   } else {
     throw new Error(`错误的Shape类型: ${shape}`);
   }
@@ -172,16 +172,5 @@ export function getNodeInstance(
       cx,
       cy
     }
-  };
-}
-
-// 抽取画布内元素的nodeType与nodeId属性
-export function extractDataAttrs(e: MouseEvent) {
-  const el = e.target! as HTMLElement;
-  const dataId = el.getAttribute('data-id');
-
-  return {
-    dataType: el.getAttribute('data-type') || undefined,
-    dataId: dataId ? parseInt(dataId) : undefined
   };
 }
