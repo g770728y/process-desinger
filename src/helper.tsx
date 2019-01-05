@@ -9,7 +9,7 @@ import {
   CircleSize,
   RectSize,
   PBox,
-  Position
+  PPosition
 } from './index.type';
 import RectNode from './NodeView/RectNode';
 import CircleNode from './NodeView/CircleNode';
@@ -162,7 +162,7 @@ export function isBoxInRange(box: PBox, boxContainer: PBox): boolean {
 // 将nodeTemplate拖到画布时, 返回实例
 export function getNodeInstance(
   nodeTemplate: PNodeTemplate,
-  { cx, cy }: Position
+  { cx, cy }: PPosition
 ): PNode {
   return {
     ...nodeTemplate,

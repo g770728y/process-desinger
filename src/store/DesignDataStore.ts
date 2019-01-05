@@ -3,7 +3,7 @@ import {
   PEdge,
   DesignData,
   PElement,
-  Position,
+  PPosition,
   PNodeId,
   PContext
 } from '../index.type';
@@ -72,7 +72,11 @@ export default class DesignDataStore {
 
   // 移动节点或边
   @action
-  move(attrs: { dataType: string; element: PElement; newPos: Position }): void {
+  move(attrs: {
+    dataType: string;
+    element: PElement;
+    newPos: PPosition;
+  }): void {
     const { dataType, element, newPos } = attrs;
     if (dataType === DataNodeType) {
       const { id } = element;

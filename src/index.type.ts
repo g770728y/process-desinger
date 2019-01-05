@@ -5,8 +5,8 @@ export type PContext = {
 export type RectSize = { w?: number; h?: number };
 export type CircleSize = { r?: number };
 export type Size = RectSize | CircleSize;
-export type Position = { cx: number; cy: number };
-export type Dim = Size & Position;
+export type PPosition = { cx: number; cy: number };
+export type Dim = Size & PPosition;
 
 export type PNodeId = number;
 
