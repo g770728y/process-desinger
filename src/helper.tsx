@@ -9,7 +9,8 @@ import {
   CircleSize,
   RectSize,
   PBox,
-  PPosition
+  PPosition,
+  PNodeId
 } from './index.type';
 import RectNode from './NodeView/RectNode';
 import CircleNode from './NodeView/CircleNode';
@@ -57,6 +58,16 @@ export function nodeAnchorXY(node: PNode, anchor: PAnchorType): PPosition {
   } else {
     throw new Error(`错误的Shape类型: ${shape}`);
   }
+}
+
+// 利用nodeId, 找到anchor
+export function nodeAnchorXYByNodeId(
+  nodes: PNode[],
+  nodeId: PNodeId,
+  anchor: PAnchorType
+) {
+  const node = nodes.find(({ id }) => id === nodeId);
+  return nodeAnchorXY(node!, anchor);
 }
 
 export function wrapSvg(

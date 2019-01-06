@@ -63,8 +63,8 @@ export interface OrphanEdge {
   hostId?: PEdgeId;
   id: PEdgeId;
   type: ElementType;
-  from: PPosition;
-  to: PPosition;
+  from: PPosition | { id: number; anchor: PAnchorType };
+  to: PPosition | { id: number; anchor: PAnchorType };
 }
 
 // 0, 1 表示 edge的起点或终点

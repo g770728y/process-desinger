@@ -14,7 +14,7 @@ type IProps = {
 class OrphanEdgeGripGroup extends React.Component<IProps> {
   render() {
     const { oedge, dataStore } = this.props;
-    const { from, to } = oedge;
+    const { fromXY, toXY } = dataStore!.getOrphanEdgeEndPoints(oedge.id);
     return [
       {
         anchor: '0' as PAnchorType,
@@ -23,8 +23,8 @@ class OrphanEdgeGripGroup extends React.Component<IProps> {
       },
       {
         anchor: '1' as PAnchorType,
-        cx: to.cx - from.cx,
-        cy: to.cy - from.cy
+        cx: toXY.cx - fromXY.cx,
+        cy: toXY.cy - fromXY.cy
       }
     ].map(item => (
       <Grip

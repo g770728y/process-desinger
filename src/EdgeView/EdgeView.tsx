@@ -20,8 +20,7 @@ class EdgeViewBase extends React.Component<IProps & HoverableProps> {
 
     const { fromXY, toXY } = dataStore!.getEdgeEndPoints(id);
 
-    const showGrip =
-      hovered || ~(dataStore!.context.selectedEdgeIds || []).indexOf(id);
+    const showGrip = ~(dataStore!.context.selectedEdgeIds || []).indexOf(id);
 
     const xy = {
       x1: 0,

@@ -4,7 +4,9 @@ import {
   PEdge,
   PPosition,
   PEdgeId,
-  ElementType
+  ElementType,
+  PAnchor,
+  Shape
 } from '../../index.type';
 import { Observable, Subscription, of } from 'rxjs';
 import UIStore from '../../store/UIStore';
@@ -24,6 +26,7 @@ import {
 import { extractGripAttrs } from './helper';
 import { distance } from '../../util';
 import { MinEdgeLength } from '../../global';
+import { xyOfRectAnchor, xyOfCircleAnchor } from '../../helper';
 
 interface EventData {
   x0?: number;
@@ -72,6 +75,7 @@ export function dragGrip(
           ...uiStore!.clientXYToPainterXY(e.clientX, e.clientY)
         })),
         throttleTime(30),
+        // 难点
         // 如果直接takeUntil(mouseup$), 那么无论如何都无法获取mouseup
         // 所以在mouseup后增加一个finished, 然后takeWhile finished 就行了
         // https://stackoverflow.com/questions/43792349/how-to-get-value-from-stop-observable-in-takeuntil
@@ -105,36 +109,10 @@ export function dragGrip(
     if (dataHost!.type === ElementType.Node) {
       if (attrs.mouseup) {
         // 鼠标抬起
-        if (snappedAnchor) {
-          //  检验孤立边是否落在node anchor上,如果是,则删除孤立边, 生成正式边
-          dataStore!.delOrphanEdge(orphanEdgeId!);
-          dataStore!.addEdge({
-            type: ElementType.Edge,
-            from: {
-              id: dataHost!.id,
-              anchor: dataHost!.anchor
-            },
-            to: {
-              id: snappedAnchor.host.id,
-              anchor: snappedAnchor.anchor
-            }
-          });
-        } else {
-          if (distance({ x: x!, y: y! }, { x: x0!, y: y0! }) < MinEdgeLength) {
-            // 最小有效距离
-            dataStore!.delOrphanEdge(orphanEdgeId!);
-          } else {
-            // 无动作(当然, 会多出一个孤立边)
-          }
-        }
+        _tryCreateEdge(attrs, dataStore!);
       } else {
         // 鼠标移动中, 画出新的孤立边
-        dataStore!.upsetOrphanEdge({
-          id: orphanEdgeId!,
-          type: ElementType.OrphanEdge,
-          from: { cx: pos0!.cx, cy: pos0!.cy },
-          to: { cx: newX!, cy: newY! }
-        });
+        _drawOrphanEdge(attrs, dataStore!);
       }
     } else if (dataHost!.type === ElementType.Edge) {
       // 移动旧边当前grip
@@ -142,4 +120,95 @@ export function dragGrip(
   });
 
   return dragGrip$;
+}
+
+////////////////////////////////////////  helper /////////////////////////////////////////////////////
+// 鼠标移动中, 画出新的孤立边
+function _drawOrphanEdge(attrs: EventData, dataStore: DesignDataStore) {
+  const { orphanEdgeId, x0, y0, x, y, host, pos0, dataHost } = attrs;
+  let newX = x,
+    newY = y;
+
+  const snappedAnchor = dataStore!.findSnappedAnchor(x!, y!);
+  if (snappedAnchor) {
+    newX = snappedAnchor.xy.cx;
+    newY = snappedAnchor.xy.cy;
+  }
+
+  dataStore!.upsetOrphanEdge({
+    id: orphanEdgeId!,
+    type: ElementType.OrphanEdge,
+    from: { id: dataHost!.id, anchor: dataHost!.anchor },
+    to: { cx: newX!, cy: newY! }
+  });
+}
+
+// 创建新的edge
+function _tryCreateEdge(attrs: EventData, dataStore: DesignDataStore) {
+  const { orphanEdgeId, x0, y0, x, y, host, pos0, dataHost } = attrs;
+  const snappedAnchor = dataStore!.findSnappedAnchor(x!, y!);
+  let nearestAnchorOnNode: PAnchor | undefined;
+  if (!snappedAnchor) {
+    const node = dataStore!.xyInWhichNode(x!, y!);
+    if (node) {
+      nearestAnchorOnNode = _findNearestAnchorOnNode(node, {
+        x: pos0!.cx!,
+        y: pos0!.cy!
+      });
+    }
+  }
+
+  // 优先定位 能被snap 的grip
+  // 然后 根据目标点所在的node, 来确定node的哪个grip距起点最近
+  // 总之 尽量确定一个终点
+  const targetAnchor = snappedAnchor || nearestAnchorOnNode;
+  if (targetAnchor) {
+    //  检验孤立边是否落在node anchor上,如果是,则删除孤立边, 生成正式边
+    dataStore!.delOrphanEdge(orphanEdgeId!);
+    dataStore!.addEdge({
+      type: ElementType.Edge,
+      from: {
+        id: dataHost!.id,
+        anchor: dataHost!.anchor
+      },
+      to: {
+        id: targetAnchor.host.id,
+        anchor: targetAnchor.anchor
+      }
+    });
+  } else {
+    dataStore!.delOrphanEdge(orphanEdgeId!); // 最小有效距离
+    // if (distance({ x: x!, y: y! }, { x: x0!, y: y0! }) < MinEdgeLength) {
+    //   dataStore!.delOrphanEdge(orphanEdgeId!); // 最小有效距离
+    // } else {
+    //   // 无动作(当然, 会多出一个孤立边)
+    // }
+  }
+}
+
+// 找到距xy最近的node上的grip
+function _findNearestAnchorOnNode(
+  node: PNode,
+  xy: { x: number; y: number }
+): PAnchor {
+  const virtualAnchor = {
+    host: node,
+    anchor: 'lc' as PAnchorType,
+    xy: { cx: 100000000, cy: 1000000000 }
+  };
+
+  return ['lc', 'tc', 'rc', 'bc'].reduce((acc: PAnchor, p) => {
+    const prevDistance = distance(xy, { x: acc.xy.cx, y: acc.xy.cy });
+
+    const { cx: x1, cy: y1 } =
+      node.shape === Shape.Rect
+        ? xyOfRectAnchor(node.dim!, p as PAnchorType)
+        : xyOfCircleAnchor(node.dim!, p as PAnchorType);
+    const currDistance = distance(xy, { x: x1, y: y1 });
+    if (currDistance < prevDistance) {
+      return { host: node, anchor: p as PAnchorType, xy: { cx: x1, cy: y1 } };
+    } else {
+      return acc;
+    }
+  }, virtualAnchor);
 }

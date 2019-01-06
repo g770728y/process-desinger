@@ -11,13 +11,16 @@ import {
   PEdgeId,
   Identity,
   ElementType,
-  PAnchor
+  PAnchor,
+  Shape,
+  RectSize,
+  CircleSize
 } from '../index.type';
 import { observable, computed, action } from 'mobx';
 import ConfigStore from './ConfigStore';
-import { nodeAnchorXY } from '../helper';
+import { nodeAnchorXY, nodeAnchorXYByNodeId } from '../helper';
 import { flatten, distance } from '../util';
-import { SnapRadius } from '../global';
+import { SnapRadius, StartId, EndId } from '../global';
 import { Omit } from 'ts-type-ext';
 
 function nextElementId(identities: Identity[]): number {
@@ -97,12 +100,32 @@ export default class DesignDataStore {
   // 加入新节点, 注意需要重新分配id
   @action
   addNode(node: PNode): void {
+    // 不可重复添加start
+    if (node.templateId === StartId && this.getNode(StartId)) return;
+
+    // 不可重复添加end
+    if (node.templateId === EndId && this.getNode(EndId)) return;
+
     this.nodes.push({ ...node, id: nextElementId(this.nodes) });
   }
 
   @action
   addEdge(edge: Omit<PEdge, 'id'>): void {
-    this.edges.push({ ...edge, id: nextElementId(this.edges) });
+    const { from, to } = edge;
+
+    if (from.id !== to.id && !this.findEdgeByStartAndEndNode(from.id, to.id)) {
+      // 仅当两个node间没有edge时, 才创建新edge
+      this.edges.push({ ...edge, id: nextElementId(this.edges) });
+    }
+  }
+
+  findEdgeByStartAndEndNode(
+    fromNodeId: PNodeId,
+    toNodeId: PNodeId
+  ): PEdge | undefined {
+    return this.edges.find(
+      edge => edge.from.id === fromNodeId && edge.to.id === toNodeId
+    );
   }
 
   // 移动节点或边
@@ -195,12 +218,13 @@ export default class DesignDataStore {
 
   @action
   delOrphanEdge(id: PEdgeId) {
-    this.context.selectedOrphanEdgeIds = (
-      this.context.selectedOrphanEdgeIds || []
-    ).filter(_id => id !== id);
+    console.log('delete:', id);
     this.orphanEdges = (this.orphanEdges || []).filter(
       oedge => oedge.id !== id
     );
+    this.context.selectedOrphanEdgeIds = (
+      this.context.selectedOrphanEdgeIds || []
+    ).filter(_id => id !== id);
   }
 
   //////////////////////////////////////////////  工具方法  /////////////////////////////////////////////////////
@@ -255,6 +279,47 @@ export default class DesignDataStore {
     return this.orphanEdges.find(({ id }) => _id === id);
   }
 
+  // 计算孤立边两个端点的坐标
+  getOrphanEdgeEndPoints(
+    oedgeId: PEdgeId
+  ): { fromXY: PPosition; toXY: PPosition } {
+    const oedge = this.orphanEdges.find(({ id }) => oedgeId === id);
+    if (!oedge) {
+      throw new Error(`oedgeId无效:${oedgeId}`);
+    }
+
+    const { from, to } = oedge;
+
+    let fromXY;
+    // 不能用id, id可能=0
+    if ((from as any).anchor) {
+      fromXY = nodeAnchorXYByNodeId(
+        this.nodes,
+        (from as any).id,
+        (from as any).anchor
+      );
+    } else {
+      fromXY = from as PPosition;
+    }
+
+    let toXY;
+    if ((to as any).anchor) {
+      toXY = nodeAnchorXYByNodeId(
+        this.nodes,
+        (to as any).id,
+        (to as any).anchor
+      );
+    } else {
+      toXY = to as PPosition;
+    }
+
+    return {
+      fromXY,
+      toXY
+    };
+  }
+
+  // 计算有效边 两个端点的 坐标
   getEdgeEndPoints(edgeId: PEdgeId): { fromXY: PPosition; toXY: PPosition } {
     const edge = this.edges.find(({ id }) => edgeId === id);
     if (!edge) {
@@ -263,15 +328,9 @@ export default class DesignDataStore {
 
     const { from, to } = edge;
 
-    const fromNode = this.nodes.find(({ id }) => id === from.id);
-    const toNode = this.nodes.find(({ id }) => id === to.id);
-
-    const fromXY = nodeAnchorXY(fromNode!, from.anchor);
-    const toXY = nodeAnchorXY(toNode!, to.anchor);
-
     return {
-      fromXY,
-      toXY
+      fromXY: nodeAnchorXYByNodeId(this.nodes, from.id, from.anchor),
+      toXY: nodeAnchorXYByNodeId(this.nodes, to.id, to.anchor)
     };
   }
 
@@ -286,5 +345,27 @@ export default class DesignDataStore {
       ({ xy }: PAnchor) =>
         distance({ x: xy.cx, y: xy.cy }, { x, y }) <= SnapRadius
     );
+  }
+
+  // xy点在哪个node里
+  xyInWhichNode(x: number, y: number): PNode | undefined {
+    return this.nodes.find(node => {
+      const { dim, shape } = node;
+      const { cx, cy } = dim as PPosition;
+      if (shape === Shape.Rect) {
+        const { w, h } = dim as RectSize;
+        return (
+          x >= cx - w! / 2 &&
+          x <= cx + w! / 2 &&
+          y >= cy - h! / 2 &&
+          y <= cy + h! / 2
+        );
+      } else if (shape === Shape.Circle) {
+        const { r } = dim as CircleSize;
+        return distance({ x, y }, { x: cx, y: cy }) <= r!;
+      } else {
+        throw new Error(`错误的shape: ${shape}`);
+      }
+    });
   }
 }

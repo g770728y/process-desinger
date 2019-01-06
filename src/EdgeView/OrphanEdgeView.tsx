@@ -4,7 +4,6 @@ import { OrphanEdge, ElementType } from '../index.type';
 import { EdgeClass } from '../global';
 import hoverable, { HoverableProps } from '../hoc/hoverable';
 import DesignDataStore from '../store/DesignDataStore';
-import EdgeGripGroup from '../Grip/EdgeGripGroup';
 import OrphanEdgeGripGroup from '../Grip/OrphanEdgeGripGroup';
 
 type IProps = {
@@ -17,16 +16,18 @@ type IProps = {
 class OrphanEdgeViewBase extends React.Component<IProps & HoverableProps> {
   render() {
     const { oedge, _ref, hovered, dataStore } = this.props;
-    const { id, from, to } = oedge;
+    const { fromXY, toXY } = dataStore!.getOrphanEdgeEndPoints(oedge.id);
 
-    const showGrip =
-      hovered || ~(dataStore!.context.selectedOrphanEdgeIds || []).indexOf(id);
+    // 注意没有用上hovered(防止视觉上与node的grip混淆)
+    const showGrip = ~(dataStore!.context.selectedOrphanEdgeIds || []).indexOf(
+      oedge.id
+    );
 
     const xy = {
       x1: 0,
       y1: 0,
-      x2: to.cx - from.cx,
-      y2: to.cy - from.cy
+      x2: toXY.cx - fromXY.cx,
+      y2: toXY.cy - fromXY.cy
     };
 
     const BgLayer = <line {...xy} strokeWidth={6} stroke="transparent" />;
@@ -34,14 +35,14 @@ class OrphanEdgeViewBase extends React.Component<IProps & HoverableProps> {
     return (
       <g
         ref={_ref}
-        transform={`translate(${from.cx}, ${from.cy})`}
-        onClick={() => dataStore!.selectOrphanEdge(id)}
+        transform={`translate(${fromXY.cx}, ${fromXY.cy})`}
+        onClick={() => dataStore!.selectOrphanEdge(oedge.id)}
       >
         {BgLayer}
         <line
           className={EdgeClass}
           data-type={ElementType.OrphanEdge}
-          data-id={id}
+          data-id={oedge.id}
           {...xy}
           stroke="#999999"
           markerEnd={'url(#arrow)'}
@@ -51,6 +52,7 @@ class OrphanEdgeViewBase extends React.Component<IProps & HoverableProps> {
     );
   }
 }
+
 const OrphanEdgeView = hoverable(OrphanEdgeViewBase);
 
 export default OrphanEdgeView;
