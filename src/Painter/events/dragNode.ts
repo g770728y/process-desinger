@@ -5,8 +5,14 @@ import {
   throttleTime,
   takeUntil
 } from 'rxjs/operators';
-import { PNode, PEdge, PPosition, PAnchorType } from '../../index.type';
-import { isDraggableDataType, DataNodeType } from '../../global';
+import {
+  PNode,
+  PEdge,
+  PPosition,
+  PAnchorType,
+  ElementType
+} from '../../index.type';
+import { isDraggableDataType } from '../../global';
 import { Observable, Subscription } from 'rxjs';
 import UIStore from '../../store/UIStore';
 import DesignDataStore from '../../store/DesignDataStore';
@@ -43,13 +49,13 @@ export function dragNode(
         y0
       };
     }),
-    filter((attrs: EventData) => attrs.dataType === DataNodeType),
+    filter((attrs: EventData) => attrs.dataType === ElementType.Node),
     map((attrs: EventData) => {
       const element = dataStore!.getElement(attrs.dataType!, attrs.dataId!);
       return {
         ...attrs,
         element,
-        pos0: dataStore!.getElementPos(element!, attrs.dataType!)
+        pos0: dataStore!.getElementPos(element!)
       };
     }),
     switchMap((attrs: EventData) =>
@@ -67,7 +73,6 @@ export function dragNode(
   const dragNode$ = drag$.subscribe((attrs: EventData) => {
     const { x0, x, y, y0, dataType, dataId, element, pos0 } = attrs;
     dataStore!.moveNode({
-      dataType: dataType!,
       element: element!,
       newPos: {
         cx: pos0!.cx + (x! - x0!),

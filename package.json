@@ -22,9 +22,11 @@
     "deploy": "gh-pages -d example/build"
   },
   "dependencies": {
+    "is-hotkey": "^0.1.4",
     "mobx": "^5.8.0",
     "mobx-react": "^5.4.3",
-    "rxjs": "^6.3.3"
+    "rxjs": "^6.3.3",
+    "ts-type-ext": "^1.0.0"
   },
   "peerDependencies": {
     "prop-types": "^15.5.4",
@@ -33,6 +35,7 @@
   },
   "devDependencies": {
     "@svgr/rollup": "^2.4.1",
+    "@types/is-hotkey": "^0.1.1",
     "@types/jest": "^23.1.5",
     "@types/react": "^16.3.13",
     "@types/react-dom": "^16.0.5",

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Grip from './Grip';
-import { PNode, CircleSize, PAnchorType } from '../index.type';
-import { DataNodeType } from '../global';
+import { PNode, CircleSize, PAnchorType, ElementType } from '../index.type';
 
 type IProps = {
   node: PNode;
@@ -18,7 +17,12 @@ class CircleGripGroup extends React.Component<IProps> {
       { anchor: 'rc' as PAnchorType, cx: 2 * r!, cy: r! },
       { anchor: 'bc' as PAnchorType, cx: r!, cy: r! * 2 }
     ].map(item => (
-      <Grip key={item.anchor} {...item} dataType={DataNodeType} dataId={id} />
+      <Grip
+        key={item.anchor}
+        {...item}
+        dataType={ElementType.Node}
+        dataId={id}
+      />
     ));
   }
 }

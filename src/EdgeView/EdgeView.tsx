@@ -1,11 +1,9 @@
 import * as React from 'react';
-import { PEdge } from '../index.type';
+import { PEdge, ElementType } from '../index.type';
 import { observer, inject } from 'mobx-react';
-import { nodeAnchorXY } from '../helper';
 import DesignDataStore from '../store/DesignDataStore';
-import { EdgeClass, DataNodeType } from '../global';
+import { EdgeClass } from '../global';
 import hoverable, { HoverableProps } from '../hoc/hoverable';
-import { CircleGripGroup } from '../Grip';
 import EdgeGripGroup from '../Grip/EdgeGripGroup';
 
 type IProps = {
@@ -43,7 +41,7 @@ class EdgeViewBase extends React.Component<IProps & HoverableProps> {
         {BgLayer}
         <line
           className={EdgeClass}
-          data-type={DataNodeType}
+          data-type={ElementType.Edge}
           data-id={id}
           stroke="#999999"
           markerEnd={'url(#arrow)'}

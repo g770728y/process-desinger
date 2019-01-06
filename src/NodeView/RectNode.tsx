@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { PNode, RectSize } from '../index.type';
+import { PNode, RectSize, ElementType } from '../index.type';
 import { observer, inject } from 'mobx-react';
-import { NodeClass, DataNodeType } from '../global';
+import { NodeClass } from '../global';
 import DesignDataStore from '../store/DesignDataStore';
 import { RectGripGroup } from '../Grip';
 import hoverable, { HoverableProps } from '../hoc/hoverable';
@@ -38,7 +38,7 @@ class RectNodeBase extends React.Component<IProps & HoverableProps> {
           width={w}
           height={h}
           className={NodeClass}
-          data-type={DataNodeType}
+          data-type={ElementType.Node}
           data-id={node.id}
           fill="#cccccc"
         />

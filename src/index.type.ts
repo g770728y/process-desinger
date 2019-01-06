@@ -1,3 +1,15 @@
+// 将放在html上
+export enum ElementType {
+  Node = 'node',
+  Edge = 'edge',
+  OrphanEdge = 'oedge',
+  Grip = 'grip'
+}
+
+export interface Identity {
+  id: number;
+}
+
 export type PContext = {
   selectedNodeIds?: PNodeId[];
   selectedEdgeIds?: PEdgeId[];
@@ -16,6 +28,7 @@ export type PEdgeId = number;
 
 export interface PNodeTemplate {
   id: PNodeId;
+  type: ElementType;
   name: string;
   shape: Shape;
   dim?: Partial<Dim>;
@@ -23,6 +36,7 @@ export interface PNodeTemplate {
 
 export interface PNode {
   id: PNodeId;
+  type: ElementType;
   name?: string;
   shape?: Shape;
   templateId?: number;
@@ -31,14 +45,24 @@ export interface PNode {
 
 export type PElement = PNode | PEdge;
 
+export interface PAnchor {
+  host: PElement;
+  anchor: PAnchorType;
+  xy: PPosition;
+}
+
 export interface PEdge {
   id: PEdgeId;
+  type: ElementType;
   from: { id: number; anchor: PAnchorType };
   to: { id: number; anchor: PAnchorType };
 }
 
 export interface OrphanEdge {
+  // 比如拖动已有的edge, 则已此孤立edge实质上将附着于已有edge
+  hostId?: PEdgeId;
   id: PEdgeId;
+  type: ElementType;
   from: PPosition;
   to: PPosition;
 }

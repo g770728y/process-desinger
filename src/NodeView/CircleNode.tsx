@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { PNode, CircleSize } from '../index.type';
+import { PNode, CircleSize, ElementType } from '../index.type';
 import { observer, inject } from 'mobx-react';
-import { NodeClass, DataNodeType } from '../global';
+import { NodeClass } from '../global';
 import hoverable, { HoverableProps } from '../hoc/hoverable';
 import DesignDataStore from '../store/DesignDataStore';
 import { CircleGripGroup } from '../Grip';
@@ -35,7 +35,7 @@ class CircleNodeBase extends React.Component<IProps & HoverableProps> {
       >
         <circle
           className={NodeClass}
-          data-type={DataNodeType}
+          data-type={ElementType.Node}
           data-id={node.id}
           r={r}
           cx={r}

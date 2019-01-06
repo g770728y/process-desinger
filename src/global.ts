@@ -1,4 +1,4 @@
-import { Shape, PNodeTemplate } from './index.type';
+import { Shape, PNodeTemplate, ElementType } from './index.type';
 
 // 开始节点id
 export const StartId = 0;
@@ -12,12 +12,14 @@ export const NodeTemplatesPanelWidth = 200;
 export const defaultNodeTemplates: PNodeTemplate[] = [
   {
     id: StartId,
+    type: ElementType.Node,
     name: '开始',
     shape: Shape.Circle,
     dim: { r: 30 }
   },
   {
     id: EndId,
+    type: ElementType.Node,
     name: '结束',
     shape: Shape.Circle,
     dim: { r: 30 }
@@ -38,19 +40,19 @@ export const NodeClass = 'pd-node';
 export const EdgeClass = 'pd-edge';
 
 /////////////////////////////////////////////////////////////////////////////////////
-// 将放在html上
-export const DataNodeType = 'node';
-export const DataEdgeType = 'edge';
-export const DataOrphanEdgeType = 'oedge';
-export const GripType = 'Grip';
 // 是否是正确的nodeTypes
 export function isDataType(type?: string): boolean {
-  return [DataNodeType, DataEdgeType].some(_type => type === _type);
+  return [ElementType.Node, ElementType.Edge].some(_type => type === _type);
 }
 // 是否是可拖放的nodeTypes (注意edge不可拖放)
 export function isDraggableDataType(type?: string): boolean {
-  return [DataNodeType, GripType].some(_type => _type === type);
+  return [ElementType.Node, ElementType.Grip].some(_type => _type === type);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 export const DefaultGripRadius = 4;
+
+export const SnapRadius = 3;
+
+// 如果画边时, 线段长小于6, 则直接删除
+export const MinEdgeLength = 6;

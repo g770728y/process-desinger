@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { PEdge, PAnchorType } from '../index.type';
+import { PEdge, PAnchorType, ElementType, OrphanEdge } from '../index.type';
 import { inject, observer } from 'mobx-react';
 import DesignDataStore from '../store/DesignDataStore';
 import Grip from './Grip';
-import { DataEdgeType } from '../global';
 
 type IProps = {
   edge: PEdge;
@@ -28,12 +27,7 @@ class EdgeGripGroup extends React.Component<IProps> {
         cy: toXY.cy - fromXY.cy
       }
     ].map(item => (
-      <Grip
-        key={item.anchor}
-        {...item}
-        dataType={DataEdgeType}
-        dataId={edge.id}
-      />
+      <Grip key={item.anchor} {...item} dataType={edge.type} dataId={edge.id} />
     ));
   }
 }

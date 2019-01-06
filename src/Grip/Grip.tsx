@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { PPosition, PAnchorType } from '../index.type';
-import { DefaultGripRadius, GripType } from '../global';
+import { PPosition, PAnchorType, ElementType } from '../index.type';
+import { DefaultGripRadius } from '../global';
 
 type IProps = PPosition & {
   anchor: PAnchorType;
-  dataType: 'node' | 'edge';
+  dataType: ElementType;
   dataId: number;
 };
 
@@ -19,7 +19,7 @@ class Grip extends React.Component<IProps> {
         strokeWidth={1}
         cx={cx}
         cy={cy}
-        data-type={GripType}
+        data-type={ElementType.Grip}
         data-host={`${dataType}:${dataId}:${anchor}`}
       />
     );

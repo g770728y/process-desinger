@@ -11,6 +11,10 @@ import { wrapSvg, renderNode } from '../helper';
 import { fromEvent, Subscription } from 'rxjs';
 import { dragNode } from './events/dragNode';
 import OrphanEdgeView from '../EdgeView/OrphanEdgeView';
+import { dragGrip } from './events/dragGrip';
+import { map } from 'rxjs/operators';
+import { isHotkey, isKeyHotkey, isCodeHotkey } from 'is-hotkey';
+import { keydown } from './events/keys';
 
 type IProps = {
   dataStore?: DesignDataStore;
@@ -26,6 +30,8 @@ export default class Painter extends React.Component<IProps> {
   ref = React.createRef<SVGSVGElement>();
 
   dragNode$: Subscription;
+  dragGrip$: Subscription;
+  keydown$: Subscription;
 
   getNodesView(nodes: PNode[]) {
     return nodes.map(node => {
@@ -45,14 +51,30 @@ export default class Painter extends React.Component<IProps> {
     });
   }
 
+  handleBackgroundClick = () => {
+    const { dataStore } = this.props;
+    dataStore!.unselectAll();
+  };
+
   componentDidMount() {
     const { uiStore, dataStore } = this.props;
     const el = this.ref.current!;
     const mousedown$ = fromEvent(el, 'mousedown');
     const mousemove$ = fromEvent(document.body, 'mousemove');
     const mouseup$ = fromEvent(document.body, 'mouseup');
+    const keydown$ = fromEvent(document.body, 'keydown');
+
+    this.keydown$ = keydown(keydown$, dataStore!);
 
     this.dragNode$ = dragNode(
+      mousedown$,
+      mousemove$,
+      mouseup$,
+      uiStore!,
+      dataStore!
+    );
+
+    this.dragGrip$ = dragGrip(
       mousedown$,
       mousemove$,
       mouseup$,
@@ -63,6 +85,8 @@ export default class Painter extends React.Component<IProps> {
 
   componentWillUnmount() {
     this.dragNode$.unsubscribe();
+    this.dragGrip$.unsubscribe();
+    this.keydown$.unsubscribe();
   }
 
   render() {
@@ -85,14 +109,13 @@ export default class Painter extends React.Component<IProps> {
       DefaultCanvasHeight,
       <>
         <Defs />
-        {background !== 'transparent' && (
-          <rect
-            className={SvgBackgroundRectClass}
-            width="100%"
-            height="100%"
-            fill={background}
-          />
-        )}
+        <rect
+          className={SvgBackgroundRectClass}
+          width="100%"
+          height="100%"
+          fill={background}
+          onClick={this.handleBackgroundClick}
+        />
         {vnodes}
         {vedges}
         {voedges}
@@ -100,15 +123,4 @@ export default class Painter extends React.Component<IProps> {
       this.ref
     );
   }
-}
-
-interface MouseEventData {
-  x0?: number;
-  y0?: number;
-  x?: number;
-  y?: number;
-  dataType?: string;
-  dataId?: number;
-  element?: PNode | PEdge;
-  elementPos0?: PPosition;
 }
