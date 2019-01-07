@@ -5,7 +5,7 @@ import ProcessDesigner from 'process-designer';
 
 class App extends Component {
   config = {
-    canvas: { background: '#eeeeee' },
+    canvas: { background: '#ffffff' },
     nodeTemplates: nodeTemplates
   };
 

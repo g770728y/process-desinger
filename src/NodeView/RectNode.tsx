@@ -6,6 +6,7 @@ import DesignDataStore from '../store/DesignDataStore';
 import { RectGripGroup } from '../Grip';
 import hoverable, { HoverableProps } from '../hoc/hoverable';
 import Rect from '../Shape/Rect';
+import NodeText from '../Shape/NodeText';
 
 type IProps = {
   node: PNode;
@@ -17,7 +18,7 @@ type IProps = {
 class RectNodeBase extends React.Component<IProps & HoverableProps> {
   render() {
     const { node, dataStore, _ref, hovered } = this.props;
-    const { dim, id } = node;
+    const { dim, id, name } = node;
     const { cx, cy } = dim!;
     const w = (dim! as RectSize).w || 100;
     const h = (dim! as RectSize).h || 30;
@@ -36,6 +37,7 @@ class RectNodeBase extends React.Component<IProps & HoverableProps> {
         onClick={() => dataStore!.selectNode(id)}
       >
         <Rect node={node} />
+        <NodeText w={w} h={h} text={name!} />
         {showGrip && <RectGripGroup node={node} />}
       </g>
     );

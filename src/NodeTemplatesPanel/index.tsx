@@ -28,6 +28,7 @@ class NodeTemplatesPanel extends React.Component<IProps> {
             <NodeTemplateItem nodeTemplate={nodeTemplate} />
           </div>
         ))}
+        <div style={{ flexGrow: 1 }} />
       </div>
     );
   }

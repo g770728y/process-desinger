@@ -17,6 +17,7 @@ import RectNode from './NodeView/RectNode';
 import CircleNode from './NodeView/CircleNode';
 import Rect from './Shape/Rect';
 import Circle from './Shape/Circle';
+import NodeText from './Shape/NodeText';
 
 export function xyOfCircleAnchor(dim: Dim, anchor: PAnchorType): PPosition {
   const { cx, cy } = dim!;
@@ -161,7 +162,7 @@ export function renderNodeTemplate(
   nodeTemplate: PNodeTemplate,
   ref: React.RefObject<SVGSVGElement>
 ) {
-  const { id, shape, dim } = nodeTemplate;
+  const { id, shape, dim, name } = nodeTemplate;
 
   let svg: React.ReactNode;
 
@@ -171,14 +172,34 @@ export function renderNodeTemplate(
       ...nodeTemplate,
       dim: { ...dim, cx: r!, cy: r! }
     };
-    svg = wrapSvg(2 * r!, 2 * r!, renderShape(node), ref);
+    const vtext = <NodeText w={2 * r!} h={2 * r!} text={name} />;
+    const vshape = renderShape(node);
+    svg = wrapSvg(
+      2 * r!,
+      2 * r!,
+      <>
+        {vshape}
+        {vtext}
+      </>,
+      ref
+    );
   } else if (shape === Shape.Rect) {
     const { w, h } = dim! as RectSize;
     const node: PNode = {
       ...nodeTemplate,
       dim: { ...dim, cx: w! / 2, cy: h! / 2 }
     };
-    svg = wrapSvg(w!, h!, renderShape(node), ref);
+    const vtext = <NodeText w={w!} h={h!} text={name} />;
+    const vshape = renderShape(node);
+    svg = wrapSvg(
+      w!,
+      h!,
+      <>
+        {vshape}
+        {vtext}
+      </>,
+      ref
+    );
   } else {
     throw new Error('错误的shape');
   }
