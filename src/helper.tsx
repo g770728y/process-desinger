@@ -15,6 +15,8 @@ import {
 } from './index.type';
 import RectNode from './NodeView/RectNode';
 import CircleNode from './NodeView/CircleNode';
+import Rect from './Shape/Rect';
+import Circle from './Shape/Circle';
 
 export function xyOfCircleAnchor(dim: Dim, anchor: PAnchorType): PPosition {
   const { cx, cy } = dim!;
@@ -140,7 +142,18 @@ export function renderNode(node: PNode) {
   } else if (shape === Shape.Circle) {
     return <CircleNode key={node.id} node={node} />;
   } else {
-    throw new Error(`错误的nodeTemplate shape:${shape}`);
+    throw new Error(`错误的node shape:${shape}`);
+  }
+}
+
+export function renderShape(node: PNode) {
+  const { id, shape } = node;
+  if (shape === Shape.Rect) {
+    return <Rect node={node} />;
+  } else if (shape === Shape.Circle) {
+    return <Circle node={node} />;
+  } else {
+    throw new Error(`错误的node shape:${shape}`);
   }
 }
 
@@ -158,14 +171,14 @@ export function renderNodeTemplate(
       ...nodeTemplate,
       dim: { ...dim, cx: r!, cy: r! }
     };
-    svg = wrapSvg(2 * r!, 2 * r!, renderNode(node), ref);
+    svg = wrapSvg(2 * r!, 2 * r!, renderShape(node), ref);
   } else if (shape === Shape.Rect) {
     const { w, h } = dim! as RectSize;
     const node: PNode = {
       ...nodeTemplate,
       dim: { ...dim, cx: w! / 2, cy: h! / 2 }
     };
-    svg = wrapSvg(w!, h!, renderNode(node), ref);
+    svg = wrapSvg(w!, h!, renderShape(node), ref);
   } else {
     throw new Error('错误的shape');
   }

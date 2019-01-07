@@ -5,6 +5,7 @@ import { NodeClass } from '../global';
 import DesignDataStore from '../store/DesignDataStore';
 import { RectGripGroup } from '../Grip';
 import hoverable, { HoverableProps } from '../hoc/hoverable';
+import Rect from '../Shape/Rect';
 
 type IProps = {
   node: PNode;
@@ -34,14 +35,7 @@ class RectNodeBase extends React.Component<IProps & HoverableProps> {
         height={h}
         onClick={() => dataStore!.selectNode(id)}
       >
-        <rect
-          width={w}
-          height={h}
-          className={NodeClass}
-          data-type={ElementType.Node}
-          data-id={node.id}
-          fill="#cccccc"
-        />
+        <Rect node={node} />
         {showGrip && <RectGripGroup node={node} />}
       </g>
     );

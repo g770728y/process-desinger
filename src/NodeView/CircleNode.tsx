@@ -5,6 +5,7 @@ import { NodeClass } from '../global';
 import hoverable, { HoverableProps } from '../hoc/hoverable';
 import DesignDataStore from '../store/DesignDataStore';
 import { CircleGripGroup } from '../Grip';
+import Circle from '../Shape/Circle';
 
 type IProps = {
   node: PNode;
@@ -33,15 +34,7 @@ class CircleNodeBase extends React.Component<IProps & HoverableProps> {
         height={2 * r}
         onClick={() => dataStore!.selectNode(id)}
       >
-        <circle
-          className={NodeClass}
-          data-type={ElementType.Node}
-          data-id={node.id}
-          r={r}
-          cx={r}
-          cy={r}
-          fill={'#999999'}
-        />
+        <Circle node={node} />
         {showGrip && <CircleGripGroup node={node} />}
       </g>
     );

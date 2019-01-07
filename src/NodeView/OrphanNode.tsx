@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { inject, observer } from 'mobx-react';
 import UIStore from '../store/UIStore';
-import { renderNode, wrapSvg, getNodeSize } from '../helper';
+import { renderNode, wrapSvg, getNodeSize, renderShape } from '../helper';
 import styles from './styles.css';
 
 interface IProps {
@@ -27,7 +27,7 @@ class OrphanNode extends React.Component<IProps> {
         className={styles['pd-orphan-node-container']}
         style={{ left: cx - w / 2, top: cy - h / 2 }}
       >
-        {wrapSvg(w, h, renderNode(_node), this.ref)}
+        {wrapSvg(w, h, renderShape(_node), this.ref)}
       </div>
     );
   }
