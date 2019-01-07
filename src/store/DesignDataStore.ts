@@ -61,7 +61,12 @@ export default class DesignDataStore {
 
   @computed
   get startNode(): PNode {
-    return this.nodes.find(({ id }) => id === StartId)!;
+    return this.nodes.find(({ templateId }) => templateId === StartId)!;
+  }
+
+  @computed
+  get endNode(): PNode {
+    return this.nodes.find(({ templateId }) => templateId === EndId)!;
   }
 
   // 全部node的anchors
@@ -121,6 +126,12 @@ export default class DesignDataStore {
 
     // 不可重复添加end
     if (node.templateId === EndId && this.getNode(EndId)) return;
+
+    if (node.templateId === EndId) {
+      // 如果新增结束结点, 强制其与开始结点在同一竖直线上
+      const cx = this.startNode.dim!.cx;
+      node = { ...node, dim: { ...node.dim!, cx } };
+    }
 
     this.nodes.push({ ...node, id: nextElementId(this.nodes) });
   }
@@ -236,6 +247,7 @@ export default class DesignDataStore {
 
   @action
   delNode(id: PNodeId) {
+    if (id === StartId) return;
     this.nodes = this.nodes.filter(node => node.id !== id);
     this.delEdgeOnNode(id);
   }

@@ -71,30 +71,68 @@ class EntiretyMovableHandler extends React.Component<IProps> {
 
   render() {
     const { dataStore } = this.props;
-    const node = dataStore!.startNode;
-    const { cx, cy } = node.dim!;
-    const { w, h } = getNodeSize(node);
-    const xy = { x1: 0, y0: 0, x2: 0, y2: 60 };
+    const { cx: cxStart, cy: cyStart } = dataStore!.startNode.dim!;
+    const xyStart = { x1: 0, y1: 0, x2: 0, y2: 60 };
+    const lineStartBg = getLineBg(xyStart);
+
+    const lineStart = getLine(xyStart);
+
+    let lineEndBg, lineEnd;
+    if (dataStore!.endNode) {
+      const { cx: cxEnd, cy: cyEnd } = dataStore!.endNode.dim!;
+      const { w: wEnd, h: hEnd } = getNodeSize(dataStore!.endNode);
+      const xyEnd = {
+        x1: cxEnd - cxStart,
+        y1: cyEnd + hEnd + 50,
+        x2: cxEnd - cxStart,
+        y2: cyEnd + hEnd + 800
+      };
+      lineEndBg = getLineBg(xyEnd);
+      lineEnd = getLine(xyEnd);
+    } else {
+      const { w: wStart, h: hStart } = getNodeSize(dataStore!.startNode);
+      const xyEnd = {
+        x1: 0,
+        y1: cyStart + hStart + 500,
+        x2: 0,
+        y2: cyStart + hStart + 800
+      };
+      lineEndBg = getLineBg(xyEnd);
+      lineEnd = getLine(xyEnd);
+    }
 
     return (
-      <g transform={`translate(${cx}, ${0})`} ref={this.ref}>
-        <line
-          {...xy}
-          strokeWidth={10}
-          stroke={'transparent'}
-          style={{ cursor: 'ew-resize' }}
-        />
-
-        <line
-          {...xy}
-          strokeWidth={2}
-          stroke={'#666666'}
-          strokeDasharray={'10 5 5 5'}
-          style={{ pointerEvents: 'none' }}
-        />
+      <g transform={`translate(${cxStart}, ${0})`} ref={this.ref}>
+        {lineStartBg}
+        {lineStart}
+        {lineEndBg}
+        {lineEnd}
       </g>
     );
   }
 }
 
 export default EntiretyMovableHandler;
+
+function getLineBg(xy: { x1: number; y1: number; x2: number; y2: number }) {
+  return (
+    <line
+      {...xy}
+      strokeWidth={10}
+      stroke={'transparent'}
+      style={{ cursor: 'ew-resize' }}
+    />
+  );
+}
+
+function getLine(xy: { x1: number; y1: number; x2: number; y2: number }) {
+  return (
+    <line
+      {...xy}
+      strokeWidth={2}
+      stroke={'#cccccc'}
+      strokeDasharray={'10 5 5 5'}
+      style={{ pointerEvents: 'none' }}
+    />
+  );
+}
