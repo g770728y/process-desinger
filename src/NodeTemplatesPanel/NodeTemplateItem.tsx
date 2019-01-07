@@ -1,16 +1,11 @@
 import * as React from 'react';
 import { observer, inject } from 'mobx-react';
 import { PNodeTemplate, PNode, OrphanNodeInfo } from '../index.type';
-import {
-  renderNodeTemplate,
-  getNodeSize,
-  isBoxInRange,
-  getNodeInstance
-} from '../helper';
+import { renderNodeTemplate } from '../helper';
 import { fromEvent, Subscription } from 'rxjs';
-import { map, throttleTime, takeUntil, switchMap, take } from 'rxjs/operators';
 import UIStore from '../store/UIStore';
 import DesignDataStore from '../store/DesignDataStore';
+import { dragTemplateNode } from '../Painter/events/dragTemplateNode';
 
 type IProps = {
   uiStore?: UIStore;
@@ -24,7 +19,6 @@ class NodeTemplateItem extends React.Component<IProps> {
   ref = React.createRef<SVGSVGElement>();
 
   dragSubs: Subscription;
-  dropSubs: Subscription;
 
   constructor(props: IProps) {
     super(props);
@@ -41,67 +35,25 @@ class NodeTemplateItem extends React.Component<IProps> {
   }
 
   componentDidMount() {
+    const { uiStore, dataStore, nodeTemplate } = this.props;
     const el = this.ref.current!;
     const body = document.body;
     const mousedown$ = fromEvent(el, 'mousedown');
     const mousemove$ = fromEvent(body, 'mousemove');
     const mouseup$ = fromEvent(body, 'mouseup');
 
-    const drag$ = mousedown$.pipe(
-      map((e: MouseEvent) => ({ x0: e.clientX, y0: e.clientY, end: false })),
-      switchMap((pos: MouseEventData) =>
-        mousemove$.pipe(
-          map((e: MouseEvent) => ({ ...pos, x: e.clientX, y: e.clientY })),
-          throttleTime(30),
-          takeUntil(mouseup$)
-        )
-      )
+    this.dragSubs = dragTemplateNode(
+      mousedown$,
+      mousemove$,
+      mouseup$,
+      uiStore!,
+      dataStore!,
+      nodeTemplate
     );
-
-    const drop$ = drag$.pipe(
-      switchMap((pos: MouseEventData) =>
-        mouseup$.pipe(
-          map((e: MouseEvent) => pos),
-          take(1)
-        )
-      )
-    );
-
-    drag$.subscribe((pos: MouseEventData) => {
-      this.showOrphanNode({
-        node: this.props.nodeTemplate as PNode,
-        cx: pos.x!,
-        cy: pos.y!
-      });
-    });
-    drop$.subscribe((pos: MouseEventData) => {
-      const { uiStore, nodeTemplate, dataStore } = this.props;
-      this.hideOrphanNode();
-      const { painterDim, painterScrollTop } = uiStore!;
-
-      const floatingNode = getNodeInstance(nodeTemplate, {
-        cx: pos.x!,
-        cy: pos.y!
-      });
-      const { w, h } = getNodeSize(floatingNode);
-      const nodeDim = {
-        x: pos.x! - w / 2,
-        y: pos.y! - h / 2,
-        w,
-        h
-      };
-
-      if (isBoxInRange(nodeDim, painterDim)) {
-        const { x: cx, y: cy } = uiStore!.clientXYToPainterXY(pos.x!, pos.y!);
-        const node = getNodeInstance(nodeTemplate, { cx, cy });
-        dataStore!.addNode(node);
-      }
-    });
   }
 
   componnetWillUnmount() {
     this.dragSubs.unsubscribe();
-    this.dropSubs.unsubscribe();
   }
 
   render() {
@@ -115,10 +67,3 @@ class NodeTemplateItem extends React.Component<IProps> {
 }
 
 export default NodeTemplateItem;
-
-interface MouseEventData {
-  x0?: number;
-  y0?: number;
-  x?: number;
-  y?: number;
-}
