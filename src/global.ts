@@ -61,4 +61,4 @@ export const ShowNodeSnapThreshold = 10;
 export const NodeSnapThreshold = 5;
 
 // 如果画边时, 线段长小于6, 则直接删除
-export const MinValidEdgeLength = 6;
+export const MinValidEdgeLength = 10;

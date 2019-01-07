@@ -3,6 +3,7 @@ import { inject, observer } from 'mobx-react';
 import UIStore from '../store/UIStore';
 import { renderNode, wrapSvg, getNodeSize, renderShape } from '../helper';
 import styles from './styles.css';
+import NodeText from '../Shape/NodeText';
 
 interface IProps {
   uiStore?: UIStore;
@@ -22,12 +23,23 @@ class OrphanNode extends React.Component<IProps> {
 
     const _node = { ...node, dim: { ...node!.dim, cx: w / 2, cy: h / 2 } };
 
+    const vtext = <NodeText w={w!} h={h!} text={node!.name || ''} />;
+    const vshape = renderShape(_node);
+
     return (
       <div
         className={styles['pd-orphan-node-container']}
         style={{ left: cx - w / 2, top: cy - h / 2 }}
       >
-        {wrapSvg(w, h, renderShape(_node), this.ref)}
+        {wrapSvg(
+          w,
+          h,
+          <>
+            {vshape}
+            {vtext}
+          </>,
+          this.ref
+        )}
       </div>
     );
   }
