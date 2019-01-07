@@ -13,6 +13,7 @@ class Grip extends React.Component<IProps> {
     const { dataType, dataId, anchor, cx, cy } = this.props;
     return (
       <circle
+        style={{ cursor: 'crosshair' }}
         r={DefaultGripRadius}
         fill={'white'}
         stroke={'red'}

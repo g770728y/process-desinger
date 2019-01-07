@@ -15,6 +15,7 @@ class Circle extends React.PureComponent<IProps> {
 
     return (
       <circle
+        style={{ cursor: 'move' }}
         className={NodeClass}
         data-type={ElementType.Node}
         data-id={node.id}

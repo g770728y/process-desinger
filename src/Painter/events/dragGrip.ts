@@ -174,18 +174,18 @@ function _drawOrphanEdge(attrs: EventData, dataStore: DesignDataStore) {
 function _findTargetAnchor(attrs: EventData, dataStore: DesignDataStore) {
   const { orphanEdgeId, x0, y0, x, y, host, pos0, dataHost } = attrs;
   const snappedAnchor = dataStore!.findSnappedAnchor(x!, y!);
-  let nearestAnchorOnNode: PAnchor | undefined;
+  let closestAnchorOnNode: PAnchor | undefined;
   if (!snappedAnchor) {
     const node = dataStore!.xyInWhichNode(x!, y!);
     if (node) {
-      nearestAnchorOnNode = _findNearestAnchorOnNode(node, {
+      closestAnchorOnNode = _findClosestAnchorOnNode(node, {
         x: x!,
         y: y!
       });
     }
   }
 
-  return snappedAnchor || nearestAnchorOnNode;
+  return snappedAnchor || closestAnchorOnNode;
 }
 
 // 创建新的edge
@@ -253,7 +253,7 @@ function _tryUpdateEdge(attrs: EventData, dataStore: DesignDataStore) {
 }
 
 // 找到距xy最近的node上的grip
-function _findNearestAnchorOnNode(
+function _findClosestAnchorOnNode(
   node: PNode,
   xy: { x: number; y: number }
 ): PAnchor {

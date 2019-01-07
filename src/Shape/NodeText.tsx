@@ -13,7 +13,7 @@ class NodeText extends React.PureComponent<IProps> {
 
     return (
       <text
-        style={{ pointerEvents: 'none' }}
+        style={{ pointerEvents: 'none', userSelect: 'none' }}
         textAnchor={'middle'}
         x={w / 2}
         y={h / 2 + (_fontSize / 2 - 1)}

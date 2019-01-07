@@ -10,11 +10,11 @@ class Rect extends React.PureComponent<IProps> {
   render() {
     const { node } = this.props;
     const { id, dim } = node;
-    const { cx, cy } = dim!;
     const { w, h } = dim! as RectSize;
 
     return (
       <rect
+        style={{ cursor: 'move' }}
         width={w}
         height={h}
         className={NodeClass}
