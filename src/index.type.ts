@@ -15,6 +15,7 @@ export type PContext = {
   selectedEdgeIds?: PEdgeId[];
   selectedOrphanEdgeIds?: PEdgeId[];
   hidedEdgeId?: PEdgeId;
+  snappableGrid?: SnappableGrid;
 };
 
 export type RectSize = { w?: number; h?: number };
@@ -102,4 +103,9 @@ export interface PBox {
   y: number;
   w: number;
   h: number;
+}
+
+export interface SnappableGrid {
+  xs?: number[];
+  ys?: number[];
 }

@@ -11,13 +11,15 @@ import {
   PBox,
   PPosition,
   PNodeId,
-  PEdge
+  PEdge,
+  SnappableGrid
 } from './index.type';
 import RectNode from './NodeView/RectNode';
 import CircleNode from './NodeView/CircleNode';
 import Rect from './Shape/Rect';
 import Circle from './Shape/Circle';
 import NodeText from './Shape/NodeText';
+import { distinct } from './util';
 
 export function xyOfCircleAnchor(dim: Dim, anchor: PAnchorType): PPosition {
   const { cx, cy } = dim!;
@@ -108,7 +110,7 @@ export function wrapSvg(
 }
 
 // 获取node宽高
-export function getNodeSize(node: PNode) {
+export function getNodeSize(node: PNode): { w: number; h: number } {
   const { dim, shape } = node;
   if (shape === Shape.Rect) {
     const _dim = dim as RectSize;
@@ -134,6 +136,30 @@ export function getNodeXY(node: PNode) {
   } else {
     throw new Error(`错误的nodeTemplate shape:${shape}`);
   }
+}
+
+// 全部可snap的边
+export function getSnappableGrid(
+  nodes: PNode[],
+  exceptId: PNodeId
+): SnappableGrid {
+  const _result = nodes.reduce(
+    (acc: SnappableGrid, node) => {
+      if (node.id === exceptId) return acc;
+
+      const { cx, cy } = node.dim!;
+      const { w, h } = getNodeSize(node);
+      return {
+        xs: [...acc.xs!, cx - w / 2, cx, cx + w / 2],
+        ys: [...acc.ys!, cy - h / 2, cy, cy + h / 2]
+      };
+    },
+    { xs: [], ys: [] }
+  );
+  return {
+    xs: distinct((_result.xs || []).sort()),
+    ys: distinct((_result.ys || []).sort())
+  };
 }
 
 export function renderNode(node: PNode) {

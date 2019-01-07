@@ -25,7 +25,7 @@ import {
 } from 'rxjs/operators';
 import { extractGripAttrs } from './helper';
 import { distance } from '../../util';
-import { MinEdgeLength } from '../../global';
+import { MinValidEdgeLength } from '../../global';
 import { xyOfRectAnchor, xyOfCircleAnchor } from '../../helper';
 
 interface EventData {
@@ -179,8 +179,8 @@ function _findTargetAnchor(attrs: EventData, dataStore: DesignDataStore) {
     const node = dataStore!.xyInWhichNode(x!, y!);
     if (node) {
       nearestAnchorOnNode = _findNearestAnchorOnNode(node, {
-        x: pos0!.cx!,
-        y: pos0!.cy!
+        x: x!,
+        y: y!
       });
     }
   }

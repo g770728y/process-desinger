@@ -52,7 +52,13 @@ export function isDraggableDataType(type?: string): boolean {
 /////////////////////////////////////////////////////////////////////////////////////
 export const DefaultGripRadius = 4;
 
-export const SnapRadius = 3;
+// 移动grip时, snap距离
+export const GripSnapThreshold = 5;
+
+// 移动node时, 距离snap线多远会显示snap线
+export const ShowNodeSnapThreshold = 10;
+// 移动node时, snap距离
+export const NodeSnapThreshold = 5;
 
 // 如果画边时, 线段长小于6, 则直接删除
-export const MinEdgeLength = 6;
+export const MinValidEdgeLength = 6;

@@ -14,13 +14,19 @@ import {
   PAnchor,
   Shape,
   RectSize,
-  CircleSize
+  CircleSize,
+  SnappableGrid
 } from '../index.type';
 import { observable, computed, action } from 'mobx';
 import ConfigStore from './ConfigStore';
-import { nodeAnchorXY, nodeAnchorXYByNodeId, edgeAnchorXY } from '../helper';
+import {
+  nodeAnchorXY,
+  nodeAnchorXYByNodeId,
+  edgeAnchorXY,
+  getNodeSize
+} from '../helper';
 import { flatten, distance } from '../util';
-import { SnapRadius, StartId, EndId } from '../global';
+import { GripSnapThreshold, StartId, EndId } from '../global';
 import { Omit } from 'ts-type-ext';
 
 function nextElementId(identities: Identity[]): number {
@@ -37,7 +43,12 @@ export default class DesignDataStore {
   configStore: ConfigStore;
 
   @observable
-  context: PContext = {};
+  context: PContext = {
+    snappableGrid: {
+      xs: [],
+      ys: []
+    }
+  };
 
   @observable
   nodes: PNode[] = [];
@@ -137,15 +148,6 @@ export default class DesignDataStore {
     }
   }
 
-  findEdgeByStartAndEndNode(
-    fromNodeId: PNodeId,
-    toNodeId: PNodeId
-  ): PEdge | undefined {
-    return this.edges.find(
-      edge => edge.from.id === fromNodeId && edge.to.id === toNodeId
-    );
-  }
-
   // 移动节点或边
   @action
   moveNode(attrs: { element: PElement; newPos: PPosition }): void {
@@ -200,6 +202,7 @@ export default class DesignDataStore {
     this.context.selectedOrphanEdgeIds = [];
     this.context.selectedNodeIds = [];
     this.context.selectedEdgeIds = [];
+    this.context.snappableGrid = { xs: [], ys: [] };
   }
 
   @action
@@ -254,7 +257,24 @@ export default class DesignDataStore {
     }
   }
 
+  @action showSnappableGrid(sb: SnappableGrid) {
+    this.context.snappableGrid = sb;
+  }
+
+  @action hideSnappableGrid() {
+    delete this.context.snappableGrid;
+  }
+
   //////////////////////////////////////////////  工具方法  /////////////////////////////////////////////////////
+  findEdgeByStartAndEndNode(
+    fromNodeId: PNodeId,
+    toNodeId: PNodeId
+  ): PEdge | undefined {
+    return this.edges.find(
+      edge => edge.from.id === fromNodeId && edge.to.id === toNodeId
+    );
+  }
+
   // 根据类型和id反推节点或边
   getElement(type: string, id: number): PElement {
     if (type === ElementType.Node) {
@@ -364,7 +384,7 @@ export default class DesignDataStore {
   findSnappedAnchor(x: number, y: number) {
     return this.anchors.find(
       ({ xy }: PAnchor) =>
-        distance({ x: xy.cx, y: xy.cy }, { x, y }) <= SnapRadius
+        distance({ x: xy.cx, y: xy.cy }, { x, y }) <= GripSnapThreshold
     );
   }
 
