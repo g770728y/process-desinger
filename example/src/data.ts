@@ -23,33 +23,33 @@ export const processData: DesignData = {
       id: StartId,
       type: ElementType.Node,
       templateId: StartId,
-      dim: { cx: 100, cy: 100, r: 30 }
+      dim: { cx: 300, cy: 100, r: 30 }
     },
     {
       id: EndId,
 
       type: ElementType.Node,
       templateId: EndId,
-      dim: { cx: 100, cy: 800, r: 30 }
+      dim: { cx: 300, cy: 800, r: 30 }
     },
     {
       id: 1,
       type: ElementType.Node,
       name: '特殊名称',
       templateId: 1,
-      dim: { cx: 100, cy: 300, w: 100, h: 50 }
+      dim: { cx: 300, cy: 300, w: 100, h: 50 }
     },
     {
       id: 2,
       type: ElementType.Node,
       templateId: 1,
-      dim: { cx: 100, cy: 500, w: 100, h: 50 }
+      dim: { cx: 300, cy: 500, w: 100, h: 50 }
     },
     {
       id: 3,
       type: ElementType.Node,
       templateId: 1,
-      dim: { cx: 100, cy: 700, w: 100, h: 50 }
+      dim: { cx: 300, cy: 700, w: 100, h: 50 }
     }
   ],
 

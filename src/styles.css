@@ -23,6 +23,13 @@
   background: #f2f2f2;
 }
 
+.pd-node-template-item-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0;
+}
+
 .pd-canvas {
   flex-grow: 1;
   flex-shrink: 1;

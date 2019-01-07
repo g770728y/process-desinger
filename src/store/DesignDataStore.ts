@@ -236,7 +236,6 @@ export default class DesignDataStore {
 
   @action
   delOrphanEdge(id: PEdgeId) {
-    console.log('delete:', id);
     this.orphanEdges = (this.orphanEdges || []).filter(
       oedge => oedge.id !== id
     );
@@ -306,7 +305,6 @@ export default class DesignDataStore {
     oedgeId: PEdgeId
   ): { fromXY: PPosition; toXY: PPosition } {
     const oedge = this.orphanEdges.find(({ id }) => oedgeId === id);
-    console.log('oedge:', JSON.stringify(oedge));
     if (!oedge) {
       throw new Error(`oedgeId无效:${oedgeId}`);
     }

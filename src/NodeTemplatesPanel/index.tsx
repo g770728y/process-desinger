@@ -21,7 +21,12 @@ class NodeTemplatesPanel extends React.Component<IProps> {
         style={{ width: NodeTemplatesPanelWidth }}
       >
         {nodeTemplates.map(nodeTemplate => (
-          <NodeTemplateItem key={nodeTemplate.id} nodeTemplate={nodeTemplate} />
+          <div
+            className={styles['pd-node-template-item-wrapper']}
+            key={nodeTemplate.id}
+          >
+            <NodeTemplateItem nodeTemplate={nodeTemplate} />
+          </div>
         ))}
       </div>
     );

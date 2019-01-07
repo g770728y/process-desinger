@@ -94,7 +94,6 @@ export default class Painter extends React.Component<IProps> {
     const { painterDim } = uiStore!;
     const { w: width, h: height } = painterDim;
     const { nodes, edges, orphanEdges } = dataStore!;
-    console.log('orphanEdges', JSON.stringify(orphanEdges));
 
     const { canvas } = configStore!;
     const background = canvas
