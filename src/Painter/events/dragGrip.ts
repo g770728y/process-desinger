@@ -115,7 +115,15 @@ export function dragGrip(
         _drawOrphanEdge(attrs, dataStore!);
       }
     } else if (dataHost!.type === ElementType.Edge) {
-      // 移动旧边当前grip
+      if (attrs.mouseup) {
+        // 鼠标抬起
+        dataStore!.showEdge(dataHost!.id);
+        _tryUpdateEdge(attrs, dataStore!);
+      } else {
+        // 鼠标移动中, 隐藏老edge, 显示孤立边
+        dataStore!.hideEdge(dataHost!.id);
+        _drawOrphanEdge(attrs, dataStore!);
+      }
     }
   });
 
@@ -135,16 +143,35 @@ function _drawOrphanEdge(attrs: EventData, dataStore: DesignDataStore) {
     newY = snappedAnchor.xy.cy;
   }
 
+  const { from, to } =
+    dataHost!.type === ElementType.Node ? _edgeFromNode() : _edgeFromEdge();
+
   dataStore!.upsetOrphanEdge({
     id: orphanEdgeId!,
     type: ElementType.OrphanEdge,
-    from: { id: dataHost!.id, anchor: dataHost!.anchor },
-    to: { cx: newX!, cy: newY! }
+    from,
+    to
   });
+
+  function _edgeFromNode() {
+    const from = { id: dataHost!.id, anchor: dataHost!.anchor };
+    const to = { cx: newX!, cy: newY! };
+    return { from, to };
+  }
+
+  function _edgeFromEdge() {
+    if (dataHost!.anchor === '0') {
+      return { from: { cx: newX!, cy: newY! }, to: (host! as PEdge).to };
+    } else {
+      return { from: (host! as PEdge).from, to: { cx: newX!, cy: newY! } };
+    }
+  }
 }
 
-// 创建新的edge
-function _tryCreateEdge(attrs: EventData, dataStore: DesignDataStore) {
+// 优先定位 能被snap 的grip
+// 然后 根据目标点所在的node, 来确定node的哪个grip距起点最近
+// 总之 尽量确定一个终点
+function _findTargetAnchor(attrs: EventData, dataStore: DesignDataStore) {
   const { orphanEdgeId, x0, y0, x, y, host, pos0, dataHost } = attrs;
   const snappedAnchor = dataStore!.findSnappedAnchor(x!, y!);
   let nearestAnchorOnNode: PAnchor | undefined;
@@ -158,13 +185,18 @@ function _tryCreateEdge(attrs: EventData, dataStore: DesignDataStore) {
     }
   }
 
-  // 优先定位 能被snap 的grip
-  // 然后 根据目标点所在的node, 来确定node的哪个grip距起点最近
-  // 总之 尽量确定一个终点
-  const targetAnchor = snappedAnchor || nearestAnchorOnNode;
+  return snappedAnchor || nearestAnchorOnNode;
+}
+
+// 创建新的edge
+function _tryCreateEdge(attrs: EventData, dataStore: DesignDataStore) {
+  const { orphanEdgeId, x0, y0, x, y, host, pos0, dataHost } = attrs;
+  const targetAnchor = _findTargetAnchor(attrs, dataStore);
+
+  dataStore!.delOrphanEdge(orphanEdgeId!); // 最小有效距离
+
   if (targetAnchor) {
     //  检验孤立边是否落在node anchor上,如果是,则删除孤立边, 生成正式边
-    dataStore!.delOrphanEdge(orphanEdgeId!);
     dataStore!.addEdge({
       type: ElementType.Edge,
       from: {
@@ -177,7 +209,41 @@ function _tryCreateEdge(attrs: EventData, dataStore: DesignDataStore) {
       }
     });
   } else {
-    dataStore!.delOrphanEdge(orphanEdgeId!); // 最小有效距离
+    // if (distance({ x: x!, y: y! }, { x: x0!, y: y0! }) < MinEdgeLength) {
+    //   dataStore!.delOrphanEdge(orphanEdgeId!); // 最小有效距离
+    // } else {
+    //   // 无动作(当然, 会多出一个孤立边)
+    // }
+  }
+}
+
+// 修改Edge
+function _tryUpdateEdge(attrs: EventData, dataStore: DesignDataStore) {
+  const { orphanEdgeId, x0, y0, x, y, host, pos0, dataHost } = attrs;
+  const targetAnchor = _findTargetAnchor(attrs, dataStore);
+
+  dataStore!.delOrphanEdge(orphanEdgeId!);
+
+  if (targetAnchor) {
+    //  检验孤立边是否落在node anchor上,如果是,则删除孤立边, 生成正式边
+
+    const fromOrTo = {
+      id: targetAnchor.host.id,
+      anchor: targetAnchor.anchor
+    };
+
+    if (dataHost!.anchor === '0') {
+      dataStore!.patchEdge({
+        id: dataHost!.id,
+        from: fromOrTo
+      });
+    } else {
+      dataStore!.patchEdge({
+        id: dataHost!.id,
+        to: fromOrTo
+      });
+    }
+  } else {
     // if (distance({ x: x!, y: y! }, { x: x0!, y: y0! }) < MinEdgeLength) {
     //   dataStore!.delOrphanEdge(orphanEdgeId!); // 最小有效距离
     // } else {

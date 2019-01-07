@@ -10,7 +10,8 @@ import {
   RectSize,
   PBox,
   PPosition,
-  PNodeId
+  PNodeId,
+  PEdge
 } from './index.type';
 import RectNode from './NodeView/RectNode';
 import CircleNode from './NodeView/CircleNode';
@@ -58,6 +59,18 @@ export function nodeAnchorXY(node: PNode, anchor: PAnchorType): PPosition {
   } else {
     throw new Error(`错误的Shape类型: ${shape}`);
   }
+}
+
+// 获取edge的起点或终点坐标
+export function edgeAnchorXY(
+  edge: PEdge,
+  anchor: PAnchorType,
+  nodes: PNode[]
+): PPosition {
+  const { id: nodeId, anchor: nodeAnchor } =
+    anchor === '0' ? edge.from : edge.to;
+  const node = nodes.find(node => node.id === nodeId);
+  return nodeAnchorXY(node!, nodeAnchor);
 }
 
 // 利用nodeId, 找到anchor

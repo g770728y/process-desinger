@@ -18,7 +18,7 @@ import {
 } from '../index.type';
 import { observable, computed, action } from 'mobx';
 import ConfigStore from './ConfigStore';
-import { nodeAnchorXY, nodeAnchorXYByNodeId } from '../helper';
+import { nodeAnchorXY, nodeAnchorXYByNodeId, edgeAnchorXY } from '../helper';
 import { flatten, distance } from '../util';
 import { SnapRadius, StartId, EndId } from '../global';
 import { Omit } from 'ts-type-ext';
@@ -116,6 +116,24 @@ export default class DesignDataStore {
     if (from.id !== to.id && !this.findEdgeByStartAndEndNode(from.id, to.id)) {
       // 仅当两个node间没有edge时, 才创建新edge
       this.edges.push({ ...edge, id: nextElementId(this.edges) });
+    }
+  }
+
+  @action
+  patchEdge(edgePatch: Partial<PEdge>): void {
+    const id = edgePatch.id!;
+    const edge = this.getEdge(id)!;
+    // 注意这只是个临时值
+    const newEdge = { ...edge, ...edgePatch };
+    if (newEdge.from.id !== newEdge.to.id) {
+      const edge1 = this.findEdgeByStartAndEndNode(
+        newEdge.from.id,
+        newEdge.to.id
+      );
+      if (!edge1 || edge1.id === id) {
+        // 最后才实施合并
+        Object.assign(edge, edgePatch);
+      }
     }
   }
 
@@ -227,6 +245,16 @@ export default class DesignDataStore {
     ).filter(_id => id !== id);
   }
 
+  @action hideEdge(id: PEdgeId) {
+    this.context.hidedEdgeId = id;
+  }
+
+  @action showEdge(id: PEdgeId) {
+    if (this.context.hidedEdgeId === id) {
+      delete this.context.hidedEdgeId;
+    }
+  }
+
   //////////////////////////////////////////////  工具方法  /////////////////////////////////////////////////////
   // 根据类型和id反推节点或边
   getElement(type: string, id: number): PElement {
@@ -255,17 +283,7 @@ export default class DesignDataStore {
     if (element.type === ElementType.Node) {
       return nodeAnchorXY(element as PNode, anchor);
     } else if (element.type === ElementType.Edge) {
-      const edge = element as PEdge;
-      if (anchor === '0') {
-        // 边的起点
-        const { id, anchor } = edge.from;
-        const node = this.getNode(id);
-        return nodeAnchorXY(node!, anchor);
-      } else {
-        const { id, anchor } = edge.to;
-        const node = this.getNode(id);
-        return nodeAnchorXY(node!, anchor);
-      }
+      return edgeAnchorXY(element as PEdge, anchor, this.nodes);
     } else {
       throw new Error(`错误的hostType:${element.type}`);
     }
@@ -273,6 +291,10 @@ export default class DesignDataStore {
 
   getNode(_id: PNodeId) {
     return this.nodes.find(({ id }) => id === _id);
+  }
+
+  getEdge(_id: PEdgeId) {
+    return this.edges.find(({ id }) => _id === id);
   }
 
   getOrphanEdge(_id: PEdgeId) {
@@ -284,6 +306,7 @@ export default class DesignDataStore {
     oedgeId: PEdgeId
   ): { fromXY: PPosition; toXY: PPosition } {
     const oedge = this.orphanEdges.find(({ id }) => oedgeId === id);
+    console.log('oedge:', JSON.stringify(oedge));
     if (!oedge) {
       throw new Error(`oedgeId无效:${oedgeId}`);
     }

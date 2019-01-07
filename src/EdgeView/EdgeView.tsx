@@ -21,6 +21,7 @@ class EdgeViewBase extends React.Component<IProps & HoverableProps> {
     const { fromXY, toXY } = dataStore!.getEdgeEndPoints(id);
 
     const showGrip = ~(dataStore!.context.selectedEdgeIds || []).indexOf(id);
+    const hided = dataStore!.context.hidedEdgeId === id;
 
     const xy = {
       x1: 0,
@@ -42,7 +43,7 @@ class EdgeViewBase extends React.Component<IProps & HoverableProps> {
           className={EdgeClass}
           data-type={ElementType.Edge}
           data-id={id}
-          stroke="#999999"
+          stroke={hided ? '#dddddd' : '#999999'}
           markerEnd={'url(#arrow)'}
           {...xy}
         />

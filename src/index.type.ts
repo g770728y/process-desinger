@@ -14,6 +14,7 @@ export type PContext = {
   selectedNodeIds?: PNodeId[];
   selectedEdgeIds?: PEdgeId[];
   selectedOrphanEdgeIds?: PEdgeId[];
+  hidedEdgeId?: PEdgeId;
 };
 
 export type RectSize = { w?: number; h?: number };
