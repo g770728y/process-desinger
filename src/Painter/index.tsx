@@ -15,7 +15,8 @@ import { dragGrip } from './events/dragGrip';
 import { map } from 'rxjs/operators';
 import { isHotkey, isKeyHotkey, isCodeHotkey } from 'is-hotkey';
 import { keydown } from './events/keys';
-import SnappableGridView from '../snap/SnappableGridView';
+import SnappableGridView from '../aux/SnappableGridView';
+import EntiretyMovableHandler from '../aux/EntiretyMovableHandler';
 
 type IProps = {
   dataStore?: DesignDataStore;
@@ -117,6 +118,7 @@ export default class Painter extends React.Component<IProps> {
           fill={background}
           onClick={this.handleBackgroundClick}
         />
+        <EntiretyMovableHandler />
         {vnodes}
         {vedges}
         {voedges}

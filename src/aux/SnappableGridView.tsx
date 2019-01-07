@@ -7,6 +7,7 @@ type IProps = {
   dataStore?: DesignDataStore;
 };
 
+// 用于显示辅助线
 @inject(({ dataStore }) => ({ dataStore }))
 @observer
 class SnappableGridView extends React.Component<IProps> {

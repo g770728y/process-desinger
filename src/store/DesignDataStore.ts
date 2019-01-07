@@ -59,6 +59,11 @@ export default class DesignDataStore {
   @observable
   orphanEdges: OrphanEdge[] = [];
 
+  @computed
+  get startNode(): PNode {
+    return this.nodes.find(({ id }) => id === StartId)!;
+  }
+
   // 全部node的anchors
   @computed
   get anchors(): PAnchor[] {
@@ -150,7 +155,7 @@ export default class DesignDataStore {
 
   // 移动节点或边
   @action
-  moveNode(attrs: { element: PElement; newPos: PPosition }): void {
+  repositionNode(attrs: { element: PElement; newPos: PPosition }): void {
     const { element, newPos } = attrs;
     if (element.type === ElementType.Node) {
       const { id } = element;
@@ -162,6 +167,17 @@ export default class DesignDataStore {
     } else {
       throw new Error(`错误的element type类型:${element.type}`);
     }
+  }
+
+  @action
+  moveAllNodes(pos0: [PNodeId, PPosition][], dx: number, dy: number) {
+    this.nodes = this.nodes.map(node => {
+      const [_, nodePosition] = pos0.find(([nodeId, _]) => nodeId === node.id)!;
+      return {
+        ...node,
+        dim: { ...node.dim, cx: nodePosition.cx + dx, cy: nodePosition.cy + dy }
+      };
+    });
   }
 
   // 增加孤立边
