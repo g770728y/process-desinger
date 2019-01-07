@@ -141,7 +141,7 @@ export function getNodeXY(node: PNode) {
 // 全部可snap的边
 export function getSnappableGrid(
   nodes: PNode[],
-  exceptId: PNodeId
+  exceptId?: PNodeId
 ): SnappableGrid {
   const _result = nodes.reduce(
     (acc: SnappableGrid, node) => {

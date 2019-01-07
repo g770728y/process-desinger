@@ -93,3 +93,29 @@ function hostInfo(dataHost: string | null) {
     anchor: anchor as PAnchorType
   };
 }
+
+// 返回值: [将要显示的snap grid, snap dx, snap dy]
+export function trySnap(
+  snappableGrid: SnappableGrid,
+  newbox: PBox,
+  showNodeSnapThreshold: number,
+  nodeSnapThreshold: number
+): [SnappableGrid, number, number] {
+  // 显示辅助线
+  const snapInfo = findClosestSnappableInfo(
+    snappableGrid!,
+    newbox,
+    showNodeSnapThreshold
+  );
+  const sg = {
+    xs: snapInfo.xs.map(([x, dx]) => x),
+    ys: snapInfo.ys.map(([y, dy]) => y)
+  };
+
+  // 尝试捕捉
+  const _dx = snapInfo.xs.length <= 0 ? 0 : snapInfo.xs[0][2];
+  const _dy = snapInfo.ys.length <= 0 ? 0 : snapInfo.ys[0][2];
+  const dx = Math.abs(_dx) <= nodeSnapThreshold ? _dx : 0;
+  const dy = Math.abs(_dy) <= nodeSnapThreshold ? _dy : 0;
+  return [sg, dx, dy];
+}

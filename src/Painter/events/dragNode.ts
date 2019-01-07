@@ -14,7 +14,8 @@ import {
   PPosition,
   PAnchorType,
   ElementType,
-  SnappableGrid
+  SnappableGrid,
+  PBox
 } from '../../index.type';
 import {
   isDraggableDataType,
@@ -24,7 +25,7 @@ import {
 import { Observable, Subscription, of } from 'rxjs';
 import UIStore from '../../store/UIStore';
 import DesignDataStore from '../../store/DesignDataStore';
-import { extractNodeAttrs, findClosestSnappableInfo } from './helper';
+import { extractNodeAttrs, findClosestSnappableInfo, trySnap } from './helper';
 import { getSnappableGrid, getNodeSize } from '../../helper';
 
 interface EventData {
@@ -112,23 +113,14 @@ export function dragNode(
       h
     };
 
-    // 显示辅助线
-    const snapInfo = findClosestSnappableInfo(
-      snappableGrid!,
+    const [sg, dx, dy] = trySnap(
+      attrs.snappableGrid!,
       newbox,
-      ShowNodeSnapThreshold
+      ShowNodeSnapThreshold,
+      NodeSnapThreshold
     );
-    const sg = {
-      xs: snapInfo.xs.map(([x, dx]) => x),
-      ys: snapInfo.ys.map(([y, dy]) => y)
-    };
-    dataStore!.showSnappableGrid(sg);
 
-    // 尝试捕捉
-    const _dx = snapInfo.xs.length <= 0 ? 0 : snapInfo.xs[0][2];
-    const _dy = snapInfo.ys.length <= 0 ? 0 : snapInfo.ys[0][2];
-    const dx = Math.abs(_dx) <= NodeSnapThreshold ? _dx : 0;
-    const dy = Math.abs(_dy) <= NodeSnapThreshold ? _dy : 0;
+    dataStore!.showSnappableGrid(sg);
 
     dataStore!.moveNode({
       element: element!,
