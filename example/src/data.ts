@@ -11,7 +11,7 @@ export const nodeTemplates: PNodeTemplate[] = [
   {
     id: 1,
     type: ElementType.Node,
-    name: '操作',
+    label: '操作',
     shape: Shape.Rect,
     dim: { w: 100, h: 30 }
   }
@@ -35,7 +35,7 @@ export const processData: DesignerData = {
     {
       id: 1,
       type: ElementType.Node,
-      name: '特殊名称',
+      label: '特殊名称',
       templateId: 1,
       dim: { cx: 300, cy: 300, w: 100, h: 50 }
     },

@@ -188,7 +188,7 @@ export function renderNodeTemplate(
   nodeTemplate: PNodeTemplate,
   ref: React.RefObject<SVGSVGElement>
 ) {
-  const { id, shape, dim, name } = nodeTemplate;
+  const { id, shape, dim, label } = nodeTemplate;
 
   let svg: React.ReactNode;
 
@@ -198,7 +198,7 @@ export function renderNodeTemplate(
       ...nodeTemplate,
       dim: { ...dim, cx: r!, cy: r! }
     };
-    const vtext = <NodeText w={2 * r!} h={2 * r!} text={name} />;
+    const vtext = <NodeText w={2 * r!} h={2 * r!} text={label} />;
     const vshape = renderShape(node);
     svg = wrapSvg(
       2 * r!,
@@ -215,7 +215,7 @@ export function renderNodeTemplate(
       ...nodeTemplate,
       dim: { ...dim, cx: w! / 2, cy: h! / 2 }
     };
-    const vtext = <NodeText w={w!} h={h!} text={name} />;
+    const vtext = <NodeText w={w!} h={h!} text={label} />;
     const vshape = renderShape(node);
     svg = wrapSvg(
       w!,
@@ -267,7 +267,9 @@ interface Id2Level {
 export function rearrange(
   nodes: PNode[],
   edges: PEdge[],
-  startNode: PNode
+  startNode: PNode,
+  hGap: number,
+  vGap: number
 ): PNode[] {
   const centralAxisX = startNode.dim!.cx;
   return [startNode, ..._rearrange([startNode], 0, { [startNode.id]: 0 })];
@@ -298,18 +300,18 @@ export function rearrange(
       const lastBottomY =
         parentNodes[0].dim!.cy + maxHeightOfNodes(parentNodes) / 2;
       // 当前level的cy
-      const cy = lastBottomY + 50 + maxHeightOfNodes(childrenNodes) / 2;
+      const cy = lastBottomY + vGap + maxHeightOfNodes(childrenNodes) / 2;
 
       // 当前level所有node的全宽
       const fullWidth =
-        fullWidthOfNodes(childrenNodes) + 20 * (childrenNodes.length - 1);
+        fullWidthOfNodes(childrenNodes) + hGap * (childrenNodes.length - 1);
 
       let currentLeft = centralAxisX - fullWidth / 2;
       // 调整
       childrenNodes.forEach(node => {
         const { w, h } = getNodeSize(node);
         node.dim!.cx = currentLeft + w / 2;
-        currentLeft = currentLeft + w + 20;
+        currentLeft = currentLeft + w + hGap;
         node.dim!.cy = cy;
       });
 

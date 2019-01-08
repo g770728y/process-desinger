@@ -31,7 +31,7 @@ export type PEdgeId = number;
 export interface PNodeTemplate {
   id: PNodeId;
   type: ElementType;
-  name: string;
+  label: string;
   shape: Shape;
   dim?: Partial<Dim>;
 }
@@ -39,7 +39,7 @@ export interface PNodeTemplate {
 export interface PNode {
   id: PNodeId;
   type: ElementType;
-  name?: string;
+  label?: string;
   shape?: Shape;
   templateId?: number;
   dim?: Dim;
@@ -74,6 +74,7 @@ export type PAnchorType = 'tc' | 'bc' | 'lc' | 'rc' | '0' | '1';
 
 export type PConfig = {
   canvas?: { background?: string };
+  rearrange?: { hGap: number; vGap: number };
   nodeTemplates: PNodeTemplate[];
 };
 
@@ -116,5 +117,10 @@ export interface DesignerEvents {
 }
 
 export interface DesignerController {
+  // 自动重排节点位置
   rearrange?: () => void;
+
+  // 标记节点名称 和 图标
+  // 图标显示24x24, 最好是png / jpg
+  markNode?: (label: string, iconSrc?: string) => void;
 }

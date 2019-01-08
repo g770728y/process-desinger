@@ -14,7 +14,7 @@ export const nodeTemplates: PNodeTemplate[] = [
   {
     id: 1,
     type: ElementType.Node,
-    name: '操作',
+    label: '操作',
     shape: Shape.Rect,
     dim: { w: 100, h: 30 }
   }

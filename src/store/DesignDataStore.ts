@@ -112,7 +112,7 @@ export default class DesignDataStore {
         return {
           id: node.id,
           type: node.type,
-          name: node.name || tNode!.name,
+          label: node.label || tNode!.label,
           shape: tNode!.shape,
           templateId,
           dim: {
@@ -304,7 +304,8 @@ export default class DesignDataStore {
   }
 
   @action rearrange() {
-    this.nodes = rearrange(this.nodes, this.edges, this.startNode);
+    const { hGap, vGap } = this.configStore.config.rearrange!;
+    this.nodes = rearrange(this.nodes, this.edges, this.startNode, hGap, vGap);
   }
 
   //////////////////////////////////////////////  工具方法  /////////////////////////////////////////////////////

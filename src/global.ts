@@ -1,4 +1,10 @@
-import { Shape, PNodeTemplate, ElementType } from './index.type';
+import {
+  Shape,
+  PNodeTemplate,
+  ElementType,
+  DesignerData,
+  PConfig
+} from './index.type';
 
 // 开始节点id
 export const StartId = 0;
@@ -13,14 +19,14 @@ export const defaultNodeTemplates: PNodeTemplate[] = [
   {
     id: StartId,
     type: ElementType.Node,
-    name: '开始',
+    label: '开始',
     shape: Shape.Circle,
     dim: { r: 30 }
   },
   {
     id: EndId,
     type: ElementType.Node,
-    name: '结束',
+    label: '结束',
     shape: Shape.Circle,
     dim: { r: 30 }
   }
@@ -62,3 +68,21 @@ export const NodeSnapThreshold = 5;
 
 // 如果画边时, 线段长小于6, 则直接删除
 export const MinValidEdgeLength = 10;
+
+/////////////////////////////////////////////////////////////////////////////////////
+export const initData: DesignerData = {
+  nodes: [
+    {
+      id: StartId,
+      type: ElementType.Node,
+      templateId: StartId,
+      dim: { cx: 300, cy: 100, r: 30 }
+    }
+  ],
+  edges: []
+};
+
+export const initConfig: Partial<PConfig> = {
+  canvas: { background: '#ffffff' },
+  rearrange: { hGap: 20, vGap: 50 }
+};

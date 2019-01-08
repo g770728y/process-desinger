@@ -9,24 +9,9 @@ import {
   DesignerEvents,
   DesignerController
 } from './index.type';
-import { StartId } from './global';
+import { initConfig, initData } from './global';
 
-export const initData: DesignerData = {
-  nodes: [
-    {
-      id: StartId,
-      type: ElementType.Node,
-      templateId: StartId,
-      dim: { cx: 300, cy: 100, r: 30 }
-    }
-  ],
-  edges: []
-};
-
-const initConfig = {
-  canvas: { background: '#ffffff' }
-};
-
+// 安装设计器到dom节点(注意仅用于 非react项目)
 export function installProcessDesigner(args: {
   el: string | HTMLElement;
   config: Partial<PConfig>;

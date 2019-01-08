@@ -18,7 +18,7 @@ type IProps = {
 class CircleNodeBase extends React.Component<IProps & HoverableProps> {
   render() {
     const { node, dataStore, _ref, hovered } = this.props;
-    const { id, dim, name } = node;
+    const { id, dim, label } = node;
     const { cx, cy } = dim!;
     const r = (dim! as CircleSize).r || 30;
     const x = cx - r;
@@ -36,7 +36,7 @@ class CircleNodeBase extends React.Component<IProps & HoverableProps> {
         onClick={() => dataStore!.selectNode(id)}
       >
         <Circle node={node} />
-        <NodeText w={2 * r} h={2 * r} text={name!} />
+        <NodeText w={2 * r} h={2 * r} text={label!} />
         {showGrip && <CircleGripGroup node={node} />}
       </g>
     );

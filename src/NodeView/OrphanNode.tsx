@@ -23,7 +23,7 @@ class OrphanNode extends React.Component<IProps> {
 
     const _node = { ...node, dim: { ...node!.dim, cx: w / 2, cy: h / 2 } };
 
-    const vtext = <NodeText w={w!} h={h!} text={node!.name || ''} />;
+    const vtext = <NodeText w={w!} h={h!} text={node!.label || ''} />;
     const vshape = renderShape(_node);
 
     return (

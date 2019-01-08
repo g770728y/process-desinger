@@ -9,6 +9,7 @@ import UIStore from './store/UIStore';
 import ConfigStore from './store/ConfigStore';
 import DesignDataStore from './store/DesignDataStore';
 import OrphanNode from './NodeView/OrphanNode';
+import { initConfig } from './global';
 
 configure({
   enforceActions: 'observed'
@@ -29,7 +30,7 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
 
     const { config, data, events } = this.props;
 
-    this.configStore = new ConfigStore(config);
+    this.configStore = new ConfigStore({ ...initConfig, ...config });
 
     this.dataStore = new DesignDataStore(data, this.configStore, events);
 
