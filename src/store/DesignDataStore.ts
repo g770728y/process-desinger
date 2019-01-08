@@ -23,7 +23,8 @@ import {
   nodeAnchorXY,
   nodeAnchorXYByNodeId,
   edgeAnchorXY,
-  getNodeSize
+  getNodeSize,
+  rearrange
 } from '../helper';
 import { flatten, distance } from '../util';
 import { GripSnapThreshold, StartId, EndId } from '../global';
@@ -291,6 +292,11 @@ export default class DesignDataStore {
 
   @action hideSnappableGrid() {
     delete this.context.snappableGrid;
+  }
+
+  @action rearrange() {
+    console.log(rearrange(this.nodes, this.edges, this.startNode));
+    // this.nodes = rearrange(this.nodes, this.edges, this.startNode);
   }
 
   //////////////////////////////////////////////  工具方法  /////////////////////////////////////////////////////

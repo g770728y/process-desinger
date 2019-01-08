@@ -4,22 +4,29 @@ import { NodeTemplatesPanelWidth } from '../global';
 import { observer, inject } from 'mobx-react';
 import NodeTemplateItem from './NodeTemplateItem';
 import ConfigStore from '../store/ConfigStore';
+import DesignDataStore from '../store/DesignDataStore';
 
 type IProps = {
   configStore?: ConfigStore;
+  dataStore?: DesignDataStore;
 };
 
-@inject(({ configStore }) => ({ configStore }))
+@inject(({ configStore, dataStore }) => ({ configStore, dataStore }))
 @observer
 class NodeTemplatesPanel extends React.Component<IProps> {
   render() {
-    const { configStore } = this.props;
+    const { configStore, dataStore } = this.props;
     const { nodeTemplates } = configStore!;
     return (
       <div
         className={styles['pd-node-templates-panel']}
         style={{ width: NodeTemplatesPanelWidth }}
       >
+        <input
+          type="button"
+          onClick={() => dataStore!.rearrange()}
+          value="自动重排"
+        />
         {nodeTemplates.map(nodeTemplate => (
           <div
             className={styles['pd-node-template-item-wrapper']}

@@ -19,6 +19,15 @@ export function minAbs(xs: number[]): number {
   return xs.reduce((acc, x) => (Math.abs(x) < acc ? x : acc));
 }
 
+///////////////////// object /////////////////////////////////////////
+// subtract({a:1, b:1}, {a:2, d:1}) = {b:1}
+export function subtractByKey(m1: Object, m2: Object): Object {
+  return Object.keys(m1).reduce(
+    (acc, id) => (m2[id] !== undefined ? acc : { ...acc, [id]: m1[id] }),
+    {}
+  );
+}
+
 ///////////////////// geo /////////////////////////////////////////
 export function distance(
   xy1: { x: number; y: number },

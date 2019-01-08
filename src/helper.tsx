@@ -19,7 +19,7 @@ import CircleNode from './NodeView/CircleNode';
 import Rect from './Shape/Rect';
 import Circle from './Shape/Circle';
 import NodeText from './Shape/NodeText';
-import { distinct } from './util';
+import { distinct, flatten, subtractByKey } from './util';
 
 export function xyOfCircleAnchor(dim: Dim, anchor: PAnchorType): PPosition {
   const { cx, cy } = dim!;
@@ -257,4 +257,88 @@ export function getNodeInstance(
       cy
     }
   };
+}
+
+interface Id2Level {
+  [pNodeId: number]: number;
+}
+
+// 重排
+export function rearrange(
+  nodes: PNode[],
+  edges: PEdge[],
+  startNode: PNode
+): PNode[] {
+  const centralAxisX = startNode.dim!.cx;
+  return [startNode, ..._rearrange([startNode], 0, { [startNode.id]: 0 })];
+
+  function _rearrange(
+    parentNodes: PNode[],
+    level: number,
+    id2Level: Id2Level
+  ): PNode[] {
+    console.log('parentNode:', JSON.stringify(parentNodes));
+    const edgesStartFromParentNodess = parentNodes.map(({ id }) =>
+      edges.filter(edge => edge.from.id === id)
+    );
+    const edgesStartFromParentNodes = flatten(edgesStartFromParentNodess);
+    // 自动去重
+    let childrenId2Level = edgesStartFromParentNodes.reduce(
+      (acc, edge) => ({ ...acc, [edge.to.id]: level + 1 }),
+      {}
+    );
+    // 排除已经使用过的
+    childrenId2Level = subtractByKey(childrenId2Level, id2Level);
+
+    if (Object.keys(childrenId2Level).length > 0) {
+      console.log(childrenId2Level, childrenId2Level, id2Level);
+      // 当前level上有哪些node
+      let childrenNodes = Object.keys(childrenId2Level).map(
+        id => nodes.find(node => node.id === parseInt(id))!
+      );
+      // 找到上一level的bottom y
+      const lastBottomY =
+        parentNodes[0].dim!.cy + maxHeightOfNodes(parentNodes) / 2;
+      // 当前level的cy
+      const cy = lastBottomY + 50 + maxHeightOfNodes(childrenNodes) / 2;
+
+      // 当前level所有node的全宽
+      const fullWidth =
+        fullWidthOfNodes(childrenNodes) + 20 * (childrenNodes.length - 1);
+      console.log('fullWidth:', fullWidth);
+
+      let currentLeft = centralAxisX - fullWidth / 2;
+      // 调整
+      childrenNodes.forEach(node => {
+        const { w, h } = getNodeSize(node);
+        node.dim!.cx = currentLeft + w / 2;
+        currentLeft = currentLeft + w + 20;
+        node.dim!.cy = cy;
+      });
+
+      return [
+        ...childrenNodes,
+        ..._rearrange(childrenNodes, level + 1, {
+          ...id2Level,
+          ...childrenId2Level
+        })
+      ];
+    } else {
+      return [];
+    }
+  }
+
+  function maxHeightOfNodes(nodes: PNode[]): number {
+    return nodes.reduce((acc, node) => {
+      const { w, h } = getNodeSize(node);
+      return Math.max(acc, h);
+    }, 0);
+  }
+
+  function fullWidthOfNodes(nodes: PNode[]): number {
+    return nodes.reduce((acc, node) => {
+      const { w, h } = getNodeSize(node);
+      return acc + w;
+    }, 0);
+  }
 }
