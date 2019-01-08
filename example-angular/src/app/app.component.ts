@@ -5,7 +5,8 @@ import ProcessDesigner, {
   ElementType,
   Shape,
   PNode,
-  DesignerController
+  DesignerController,
+  PNodeId
 } from 'process-designer';
 
 const ProcessDesingerId = '__process_designer__';
@@ -30,7 +31,6 @@ export class AppComponent implements AfterViewInit {
   designerController: DesignerController;
 
   rearrange() {
-    console.log(22);
     this.designerController.rearrange();
   }
 
@@ -39,12 +39,10 @@ export class AppComponent implements AfterViewInit {
       el: ProcessDesingerId,
       config: { nodeTemplates },
       events: {
-        onSelectNode(node: PNode) {
-          console.log('node:', node);
+        onActiveNode(nodeId: PNodeId) {
+          console.log('nodeId:', nodeId);
         }
       }
     });
-
-    console.log('designer:', this.designerController);
   }
 }

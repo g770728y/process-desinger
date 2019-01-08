@@ -155,6 +155,13 @@ export default class DesignDataStore {
   }
 
   @action
+  patchNode(nodePatch: Partial<PNode>): void {
+    const id = nodePatch.id!;
+    const node = this.getNode(id)!;
+    Object.assign(node, nodePatch);
+  }
+
+  @action
   patchEdge(edgePatch: Partial<PEdge>): void {
     const id = edgePatch.id!;
     const edge = this.getEdge(id)!;
@@ -213,8 +220,6 @@ export default class DesignDataStore {
   // 选择某个node
   @action
   selectNode(id: PNodeId) {
-    this.events.onSelectNode &&
-      this.events.onSelectNode(toJS(this.getNode(id)!));
     this.context.selectedEdgeIds = [];
     this.context.selectedOrphanEdgeIds = [];
     this.context.selectedNodeIds = [id];
@@ -260,6 +265,7 @@ export default class DesignDataStore {
     if (id === StartId) return;
     this.nodes = this.nodes.filter(node => node.id !== id);
     this.delEdgeOnNode(id);
+    this.events.onDelNode!(id);
   }
 
   @action

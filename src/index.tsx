@@ -4,7 +4,7 @@ configure({
   enforceActions: 'observed'
 });
 
-import ProcessDesigner from './ProcessDesign';
+import ProcessDesigner from './ProcessDesigner';
 
 export * from './global';
 export * from './index.type';

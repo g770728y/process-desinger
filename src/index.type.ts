@@ -32,6 +32,7 @@ export interface PNodeTemplate {
   id: PNodeId;
   type: ElementType;
   label: string;
+  iconSrc?: string;
   shape: Shape;
   dim?: Partial<Dim>;
 }
@@ -40,6 +41,7 @@ export interface PNode {
   id: PNodeId;
   type: ElementType;
   label?: string;
+  iconSrc?: string;
   shape?: Shape;
   templateId?: number;
   dim?: Dim;
@@ -113,14 +115,28 @@ export interface SnappableGrid {
 }
 
 export interface DesignerEvents {
-  onSelectNode?: (node: PNode) => void;
+  // 双击 或 点击node上的编辑按钮时 触发此事件
+  // 回调方法将收到整个node节点, 可使用node节点的id, 查找对应的业务对象并弹出编辑框
+  onActiveNode?: (id: PNodeId) => void;
+
+  // 在图中删除节点时调用, 同步调用 对应的 业务对象
+  onDelNode?: (id: PNodeId) => void;
 }
 
+// 对angular, 可使用 controller = installProcessDesigner(...) 获取
+// 对react, 可使用 ProcessDesinger的 ref.getController 获取
 export interface DesignerController {
   // 自动重排节点位置
   rearrange?: () => void;
 
-  // 标记节点名称 和 图标
+  // 标记 [节点名称] 和 [图标]
+  // 何时调用: 双击节点打开业务对象编辑器进行编辑,点击确定后, 可调用此方法,并:
+  // 1. 设置 工艺计划明细名称 为label
+  // 2. 对于支持 返修 的操作, 可以增加一个png前缀图标
   // 图标显示24x24, 最好是png / jpg
-  markNode?: (label: string, iconSrc?: string) => void;
+  markNode?: (id: PNodeId, label: string, iconSrc?: string) => void;
+
+  // 获取全部节点关系
+  // 何时调用: 在保存时, 先 删除 全部关系, 再重建全部关系
+  getAllAssoc?: () => { fromNodeId: PNodeId; toNodeId: PNodeId }[];
 }

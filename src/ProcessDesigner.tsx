@@ -101,7 +101,13 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
   getController(): DesignerController {
     const ds = this.dataStore!;
     return {
-      rearrange: ds.rearrange.bind(ds)
+      rearrange: ds.rearrange.bind(ds),
+      getAllAssoc: () =>
+        ds.edges.map(edge => ({
+          fromNodeId: edge.from.id,
+          toNodeId: edge.to.id
+        })),
+      markNode: ds.patchNode.bind(ds)
     };
   }
 }
