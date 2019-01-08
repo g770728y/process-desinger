@@ -1,13 +1,13 @@
 {
-  "main.css": "/simple-process-designer/static/css/main.f3c334b3.chunk.css",
-  "main.js": "/simple-process-designer/static/js/main.0b326907.chunk.js",
-  "main.js.map": "/simple-process-designer/static/js/main.0b326907.chunk.js.map",
-  "static/js/1.69a9e011.chunk.js": "/simple-process-designer/static/js/1.69a9e011.chunk.js",
-  "static/js/1.69a9e011.chunk.js.map": "/simple-process-designer/static/js/1.69a9e011.chunk.js.map",
-  "runtime~main.js": "/simple-process-designer/static/js/runtime~main.1764f1d7.js",
-  "runtime~main.js.map": "/simple-process-designer/static/js/runtime~main.1764f1d7.js.map",
-  "static/css/main.f3c334b3.chunk.css.map": "/simple-process-designer/static/css/main.f3c334b3.chunk.css.map",
-  "index.html": "/simple-process-designer/index.html",
-  "precache-manifest.79f12b7b0ebf673778245261417684f9.js": "/simple-process-designer/precache-manifest.79f12b7b0ebf673778245261417684f9.js",
-  "service-worker.js": "/simple-process-designer/service-worker.js"
+  "main.css": "/process-designer/static/css/main.f3c334b3.chunk.css",
+  "main.js": "/process-designer/static/js/main.7863014a.chunk.js",
+  "main.js.map": "/process-designer/static/js/main.7863014a.chunk.js.map",
+  "static/js/1.69a9e011.chunk.js": "/process-designer/static/js/1.69a9e011.chunk.js",
+  "static/js/1.69a9e011.chunk.js.map": "/process-designer/static/js/1.69a9e011.chunk.js.map",
+  "runtime~main.js": "/process-designer/static/js/runtime~main.0d250557.js",
+  "runtime~main.js.map": "/process-designer/static/js/runtime~main.0d250557.js.map",
+  "static/css/main.f3c334b3.chunk.css.map": "/process-designer/static/css/main.f3c334b3.chunk.css.map",
+  "index.html": "/process-designer/index.html",
+  "precache-manifest.cfa8bb274476e47c51583774866bdce7.js": "/process-designer/precache-manifest.cfa8bb274476e47c51583774866bdce7.js",
+  "service-worker.js": "/process-designer/service-worker.js"
 }
