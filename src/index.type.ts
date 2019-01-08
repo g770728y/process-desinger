@@ -72,7 +72,7 @@ export interface OrphanEdge {
 // 0, 1 表示 edge的起点或终点
 export type PAnchorType = 'tc' | 'bc' | 'lc' | 'rc' | '0' | '1';
 
-export type Config = {
+export type PConfig = {
   canvas?: { background?: string };
   nodeTemplates: PNodeTemplate[];
 };
@@ -83,7 +83,7 @@ export type DesignData = {
 };
 
 export type DesignerProps = {
-  config: Config;
+  config: PConfig;
   data: DesignData;
 };
 

@@ -1,5 +1,5 @@
 import { observable, computed } from 'mobx';
-import { PNodeTemplate, Config } from '../index.type';
+import { PNodeTemplate, PConfig } from '../index.type';
 import { defaultNodeTemplates } from '../global';
 
 export default class ConfigStore {
@@ -7,14 +7,14 @@ export default class ConfigStore {
 
   @observable nodeTemplates: PNodeTemplate[];
 
-  @computed get config(): Config {
+  @computed get config(): PConfig {
     return {
       canvas: this.canvas,
       nodeTemplates: this.nodeTemplates
     };
   }
 
-  constructor(config: Config) {
+  constructor(config: PConfig) {
     this.canvas = config.canvas || {};
     this.nodeTemplates = [
       ...defaultNodeTemplates,
