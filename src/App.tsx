@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import ProcessDesigner from './ProcessDesign';
+import ProcessDesigner from './ProcessDesigner';
 import {
   ElementType,
   DesignerData,

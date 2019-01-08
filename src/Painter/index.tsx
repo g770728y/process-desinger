@@ -1,7 +1,13 @@
 import * as React from 'react';
 import { inject, observer } from 'mobx-react';
 import UIStore from '../store/UIStore';
-import { PNode, PEdge, PPosition, OrphanEdge } from '../index.type';
+import {
+  PNode,
+  PEdge,
+  PPosition,
+  OrphanEdge,
+  ElementType
+} from '../index.type';
 import { DefaultCanvasHeight, SvgBackgroundRectClass } from '../global';
 import { EdgeView } from '../EdgeView';
 import Defs from './defs';
@@ -12,11 +18,12 @@ import { fromEvent, Subscription } from 'rxjs';
 import { dragNode } from './events/dragNode';
 import OrphanEdgeView from '../EdgeView/OrphanEdgeView';
 import { dragGrip } from './events/dragGrip';
-import { map } from 'rxjs/operators';
+import { map, filter, buffer, debounce, bufferTime, tap } from 'rxjs/operators';
 import { isHotkey, isKeyHotkey, isCodeHotkey } from 'is-hotkey';
 import { keydown } from './events/keys';
 import SnappableGridView from '../aux/SnappableGridView';
 import EntiretyMovableHandler from '../aux/EntiretyMovableHandler';
+import { extractNodeAttrs } from './events/helper';
 
 type IProps = {
   dataStore?: DesignDataStore;
@@ -34,6 +41,7 @@ export default class Painter extends React.Component<IProps> {
   dragNode$: Subscription;
   dragGrip$: Subscription;
   keydown$: Subscription;
+  activeNode$: Subscription;
 
   getNodesView(nodes: PNode[]) {
     return nodes.map(node => {
@@ -83,12 +91,23 @@ export default class Painter extends React.Component<IProps> {
       uiStore!,
       dataStore!
     );
+
+    const click$ = fromEvent(el, 'dblclick');
+    const dblclick$ = click$.pipe(
+      map((e: MouseEvent) => extractNodeAttrs(e)),
+      filter(({ dataType, dataId }) => dataType === ElementType.Node)
+    );
+
+    this.activeNode$ = dblclick$.subscribe(({ dataType, dataId }) =>
+      this.props.dataStore!.events!.onActiveNode!(dataId!)
+    );
   }
 
   componentWillUnmount() {
     this.dragNode$.unsubscribe();
     this.dragGrip$.unsubscribe();
     this.keydown$.unsubscribe();
+    this.activeNode$.unsubscribe();
   }
 
   render() {

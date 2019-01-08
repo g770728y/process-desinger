@@ -22,11 +22,6 @@ class NodeTemplatesPanel extends React.Component<IProps> {
         className={styles['pd-node-templates-panel']}
         style={{ width: NodeTemplatesPanelWidth }}
       >
-        <input
-          type="button"
-          onClick={() => dataStore!.rearrange()}
-          value="自动重排"
-        />
         {nodeTemplates.map(nodeTemplate => (
           <div
             className={styles['pd-node-template-item-wrapper']}
