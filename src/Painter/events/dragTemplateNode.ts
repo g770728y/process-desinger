@@ -71,7 +71,6 @@ export function dragTemplateNode(
 
   const dragTemplateNode$ = drag$.subscribe((attrs: EventData) => {
     const { x: cx, y: cy } = uiStore!.clientXYToPainterXY(attrs.x!, attrs.y!);
-    console.log(cx, cy);
     const node = getNodeInstance(nodeTemplate, { cx, cy });
     const { w, h } = getNodeSize(node);
     const newbox = {

@@ -1,7 +1,7 @@
 {
-  "name": "process-designer",
+  "name": "simple-process-designer",
   "version": "1.0.0",
-  "description": "",
+  "description": "简单好用的图形化流程定义工具, 基于react, 也可用于angular / vue",
   "author": "g770728y",
   "license": "MIT",
   "repository": "g770728y/process-designer",
