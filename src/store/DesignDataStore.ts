@@ -1,7 +1,7 @@
 import {
   PNode,
   PEdge,
-  DesignData,
+  DesignerData,
   PElement,
   PPosition,
   PNodeId,
@@ -15,15 +15,15 @@ import {
   Shape,
   RectSize,
   CircleSize,
-  SnappableGrid
+  SnappableGrid,
+  DesignerEvents
 } from '../index.type';
-import { observable, computed, action } from 'mobx';
+import { observable, computed, action, toJS } from 'mobx';
 import ConfigStore from './ConfigStore';
 import {
   nodeAnchorXY,
   nodeAnchorXYByNodeId,
   edgeAnchorXY,
-  getNodeSize,
   rearrange
 } from '../helper';
 import { flatten, distance } from '../util';
@@ -42,6 +42,8 @@ function nextElementId(identities: Identity[]): number {
 
 export default class DesignDataStore {
   configStore: ConfigStore;
+
+  events: DesignerEvents;
 
   @observable
   context: PContext = {
@@ -87,14 +89,19 @@ export default class DesignDataStore {
   }
 
   @computed
-  get data(): DesignData {
+  get data(): DesignerData {
     return {
       nodes: this.nodes,
       edges: this.edges
     };
   }
 
-  constructor(designData: DesignData, configStore: ConfigStore) {
+  constructor(
+    designData: DesignerData,
+    configStore: ConfigStore,
+    events: DesignerEvents
+  ) {
+    this.events = events;
     const nodeTemplates = configStore.nodeTemplates;
 
     this.nodes = (designData.nodes || [])
@@ -206,6 +213,8 @@ export default class DesignDataStore {
   // 选择某个node
   @action
   selectNode(id: PNodeId) {
+    this.events.onSelectNode &&
+      this.events.onSelectNode(toJS(this.getNode(id)!));
     this.context.selectedEdgeIds = [];
     this.context.selectedOrphanEdgeIds = [];
     this.context.selectedNodeIds = [id];
@@ -295,8 +304,7 @@ export default class DesignDataStore {
   }
 
   @action rearrange() {
-    console.log(rearrange(this.nodes, this.edges, this.startNode));
-    // this.nodes = rearrange(this.nodes, this.edges, this.startNode);
+    this.nodes = rearrange(this.nodes, this.edges, this.startNode);
   }
 
   //////////////////////////////////////////////  工具方法  /////////////////////////////////////////////////////

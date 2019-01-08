@@ -1,10 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ProcessDesigner from './ProcessDesign';
-import { ElementType, DesignData, PConfig } from './index.type';
+import {
+  ElementType,
+  DesignerData,
+  PConfig,
+  PNode,
+  DesignerEvents,
+  DesignerController
+} from './index.type';
 import { StartId } from './global';
 
-export const initData: DesignData = {
+export const initData: DesignerData = {
   nodes: [
     {
       id: StartId,
@@ -20,11 +27,23 @@ const initConfig = {
   canvas: { background: '#ffffff' }
 };
 
-export function installProcessDesigner(
-  config: Partial<PConfig>,
-  el: string | HTMLElement
-) {
+export function installProcessDesigner(args: {
+  el: string | HTMLElement;
+  config: Partial<PConfig>;
+  events?: DesignerEvents;
+}): DesignerController {
+  const { el, config, events } = args;
   const _config = { ...initConfig, ...config } as PConfig;
   const _el = typeof el === 'string' ? document.getElementById(el) : el;
-  ReactDOM.render(<ProcessDesigner config={_config} data={initData} />, _el);
+  const ref = React.createRef<ProcessDesigner>();
+  ReactDOM.render(
+    <ProcessDesigner
+      config={_config}
+      data={initData}
+      ref={ref}
+      events={events || {}}
+    />,
+    _el
+  );
+  return ref.current!.getController();
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './styles.css';
-import { DesignerProps } from './index.type';
+import { DesignerProps, DesignerController } from './index.type';
 import NodeTemplatesPanel from './NodeTemplatesPanel';
 import Painter from './Painter';
 import { configure } from 'mobx';
@@ -18,7 +18,7 @@ configure({
 class ProcessDesigner extends React.Component<DesignerProps, {}> {
   uiStore: UIStore;
   configStore: ConfigStore;
-  designDataStore: DesignDataStore;
+  dataStore: DesignDataStore;
 
   painterContainerRef = React.createRef<HTMLDivElement>();
   painterWrapperRef = React.createRef<HTMLDivElement>();
@@ -27,11 +27,11 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
     super(props);
     this.uiStore = new UIStore();
 
-    const { config, data } = this.props;
+    const { config, data, events } = this.props;
 
     this.configStore = new ConfigStore(config);
 
-    this.designDataStore = new DesignDataStore(data, this.configStore);
+    this.dataStore = new DesignDataStore(data, this.configStore, events);
 
     this.onResize = this.onResize.bind(this);
 
@@ -56,7 +56,7 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
       <Provider
         uiStore={this.uiStore}
         configStore={this.configStore}
-        dataStore={this.designDataStore}
+        dataStore={this.dataStore}
       >
         <div ref={this.painterContainerRef} className={styles['pd-container']}>
           <NodeTemplatesPanel />
@@ -95,6 +95,13 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
   handlePainterWrapperScroll() {
     const painterWrapperEl = this.painterWrapperRef.current!;
     this.uiStore.resetPainterScrollTop(painterWrapperEl.scrollTop);
+  }
+
+  getController(): DesignerController {
+    const ds = this.dataStore!;
+    return {
+      rearrange: ds.rearrange.bind(ds)
+    };
   }
 }
 

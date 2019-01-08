@@ -77,14 +77,15 @@ export type PConfig = {
   nodeTemplates: PNodeTemplate[];
 };
 
-export type DesignData = {
+export type DesignerData = {
   nodes: PNode[];
   edges: PEdge[];
 };
 
 export type DesignerProps = {
   config: PConfig;
-  data: DesignData;
+  data: DesignerData;
+  events: DesignerEvents;
 };
 
 export enum Shape {
@@ -108,4 +109,12 @@ export interface PBox {
 export interface SnappableGrid {
   xs?: number[];
   ys?: number[];
+}
+
+export interface DesignerEvents {
+  onSelectNode?: (node: PNode) => void;
+}
+
+export interface DesignerController {
+  rearrange?: () => void;
 }

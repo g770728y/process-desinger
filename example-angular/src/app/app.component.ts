@@ -1,9 +1,11 @@
 import { Component, AfterViewInit } from '@angular/core';
-import {
+import ProcessDesigner, {
   installProcessDesigner,
   PNodeTemplate,
   ElementType,
-  Shape
+  Shape,
+  PNode,
+  DesignerController
 } from 'process-designer';
 
 const ProcessDesingerId = '__process_designer__';
@@ -25,8 +27,24 @@ export const nodeTemplates: PNodeTemplate[] = [
 })
 export class AppComponent implements AfterViewInit {
   title = 'example-angular';
+  designerController: DesignerController;
+
+  rearrange() {
+    console.log(22);
+    this.designerController.rearrange();
+  }
 
   ngAfterViewInit() {
-    installProcessDesigner({ nodeTemplates }, ProcessDesingerId);
+    this.designerController = installProcessDesigner({
+      el: ProcessDesingerId,
+      config: { nodeTemplates },
+      events: {
+        onSelectNode(node: PNode) {
+          console.log('node:', node);
+        }
+      }
+    });
+
+    console.log('designer:', this.designerController);
   }
 }

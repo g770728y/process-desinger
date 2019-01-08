@@ -12,7 +12,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <ProcessDesigner config={this.config} data={processData} />
+        <ProcessDesigner config={this.config} data={processData} events={{}} />
       </div>
     );
   }

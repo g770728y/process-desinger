@@ -2,7 +2,7 @@ import {
   Shape,
   StartId,
   EndId,
-  DesignData,
+  DesignerData,
   PNodeTemplate,
   ElementType
 } from 'process-designer';
@@ -17,7 +17,7 @@ export const nodeTemplates: PNodeTemplate[] = [
   }
 ];
 
-export const processData: DesignData = {
+export const processData: DesignerData = {
   nodes: [
     {
       id: StartId,
