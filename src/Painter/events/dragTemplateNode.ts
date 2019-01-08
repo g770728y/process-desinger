@@ -71,6 +71,7 @@ export function dragTemplateNode(
 
   const dragTemplateNode$ = drag$.subscribe((attrs: EventData) => {
     const { x: cx, y: cy } = uiStore!.clientXYToPainterXY(attrs.x!, attrs.y!);
+    console.log(cx, cy);
     const node = getNodeInstance(nodeTemplate, { cx, cy });
     const { w, h } = getNodeSize(node);
     const newbox = {
@@ -89,10 +90,11 @@ export function dragTemplateNode(
 
     if (!attrs.mouseup) {
       dataStore!.showSnappableGrid(sg);
+      const pcbox = uiStore!.painterContainerBox;
       uiStore.showOrphanNode({
         node: nodeTemplate as PNode,
-        cx: attrs.x! + dx,
-        cy: attrs.y! + dy
+        cx: attrs.x! + dx - pcbox.x,
+        cy: attrs.y! + dy - pcbox.y
       });
     } else {
       dataStore.hideSnappableGrid();
@@ -112,7 +114,10 @@ export function dragTemplateNode(
       };
 
       if (isBoxInRange(nodeDim, painterDim)) {
-        dataStore!.addNode(node);
+        dataStore!.addNode({
+          ...node,
+          dim: { ...node.dim!, cx: node.dim!.cx + dx, cy: node.dim!.cy + dy }
+        });
       }
     }
   });

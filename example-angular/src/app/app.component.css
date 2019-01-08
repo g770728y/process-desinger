@@ -1,0 +1,24 @@
+.modal {
+  margin: 40px;
+  width: calc(100% - 80px);
+  height: calc(100% - 80px);
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: stretch;
+  /* 重要! */
+  overflow: hidden;
+}
+
+.modal .action-bar {
+  height: 40px;
+  background: #ccc;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+#__process_designer__ {
+  flex-grow: 1;
+  flex-shrink: 1;
+  height: 1px;
+}

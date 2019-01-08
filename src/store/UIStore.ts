@@ -1,6 +1,6 @@
 import { observable, action, computed } from 'mobx';
 import { NodeTemplatesPanelWidth } from '../global';
-import { PNode, OrphanNodeInfo } from '../index.type';
+import { PNode, OrphanNodeInfo, PBox } from '../index.type';
 
 const defaultOrphanNodeInfo: OrphanNodeInfo = {
   cx: -100000,
@@ -14,15 +14,22 @@ export default class UIStore {
     height: window.innerHeight
   };
 
+  @observable.struct painterContainerBox = {
+    x: 0,
+    y: 0,
+    w: 300,
+    h: 300
+  };
+
   // 暂时不需要observable, 因为只是供 OrphanNode 拖动时临时使用
   painterScrollTop = 0;
 
   @computed.struct get painterDim() {
     return {
-      x: NodeTemplatesPanelWidth,
-      y: 0,
-      w: this.windowDim.width - NodeTemplatesPanelWidth,
-      h: this.windowDim.height
+      x: NodeTemplatesPanelWidth + this.painterContainerBox.x,
+      y: this.painterContainerBox.y,
+      w: this.painterContainerBox.w - NodeTemplatesPanelWidth,
+      h: this.painterContainerBox.h
     };
   }
 
@@ -32,6 +39,11 @@ export default class UIStore {
       width: window.innerWidth,
       height: window.innerHeight
     };
+  }
+
+  @action
+  resetPainterContainerBox(rect: PBox) {
+    this.painterContainerBox = rect;
   }
 
   @observable.struct orphanNodeInfo: OrphanNodeInfo = defaultOrphanNodeInfo;

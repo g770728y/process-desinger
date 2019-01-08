@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
-import './App.css';
 import ProcessDesigner from './ProcessDesign';
 import { ElementType, DesignData, PConfig } from './index.type';
 import { StartId } from './global';
@@ -26,6 +25,6 @@ export function installProcessDesigner(
   el: string | HTMLElement
 ) {
   const _config = { ...initConfig, ...config } as PConfig;
-  const _el = typeof el === 'string' ? document.getElementById('el') : el;
+  const _el = typeof el === 'string' ? document.getElementById(el) : el;
   ReactDOM.render(<ProcessDesigner config={_config} data={initData} />, _el);
 }

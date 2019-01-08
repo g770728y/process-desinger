@@ -20,6 +20,7 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
   configStore: ConfigStore;
   designDataStore: DesignDataStore;
 
+  painterContainerRef = React.createRef<HTMLDivElement>();
   painterWrapperRef = React.createRef<HTMLDivElement>();
 
   constructor(props: DesignerProps) {
@@ -41,6 +42,13 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
 
   onResize() {
     this.uiStore.resetWindowDim();
+    const {
+      left: x,
+      top: y,
+      width: w,
+      height: h
+    } = this.painterContainerRef.current!.getBoundingClientRect();
+    this.uiStore.resetPainterContainerBox({ x, y, w, h });
   }
 
   render() {
@@ -50,7 +58,7 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
         configStore={this.configStore}
         dataStore={this.designDataStore}
       >
-        <div className={styles['pd-container']}>
+        <div ref={this.painterContainerRef} className={styles['pd-container']}>
           <NodeTemplatesPanel />
           <div
             ref={this.painterWrapperRef}
@@ -69,6 +77,7 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
   }
 
   componentDidMount() {
+    this.onResize();
     window.addEventListener('resize', this.onResize);
     const painterWrpperEl = this.painterWrapperRef.current!;
     painterWrpperEl.addEventListener('scroll', this.handlePainterWrapperScroll);
