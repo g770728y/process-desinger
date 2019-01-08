@@ -139,4 +139,7 @@ export interface DesignerController {
   // 获取全部节点关系
   // 何时调用: 在保存时, 先 删除 全部关系, 再重建全部关系
   getAllAssoc?: () => { fromNodeId: PNodeId; toNodeId: PNodeId }[];
+
+  // 获取全部设计数据
+  getDesignerData?: () => DesignerData;
 }

@@ -16,15 +16,16 @@ export function installProcessDesigner(args: {
   el: string | HTMLElement;
   config: Partial<PConfig>;
   events?: DesignerEvents;
+  data?: DesignerData;
 }): DesignerController {
-  const { el, config, events } = args;
+  const { el, config, events, data } = args;
   const _config = { ...initConfig, ...config } as PConfig;
   const _el = typeof el === 'string' ? document.getElementById(el) : el;
   const ref = React.createRef<ProcessDesigner>();
   ReactDOM.render(
     <ProcessDesigner
       config={_config}
-      data={initData}
+      data={data || initData}
       ref={ref}
       events={events || {}}
     />,

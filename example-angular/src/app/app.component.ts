@@ -42,7 +42,8 @@ export class AppComponent implements AfterViewInit {
         onActiveNode(nodeId: PNodeId) {
           console.log('nodeId:', nodeId);
         }
-      }
+      },
+      data: { nodes: [], edges: [] }
     });
   }
 }

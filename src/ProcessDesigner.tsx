@@ -3,13 +3,13 @@ import styles from './styles.css';
 import { DesignerProps, DesignerController } from './index.type';
 import NodeTemplatesPanel from './NodeTemplatesPanel';
 import Painter from './Painter';
-import { configure } from 'mobx';
+import { configure, toJS } from 'mobx';
 import { Provider, observer } from 'mobx-react';
 import UIStore from './store/UIStore';
 import ConfigStore from './store/ConfigStore';
 import DesignDataStore from './store/DesignDataStore';
 import OrphanNode from './NodeView/OrphanNode';
-import { initConfig } from './global';
+import { initConfig, initData } from './global';
 
 configure({
   enforceActions: 'observed'
@@ -32,7 +32,11 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
 
     this.configStore = new ConfigStore({ ...initConfig, ...config });
 
-    this.dataStore = new DesignDataStore(data, this.configStore, events);
+    this.dataStore = new DesignDataStore(
+      data || initData,
+      this.configStore,
+      events
+    );
 
     this.onResize = this.onResize.bind(this);
 
@@ -107,7 +111,8 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
           fromNodeId: edge.from.id,
           toNodeId: edge.to.id
         })),
-      markNode: ds.patchNode.bind(ds)
+      markNode: ds.patchNode.bind(ds),
+      getDesignerData: () => ({ nodes: toJS(ds.nodes), edges: toJS(ds.edges) })
     };
   }
 }
