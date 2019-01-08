@@ -277,7 +277,6 @@ export function rearrange(
     level: number,
     id2Level: Id2Level
   ): PNode[] {
-    console.log('parentNode:', JSON.stringify(parentNodes));
     const edgesStartFromParentNodess = parentNodes.map(({ id }) =>
       edges.filter(edge => edge.from.id === id)
     );
@@ -291,7 +290,6 @@ export function rearrange(
     childrenId2Level = subtractByKey(childrenId2Level, id2Level);
 
     if (Object.keys(childrenId2Level).length > 0) {
-      console.log(childrenId2Level, childrenId2Level, id2Level);
       // 当前level上有哪些node
       let childrenNodes = Object.keys(childrenId2Level).map(
         id => nodes.find(node => node.id === parseInt(id))!
@@ -305,7 +303,6 @@ export function rearrange(
       // 当前level所有node的全宽
       const fullWidth =
         fullWidthOfNodes(childrenNodes) + 20 * (childrenNodes.length - 1);
-      console.log('fullWidth:', fullWidth);
 
       let currentLeft = centralAxisX - fullWidth / 2;
       // 调整
