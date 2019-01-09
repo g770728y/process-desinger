@@ -18,7 +18,7 @@ type IProps = {
 class RectNodeBase extends React.Component<IProps & HoverableProps> {
   render() {
     const { node, dataStore, _ref, hovered } = this.props;
-    const { dim, id, label } = node;
+    const { dim, id, label, iconSrc } = node;
     const { cx, cy } = dim!;
     const w = (dim! as RectSize).w || 100;
     const h = (dim! as RectSize).h || 30;
@@ -37,7 +37,7 @@ class RectNodeBase extends React.Component<IProps & HoverableProps> {
         onClick={() => dataStore!.selectNode(id)}
       >
         <Rect node={node} />
-        <NodeText w={w} h={h} text={label!} />
+        <NodeText w={w} h={h} text={label!} iconSrc={iconSrc} />
         {showGrip && <RectGripGroup node={node} />}
       </g>
     );

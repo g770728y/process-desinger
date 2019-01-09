@@ -17,6 +17,7 @@ export const nodeTemplates: PNodeTemplate[] = [
     type: ElementType.Node,
     label: '操作',
     shape: Shape.Rect,
+    iconSrc: '/assets/repair_24x24.png',
     dim: { w: 100, h: 30 }
   }
 ];
@@ -43,7 +44,7 @@ export class AppComponent implements AfterViewInit {
           console.log('nodeId:', nodeId);
         }
       },
-      data: { nodes: [], edges: [] }
+      data: null
     });
   }
 }
