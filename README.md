@@ -55,7 +55,14 @@ onActiveNode?: (id: PNodeId) => void;
 
 ### 第三步: 初始化
 
-    // 以下是angular的初始代码, 注意将返回 designerController
+    // angular
+    // 注意将返回 designerController
+    // 注意 npm i -S react react-dom
+    // npm i -D @types/react @types/react-dom
+    // 在 html 里新建一个节点, 以供安装设计器
+    // xxx.component.html:
+    // <div id="xxx" style="width:100%;height:100"></div>
+    const ProcessDesingerId= 'xxx';
     ngAfterViewInit() {
       this.designerController = installProcessDesigner({
         el: ProcessDesingerId,

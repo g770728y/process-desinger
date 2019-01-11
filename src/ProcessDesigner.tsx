@@ -43,6 +43,8 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
     this.handlePainterWrapperScroll = this.handlePainterWrapperScroll.bind(
       this
     );
+
+    this.getController = this.getController.bind(this);
   }
 
   onResize() {

@@ -102,6 +102,8 @@ export default class DesignDataStore {
     events: DesignerEvents
   ) {
     this.events = events;
+    this.configStore = configStore;
+
     const nodeTemplates = configStore.nodeTemplates;
 
     this.nodes = (designData.nodes || [])
@@ -310,7 +312,7 @@ export default class DesignDataStore {
   }
 
   @action rearrange() {
-    const { hGap, vGap } = this.configStore.config.rearrange!;
+    const { hGap, vGap } = this.configStore.rearrange!;
     this.nodes = rearrange(this.nodes, this.edges, this.startNode, hGap, vGap);
   }
 
