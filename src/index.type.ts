@@ -119,8 +119,11 @@ export interface DesignerEvents {
   // 回调方法将收到整个node节点, 可使用node节点的id, 查找对应的业务对象并弹出编辑框
   onActiveNode?: (id: PNodeId) => void;
 
-  // 在图中删除节点时调用, 同步调用 对应的 业务对象
+  // 在图中删除节点时调用, 外部应同步删除 对应的 业务对象
   onDelNode?: (id: PNodeId) => void;
+
+  // 在图中添加节点时调用, 外部应同步添加 对应的 空业务对象
+  onAddNode?: (id: PNodeId) => void;
 }
 
 // 对angular, 可使用 controller = installProcessDesigner(...) 获取
@@ -138,8 +141,8 @@ export interface DesignerController {
 
   // 获取全部节点关系
   // 何时调用: 在保存时, 先 删除 全部关系, 再重建全部关系
-  getAllAssoc?: () => { fromNodeId: PNodeId; toNodeId: PNodeId }[];
+  getAllAssoc: () => { fromNodeId: PNodeId; toNodeId: PNodeId }[];
 
   // 获取全部设计数据
-  getDesignerData?: () => DesignerData;
+  getDesignerData: () => DesignerData;
 }

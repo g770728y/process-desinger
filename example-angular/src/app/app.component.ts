@@ -42,6 +42,14 @@ export class AppComponent implements AfterViewInit {
       events: {
         onActiveNode(nodeId: PNodeId) {
           console.log('nodeId:', nodeId);
+        },
+
+        onDelNode(nodeId: PNodeId) {
+          console.log('delete node:', nodeId);
+        },
+
+        onAddNode(nodeId: PNodeId) {
+          console.log('add node:', nodeId);
         }
       },
       data: null

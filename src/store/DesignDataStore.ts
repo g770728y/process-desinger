@@ -143,7 +143,13 @@ export default class DesignDataStore {
       node = { ...node, dim: { ...node.dim!, cx } };
     }
 
-    this.nodes.push({ ...node, id: nextElementId(this.nodes) });
+    const newNode = { ...node, id: nextElementId(this.nodes) };
+
+    this.nodes.push(newNode);
+
+    if (node.templateId !== StartId && node.templateId !== EndId) {
+      this.events.onAddNode!(newNode.id);
+    }
   }
 
   @action
@@ -265,9 +271,15 @@ export default class DesignDataStore {
   @action
   delNode(id: PNodeId) {
     if (id === StartId) return;
+    // 要被删除的node
+    const node = this.nodes.find(node => node.id === id)!;
+
     this.nodes = this.nodes.filter(node => node.id !== id);
+
     this.delEdgeOnNode(id);
-    this.events.onDelNode!(id);
+    if (node.templateId !== StartId && node.templateId !== EndId) {
+      this.events.onDelNode!(id);
+    }
   }
 
   @action
