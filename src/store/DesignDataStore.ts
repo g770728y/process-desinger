@@ -147,6 +147,8 @@ export default class DesignDataStore {
 
     this.nodes.push(newNode);
 
+    this.context.selectedNodeIds = [newNode.id];
+
     if (node.templateId !== StartId && node.templateId !== EndId) {
       this.events.onAddNode!(newNode.id);
     }

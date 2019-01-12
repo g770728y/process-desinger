@@ -98,9 +98,17 @@ export default class Painter extends React.Component<IProps> {
       filter(({ dataType, dataId }) => dataType === ElementType.Node)
     );
 
-    this.activeNode$ = dblclick$.subscribe(({ dataType, dataId }) =>
-      this.props.dataStore!.events!.onActiveNode!(dataId!)
-    );
+    this.activeNode$ = dblclick$.subscribe(({ dataType, dataId }) => {
+      const { dataStore } = this.props;
+      if (
+        dataStore!.startNode.id === dataId ||
+        (dataStore!.endNode && dataStore!.endNode.id === dataId)
+      ) {
+        return;
+      }
+      console.log('willActive');
+      this.props.dataStore!.events!.onActiveNode!(dataId!);
+    });
   }
 
   componentWillUnmount() {
