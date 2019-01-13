@@ -59,6 +59,7 @@ export interface PAnchor {
 export interface PEdge {
   id: PEdgeId;
   type: ElementType;
+  flag?: any;
   from: { id: number; anchor: PAnchorType };
   to: { id: number; anchor: PAnchorType };
 }

@@ -6,6 +6,7 @@ import { EdgeClass } from '../global';
 import hoverable, { HoverableProps } from '../hoc/hoverable';
 import EdgeGripGroup from '../Grip/EdgeGripGroup';
 import { distance } from '../util';
+import NodeText from '../Shape/NodeText';
 
 type IProps = {
   edge: PEdge;
@@ -18,6 +19,7 @@ class EdgeViewBase extends React.Component<IProps & HoverableProps> {
   render() {
     const { edge, dataStore, hovered, _ref } = this.props;
     const { id, from, to } = edge;
+    const flag = 'abc';
 
     const { fromXY, toXY } = dataStore!.getEdgeEndPoints(id);
 
@@ -33,8 +35,9 @@ class EdgeViewBase extends React.Component<IProps & HoverableProps> {
       y2: 0
     };
 
-    const rotate =
+    const _rotate =
       (Math.atan2(toXY.cy - fromXY.cy, toXY.cx - fromXY.cx) * 180) / Math.PI;
+    const rotate = (_rotate + 360) % 360;
 
     const stroke = hided ? '#dddddd' : '#999999';
 
@@ -48,6 +51,7 @@ class EdgeViewBase extends React.Component<IProps & HoverableProps> {
         stroke={stroke}
         markerEnd={'url(#arrow)'}
         {...xy}
+        style={{ pointerEvents: 'none' }}
       />
     );
 
@@ -70,6 +74,17 @@ class EdgeViewBase extends React.Component<IProps & HoverableProps> {
       />
     );
 
+    const flagText = !!flag && (
+      <NodeText
+        fontSize={12}
+        w={xy.x2 - xy.x1}
+        h={xy.y2 - xy.y1}
+        text={flag}
+        rotate={rotate > 90 && rotate < 270 ? 180 : 0}
+        offsetY={-5}
+      />
+    );
+
     const isSameSide =
       (from.anchor === 'lc' && to.anchor === 'lc') ||
       (from.anchor === 'rc' && to.anchor === 'rc');
@@ -81,6 +96,7 @@ class EdgeViewBase extends React.Component<IProps & HoverableProps> {
       >
         {isSameSide ? BgLayerArc : BgLayerLine}
         {isSameSide ? layerArc : layerLine}
+        {flagText}
         {showGrip && <EdgeGripGroup edge={edge} />}
       </g>
     );
