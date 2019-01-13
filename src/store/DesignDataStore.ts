@@ -143,7 +143,7 @@ export default class DesignDataStore {
       node = { ...node, dim: { ...node.dim!, cx } };
     }
 
-    const newNode = { ...node, id: nextElementId(this.nodes) };
+    const newNode = { ...toJS(node), id: nextElementId(this.nodes) };
 
     this.nodes.push(newNode);
 
@@ -194,7 +194,6 @@ export default class DesignDataStore {
   repositionNode(attrs: { element: PElement; newPos: PPosition }): void {
     const { element, newPos } = attrs;
     if (element.type === ElementType.Node) {
-      const { id } = element;
       this.nodes.forEach(node => {
         if (node.id === element.id) {
           node.dim = { ...node.dim, ...newPos };
