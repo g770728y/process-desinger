@@ -86,3 +86,5 @@ export const initConfig: Partial<PConfig> = {
   canvas: { background: '#ffffff' },
   rearrange: { hGap: 20, vGap: 50 }
 };
+
+export const DeleteFlag = '__DELETE__';

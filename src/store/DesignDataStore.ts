@@ -18,7 +18,7 @@ import {
   SnappableGrid,
   DesignerEvents
 } from '../index.type';
-import { observable, computed, action, toJS } from 'mobx';
+import { observable, computed, action, toJS, extendObservable } from 'mobx';
 import ConfigStore from './ConfigStore';
 import {
   nodeAnchorXY,
@@ -175,18 +175,13 @@ export default class DesignDataStore {
   patchEdge(edgePatch: Partial<PEdge>): void {
     const id = edgePatch.id!;
     const edge = this.getEdge(id)!;
-    // 注意这只是个临时值
-    const newEdge = { ...edge, ...edgePatch };
-    if (newEdge.from.id !== newEdge.to.id) {
-      const edge1 = this.findEdgeByStartAndEndNode(
-        newEdge.from.id,
-        newEdge.to.id
-      );
-      if (!edge1 || edge1.id === id) {
-        // 最后才实施合并
-        Object.assign(edge, edgePatch);
-      }
-    }
+    Object.assign(edge, edgePatch);
+  }
+
+  @action
+  resetEdgeFlag(edgeId: PEdgeId): void {
+    const edge = this.getEdge(edgeId)!;
+    delete edge.flag;
   }
 
   // 移动节点或边

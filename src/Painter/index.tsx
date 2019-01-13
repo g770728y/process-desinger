@@ -1,13 +1,7 @@
 import * as React from 'react';
 import { inject, observer } from 'mobx-react';
 import UIStore from '../store/UIStore';
-import {
-  PNode,
-  PEdge,
-  PPosition,
-  OrphanEdge,
-  ElementType
-} from '../index.type';
+import { PNode, PEdge, OrphanEdge } from '../index.type';
 import { DefaultCanvasHeight, SvgBackgroundRectClass } from '../global';
 import { EdgeView } from '../EdgeView';
 import Defs from './defs';
@@ -18,12 +12,11 @@ import { fromEvent, Subscription } from 'rxjs';
 import { dragNode } from './events/dragNode';
 import OrphanEdgeView from '../EdgeView/OrphanEdgeView';
 import { dragGrip } from './events/dragGrip';
-import { map, filter, buffer, debounce, bufferTime, tap } from 'rxjs/operators';
-import { isHotkey, isKeyHotkey, isCodeHotkey } from 'is-hotkey';
 import { keydown } from './events/keys';
 import SnappableGridView from '../aux/SnappableGridView';
 import EntiretyMovableHandler from '../aux/EntiretyMovableHandler';
-import { extractNodeAttrs } from './events/helper';
+import { activeNode } from './events/activeNode';
+import { activeEdge } from './events/activeEdge';
 
 type IProps = {
   dataStore?: DesignDataStore;
@@ -42,6 +35,7 @@ export default class Painter extends React.Component<IProps> {
   dragGrip$: Subscription;
   keydown$: Subscription;
   activeNode$: Subscription;
+  activeEdge$: Subscription;
 
   getNodesView(nodes: PNode[]) {
     return nodes.map(node => {
@@ -67,7 +61,7 @@ export default class Painter extends React.Component<IProps> {
   };
 
   componentDidMount() {
-    const { uiStore, dataStore } = this.props;
+    const { uiStore, configStore, dataStore } = this.props;
     const el = this.ref.current!;
     const mousedown$ = fromEvent(el, 'mousedown');
     const mousemove$ = fromEvent(document.body, 'mousemove');
@@ -92,22 +86,11 @@ export default class Painter extends React.Component<IProps> {
       dataStore!
     );
 
-    const click$ = fromEvent(el, 'dblclick');
-    const dblclick$ = click$.pipe(
-      map((e: MouseEvent) => extractNodeAttrs(e)),
-      filter(({ dataType, dataId }) => dataType === ElementType.Node)
-    );
+    const dblclick$ = fromEvent(el, 'dblclick');
 
-    this.activeNode$ = dblclick$.subscribe(({ dataType, dataId }) => {
-      const { dataStore } = this.props;
-      if (
-        dataStore!.startNode.id === dataId ||
-        (dataStore!.endNode && dataStore!.endNode.id === dataId)
-      ) {
-        return;
-      }
-      this.props.dataStore!.events!.onActiveNode!(dataId!);
-    });
+    this.activeNode$ = activeNode(dblclick$, dataStore!);
+
+    this.activeEdge$ = activeEdge(dblclick$, configStore!, dataStore!);
   }
 
   componentWillUnmount() {
@@ -115,6 +98,7 @@ export default class Painter extends React.Component<IProps> {
     this.dragGrip$.unsubscribe();
     this.keydown$.unsubscribe();
     this.activeNode$.unsubscribe();
+    this.activeEdge$.unsubscribe();
   }
 
   render() {

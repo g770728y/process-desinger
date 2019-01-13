@@ -18,8 +18,7 @@ type IProps = {
 class EdgeViewBase extends React.Component<IProps & HoverableProps> {
   render() {
     const { edge, dataStore, hovered, _ref } = this.props;
-    const { id, from, to } = edge;
-    const flag = 'abc';
+    const { id, from, to, flag } = edge;
 
     const { fromXY, toXY } = dataStore!.getEdgeEndPoints(id);
 
@@ -29,8 +28,6 @@ class EdgeViewBase extends React.Component<IProps & HoverableProps> {
     const xy = {
       x1: 0,
       y1: 0,
-      // x2: toXY.cx - fromXY.cx,
-      // y2: toXY.cy - fromXY.cy
       x2: distance({ x: fromXY.cx, y: fromXY.cy }, { x: toXY.cx, y: toXY.cy }),
       y2: 0
     };
@@ -42,12 +39,18 @@ class EdgeViewBase extends React.Component<IProps & HoverableProps> {
     const stroke = hided ? '#dddddd' : '#999999';
 
     // 线
-    const BgLayerLine = <line {...xy} strokeWidth={10} stroke="transparent" />;
+    const BgLayerLine = (
+      <line
+        {...xy}
+        data-type={ElementType.Edge}
+        data-id={id}
+        strokeWidth={10}
+        stroke="transparent"
+      />
+    );
     const layerLine = (
       <line
         className={EdgeClass}
-        data-type={ElementType.Edge}
-        data-id={id}
         stroke={stroke}
         markerEnd={'url(#arrow)'}
         {...xy}
@@ -59,6 +62,8 @@ class EdgeViewBase extends React.Component<IProps & HoverableProps> {
     const BgLayerArc = (
       <path
         d={`M${xy.x1},${xy.y1} Q${xy.x2 / 2},${xy.x2 / 5},${xy.x2},${xy.y2}`}
+        data-type={ElementType.Edge}
+        data-id={id}
         fill="none"
         strokeWidth={10}
         stroke="transparent"

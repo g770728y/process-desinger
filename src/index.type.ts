@@ -117,8 +117,15 @@ export interface SnappableGrid {
 }
 
 export interface DesignerEvents {
+  // 双击边时触发此事件
+  // 回调方法将收到边的id 和 可用的flags, 如果flags 不存在, 则弹出文本输入框, 否则弹出选框
+  // 与markEdge配套使用
+  // 一般不用
+  onActiveEdge?: (id: PEdgeId, flags?: String[]) => void;
+
   // 双击 或 点击node上的编辑按钮时 触发此事件
   // 回调方法将收到整个node节点, 可使用node节点的id, 查找对应的业务对象并弹出编辑框
+  // 与markNode配套使用
   onActiveNode?: (id: PNodeId) => void;
 
   // 在图中删除节点时调用, 外部应同步删除 对应的 业务对象
@@ -140,6 +147,9 @@ export interface DesignerController {
   // 2. 对于支持 返修 的操作, 可以增加一个png前缀图标
   // 图标显示24x24, 最好是png / jpg
   markNode?: (id: PNodeId, label: string, iconSrc?: string) => void;
+
+  // 标记 [ 边的状态 ]
+  markEdge?: (id: PEdgeId, flag: String) => void;
 
   // 获取全部节点关系
   // 何时调用: 在保存时, 先 删除 全部关系, 再重建全部关系
