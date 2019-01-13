@@ -22,7 +22,9 @@ class EdgeFlagInput extends React.Component<IProps, IState> {
 
   onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.keyCode === 13) {
-      this.props.onOk(this.state.value);
+      const value = this.state.value;
+      const v = value.trim().length === 0 ? DeleteFlag : value;
+      this.props.onOk(v);
     }
   };
 

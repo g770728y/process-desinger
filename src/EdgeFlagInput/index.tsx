@@ -9,6 +9,9 @@ export default function installEdgeFlagInput(
   cb: (flag: string) => void
 ) {
   const el = document.createElement('div');
+  el.style.position = 'fixed';
+  el.style.zIndex = '100001';
+
   document.body.appendChild(el);
 
   function onOk(flag?: string) {

@@ -1,6 +1,6 @@
 {
   "name": "simple-process-designer",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "简单好用的图形化流程定义工具, 基于react, 也可用于angular / vue",
   "homepage": "https://g770728y.github.io/simple-process-designer",
   "author": "g770728y",
