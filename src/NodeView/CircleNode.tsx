@@ -17,7 +17,8 @@ type IProps = {
 @observer
 class CircleNodeBase extends React.Component<IProps & HoverableProps> {
   render() {
-    const { node, dataStore, _ref, hovered } = this.props;
+    const { node: _node, dataStore, _ref, hovered } = this.props;
+    const node = dataStore!.getNode(_node.id)!;
     const { id, dim, label } = node;
     const { cx, cy } = dim!;
     const r = (dim! as CircleSize).r || 30;

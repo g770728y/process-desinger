@@ -35,6 +35,7 @@ export interface PNodeTemplate {
   iconSrc?: string;
   shape: Shape;
   dim?: Partial<Dim>;
+  branchFlags?: any[];
 }
 
 export interface PNode {

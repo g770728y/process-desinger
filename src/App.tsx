@@ -17,10 +17,11 @@ export function installProcessDesigner(args: {
   config: Partial<PConfig>;
   events?: DesignerEvents;
   data?: DesignerData;
-}): DesignerController {
+}): [DesignerController, () => void] {
   const { el, config, events, data } = args;
   const _config = { ...initConfig, ...config } as PConfig;
   const _el = typeof el === 'string' ? document.getElementById(el) : el;
+  if (!_el) throw new Error('安装节点不存在');
   const ref = React.createRef<ProcessDesigner>();
   ReactDOM.render(
     <ProcessDesigner
@@ -31,5 +32,8 @@ export function installProcessDesigner(args: {
     />,
     _el
   );
-  return ref.current!.getController();
+  return [
+    ref.current!.getController(),
+    () => ReactDOM.unmountComponentAtNode(_el)
+  ];
 }

@@ -106,7 +106,6 @@ export default class Painter extends React.Component<IProps> {
       ) {
         return;
       }
-      console.log('willActive');
       this.props.dataStore!.events!.onActiveNode!(dataId!);
     });
   }

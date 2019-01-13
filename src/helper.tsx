@@ -188,14 +188,15 @@ export function renderNodeTemplate(
   nodeTemplate: PNodeTemplate,
   ref: React.RefObject<SVGSVGElement>
 ) {
-  const { id, shape, dim, label } = nodeTemplate;
+  const { branchFlags, ..._nodeTemplate } = nodeTemplate;
+  const { id, shape, dim, label } = _nodeTemplate;
 
   let svg: React.ReactNode;
 
   if (shape === Shape.Circle) {
     const { r } = dim as CircleSize;
     const node: PNode = {
-      ...nodeTemplate,
+      ..._nodeTemplate,
       dim: { ...dim, cx: r!, cy: r! }
     };
     const vtext = <NodeText w={2 * r!} h={2 * r!} text={label} />;
@@ -212,7 +213,7 @@ export function renderNodeTemplate(
   } else if (shape === Shape.Rect) {
     const { w, h } = dim! as RectSize;
     const node: PNode = {
-      ...nodeTemplate,
+      ..._nodeTemplate,
       dim: { ...dim, cx: w! / 2, cy: h! / 2 }
     };
     const vtext = <NodeText w={w!} h={h!} text={label} />;
@@ -248,8 +249,9 @@ export function getNodeInstance(
   nodeTemplate: PNodeTemplate,
   { cx, cy }: PPosition
 ): PNode {
+  const { branchFlags, ..._nodeTemplate } = nodeTemplate;
   return {
-    ...nodeTemplate,
+    ..._nodeTemplate,
     templateId: nodeTemplate.id,
     dim: {
       ...nodeTemplate.dim,

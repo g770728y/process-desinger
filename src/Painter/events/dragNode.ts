@@ -121,7 +121,6 @@ export function dragNode(
     );
 
     dataStore!.showSnappableGrid(sg);
-
     dataStore!.repositionNode({
       element: element!,
       newPos: {

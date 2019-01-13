@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy } from '@angular/core';
 import ProcessDesigner, {
   installProcessDesigner,
   PNodeTemplate,
@@ -18,7 +18,8 @@ export const nodeTemplates: PNodeTemplate[] = [
     label: '操作',
     shape: Shape.Rect,
     iconSrc: '/assets/repair_24x24.png',
-    dim: { w: 100, h: 30 }
+    dim: { w: 100, h: 30 },
+    branchFlags: ['ok', 'fail']
   }
 ];
 
@@ -27,16 +28,17 @@ export const nodeTemplates: PNodeTemplate[] = [
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements AfterViewInit, OnDestroy {
   title = 'example-angular';
   designerController: DesignerController;
+  uninstall: () => void;
 
   rearrange() {
     this.designerController.rearrange();
   }
 
   ngAfterViewInit() {
-    this.designerController = installProcessDesigner({
+    const [designerController, uninstall] = installProcessDesigner({
       el: ProcessDesingerId,
       config: { nodeTemplates },
       events: {
@@ -54,5 +56,12 @@ export class AppComponent implements AfterViewInit {
       },
       data: null
     });
+
+    this.designerController = designerController;
+    this.uninstall = uninstall;
+  }
+
+  ngOnDestroy() {
+    this.uninstall();
   }
 }
