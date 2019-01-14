@@ -111,7 +111,8 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
       getAllAssoc: () =>
         ds.edges.map(edge => ({
           fromNodeId: edge.from.id,
-          toNodeId: edge.to.id
+          toNodeId: edge.to.id,
+          flag: edge.flag
         })),
       markNode: ds.patchNode.bind(ds),
       getDesignerData: () => ({ nodes: toJS(ds.nodes), edges: toJS(ds.edges) })
