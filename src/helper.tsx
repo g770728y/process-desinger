@@ -20,6 +20,7 @@ import Rect from './Shape/Rect';
 import Circle from './Shape/Circle';
 import NodeText from './Shape/NodeText';
 import { distinct, flatten, subtractByKey } from './util';
+import DesignDataStore from './store/DesignDataStore';
 
 export function isValidData(data: any) {
   return !!data && typeof data === 'object' && data.nodes;
@@ -345,5 +346,39 @@ export function rearrange(
       const { w, h } = getNodeSize(node);
       return acc + w;
     }, 0);
+  }
+}
+
+// 检查整个ds的有效性
+export function check(ds: DesignDataStore): string | null | undefined {
+  const edges = ds.edges;
+
+  // StartNode不能作为边的终点
+  if (edges.some(edge => edge.to.id === ds.startNode.id)) {
+    return '开始节点 不能作为边的终点';
+  }
+
+  // EndNode不能作为边的起点
+  if (edges.some(edge => edge.from.id === ds.endNode.id)) {
+    return '终止节点 不能作为边的起点';
+  }
+
+  // 其余节点必须至少有一个入口边和一个出口边
+  if (
+    ds.nodes
+      .filter(node => [ds.startNode.id, ds.endNode.id].indexOf(node.id) < 0)
+      .some(node => isOrphanNode(node, ds.edges))
+  ) {
+    return '存在孤立节点. 请确保每个节点至少有一进一出两条边';
+  }
+
+  return null;
+
+  // 节点至少有一进一出两条边
+  function isOrphanNode(node: PNode, edges: PEdge[]) {
+    const isValid =
+      edges.map(edge => edge.from.id).includes(node.id) &&
+      edges.map(edge => edge.to.id).includes(node.id);
+    return !isValid;
   }
 }

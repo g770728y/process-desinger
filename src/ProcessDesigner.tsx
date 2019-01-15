@@ -10,7 +10,7 @@ import ConfigStore from './store/ConfigStore';
 import DesignDataStore from './store/DesignDataStore';
 import OrphanNode from './NodeView/OrphanNode';
 import { initConfig, initData } from './global';
-import { isValidData } from './helper';
+import { isValidData, check } from './helper';
 
 configure({
   enforceActions: 'observed'
@@ -115,6 +115,7 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
           toNodeId: edge.to.id,
           flag: edge.flag
         })),
+      check: () => check(ds),
       markNode: ds.patchNode.bind(ds),
       markEdge: ds.patchEdge.bind(ds),
       getDesignerData: () => ({ nodes: toJS(ds.nodes), edges: toJS(ds.edges) })

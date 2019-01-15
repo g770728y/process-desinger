@@ -155,6 +155,9 @@ export interface DesignerController {
   // 何时调用: 在保存时, 先 删除 全部关系, 再重建全部关系
   getAllAssoc: () => { fromNodeId: PNodeId; toNodeId: PNodeId; flag: any }[];
 
+  // 检查
+  check: () => string | null | undefined;
+
   // 获取全部设计数据
   getDesignerData: () => DesignerData;
 }
