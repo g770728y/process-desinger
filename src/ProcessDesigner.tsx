@@ -115,6 +115,7 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
           flag: edge.flag
         })),
       markNode: ds.patchNode.bind(ds),
+      markEdge: ds.patchEdge.bind(ds),
       getDesignerData: () => ({ nodes: toJS(ds.nodes), edges: toJS(ds.edges) })
     };
   }

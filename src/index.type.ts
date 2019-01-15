@@ -146,10 +146,10 @@ export interface DesignerController {
   // 1. 设置 工艺计划明细名称 为label
   // 2. 对于支持 返修 的操作, 可以增加一个png前缀图标
   // 图标显示24x24, 最好是png / jpg
-  markNode?: (id: PNodeId, label: string, iconSrc?: string) => void;
+  markNode?: (params: { id: PNodeId; label: string; iconSrc?: string }) => void;
 
   // 标记 [ 边的状态 ]
-  markEdge?: (id: PEdgeId, flag: String) => void;
+  markEdge?: (params: { id: PEdgeId; flag: String }) => void;
 
   // 获取全部节点关系
   // 何时调用: 在保存时, 先 删除 全部关系, 再重建全部关系
