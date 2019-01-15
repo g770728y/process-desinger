@@ -10,6 +10,7 @@ import ConfigStore from './store/ConfigStore';
 import DesignDataStore from './store/DesignDataStore';
 import OrphanNode from './NodeView/OrphanNode';
 import { initConfig, initData } from './global';
+import { isValidData } from './helper';
 
 configure({
   enforceActions: 'observed'
@@ -33,7 +34,7 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
     this.configStore = new ConfigStore({ ...initConfig, ...config });
 
     this.dataStore = new DesignDataStore(
-      data || initData,
+      isValidData(data) ? data : initData,
       this.configStore,
       events
     );

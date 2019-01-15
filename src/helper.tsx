@@ -21,6 +21,10 @@ import Circle from './Shape/Circle';
 import NodeText from './Shape/NodeText';
 import { distinct, flatten, subtractByKey } from './util';
 
+export function isValidData(data: any) {
+  return !!data && typeof data === 'object' && data.nodes;
+}
+
 export function xyOfCircleAnchor(dim: Dim, anchor: PAnchorType): PPosition {
   const { cx, cy } = dim!;
   const { r } = dim! as CircleSize;
