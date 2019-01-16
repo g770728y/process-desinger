@@ -10,7 +10,7 @@ export function keydown(
     if (isHotkey('esc', e)) {
       dataStore!.unselectAll();
     } else if (isHotkey(['del', 'backspace'], e)) {
-      dataStore!.delSelected();
+      // dataStore!.delSelected();
     }
   });
 }

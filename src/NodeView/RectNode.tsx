@@ -7,6 +7,7 @@ import { RectGripGroup } from '../Grip';
 import hoverable, { HoverableProps } from '../hoc/hoverable';
 import Rect from '../Shape/Rect';
 import NodeText from '../Shape/NodeText';
+import DeleteIcon from '../icons/DeleteIcon';
 
 type IProps = {
   node: PNode;
@@ -25,8 +26,12 @@ class RectNodeBase extends React.Component<IProps & HoverableProps> {
     const x = cx - w / 2;
     const y = cy - h / 2;
 
-    const showGrip =
-      hovered || ~(dataStore!.context.selectedNodeIds || []).indexOf(id);
+    const isSelected = dataStore!.isSelectedNode(id);
+    const showGrip = hovered || isSelected;
+
+    const isStart = dataStore!.startNode && dataStore!.startNode.id === node.id;
+    const isEnd = dataStore!.endNode && dataStore!.endNode.id === node.id;
+    const showDeleteIcon = !isStart && !isEnd && isSelected;
 
     return (
       <g
@@ -39,6 +44,9 @@ class RectNodeBase extends React.Component<IProps & HoverableProps> {
         <Rect node={node} />
         <NodeText w={w} h={h} text={label!} iconSrc={iconSrc} />
         {showGrip && <RectGripGroup node={node} />}
+        {showDeleteIcon && (
+          <DeleteIcon hostType={'node'} hostId={id} cx={w - 10} cy={10} />
+        )}
       </g>
     );
   }

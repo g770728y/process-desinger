@@ -7,6 +7,7 @@ import hoverable, { HoverableProps } from '../hoc/hoverable';
 import EdgeGripGroup from '../Grip/EdgeGripGroup';
 import { distance } from '../util';
 import NodeText from '../Shape/NodeText';
+import DeleteIcon from '../icons/DeleteIcon';
 
 type IProps = {
   edge: PEdge;
@@ -20,9 +21,11 @@ class EdgeViewBase extends React.Component<IProps & HoverableProps> {
     const { edge, dataStore, hovered, _ref } = this.props;
     const { id, from, to, flag } = edge;
 
+    const isSelected = dataStore!.isSelectedEdge(id);
+
     const { fromXY, toXY } = dataStore!.getEdgeEndPoints(id);
 
-    const showGrip = ~(dataStore!.context.selectedEdgeIds || []).indexOf(id);
+    const showGrip = isSelected;
     const hided = dataStore!.context.hidedEdgeId === id;
 
     const xy = {
@@ -103,6 +106,14 @@ class EdgeViewBase extends React.Component<IProps & HoverableProps> {
         {isSameSide ? layerArc : layerLine}
         {flagText}
         {showGrip && <EdgeGripGroup edge={edge} />}
+        {isSelected && (
+          <DeleteIcon
+            hostType={'edge'}
+            hostId={id}
+            cx={(xy.x2 - xy.x1) / 2}
+            cy={16}
+          />
+        )}
       </g>
     );
   }

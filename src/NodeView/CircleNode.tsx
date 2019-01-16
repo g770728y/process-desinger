@@ -7,6 +7,7 @@ import DesignDataStore from '../store/DesignDataStore';
 import { CircleGripGroup } from '../Grip';
 import Circle from '../Shape/Circle';
 import NodeText from '../Shape/NodeText';
+import DeleteIcon from '../icons/DeleteIcon';
 
 type IProps = {
   node: PNode;
@@ -25,8 +26,12 @@ class CircleNodeBase extends React.Component<IProps & HoverableProps> {
     const x = cx - r;
     const y = cy - r;
 
-    const showGrip =
-      hovered || ~(dataStore!.context.selectedNodeIds || []).indexOf(id);
+    const isSelected = dataStore!.isSelectedNode(id);
+    const showGrip = hovered || isSelected;
+
+    const isStart = dataStore!.startNode && dataStore!.startNode.id === node.id;
+    const isEnd = dataStore!.endNode && dataStore!.endNode.id === node.id;
+    const showDeleteIcon = !isStart && !isEnd && isSelected;
 
     return (
       <g
@@ -39,6 +44,9 @@ class CircleNodeBase extends React.Component<IProps & HoverableProps> {
         <Circle node={node} />
         <NodeText w={2 * r} h={2 * r} text={label!} />
         {showGrip && <CircleGripGroup node={node} />}
+        {showDeleteIcon && (
+          <DeleteIcon hostType={'node'} hostId={id} cx={2 * r - 10} cy={10} />
+        )}
       </g>
     );
   }

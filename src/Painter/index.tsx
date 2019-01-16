@@ -17,6 +17,7 @@ import SnappableGridView from '../aux/SnappableGridView';
 import EntiretyMovableHandler from '../aux/EntiretyMovableHandler';
 import { activeNode } from './events/activeNode';
 import { activeEdge } from './events/activeEdge';
+import DeleteIcon from '../icons/DeleteIcon';
 
 type IProps = {
   dataStore?: DesignDataStore;

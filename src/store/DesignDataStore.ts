@@ -147,7 +147,7 @@ export default class DesignDataStore {
 
     this.nodes.push(newNode);
 
-    this.context.selectedNodeIds = [newNode.id];
+    this.selectNode(newNode.id);
 
     if (node.templateId !== StartId && node.templateId !== EndId) {
       this.events.onAddNode!(newNode.id);
@@ -160,7 +160,9 @@ export default class DesignDataStore {
 
     if (from.id !== to.id && !this.findEdgeByStartAndEndNode(from.id, to.id)) {
       // 仅当两个node间没有edge时, 才创建新edge
-      this.edges.push({ ...edge, id: nextElementId(this.edges) });
+      const newEdge = { ...edge, id: nextElementId(this.edges) };
+      this.edges.push(newEdge);
+      this.selectEdge(newEdge.id);
     }
   }
 
@@ -365,6 +367,14 @@ export default class DesignDataStore {
     } else {
       throw new Error(`错误的hostType:${element.type}`);
     }
+  }
+
+  isSelectedNode(id: PNodeId) {
+    return ~(this.context.selectedNodeIds || []).indexOf(id);
+  }
+
+  isSelectedEdge(id: PEdgeId) {
+    return ~(this.context.selectedEdgeIds || []).indexOf(id);
   }
 
   getNode(_id: PNodeId) {
