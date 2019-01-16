@@ -351,6 +351,11 @@ export function rearrange(
 
 // 检查整个ds的有效性
 export function check(ds: DesignDataStore): string | null | undefined {
+  // 必须至少有开始节点
+  if (!ds.startNode) return '必须有开始结点';
+
+  if (!ds.endNode) return '必须有结束结点';
+
   const edges = ds.edges;
 
   // StartNode不能作为边的终点

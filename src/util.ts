@@ -28,6 +28,16 @@ export function subtractByKey(m1: Object, m2: Object): Object {
   );
 }
 
+export function isEmpty(xs: any): boolean {
+  return (
+    xs == null ||
+    xs == undefined ||
+    (Array.isArray(xs) && xs.length <= 0) ||
+    (typeof xs === 'string' && xs.length <= 0) ||
+    (typeof xs === 'object' && Object.keys(xs).length <= 0)
+  );
+}
+
 ///////////////////// geo /////////////////////////////////////////
 export function distance(
   xy1: { x: number; y: number },

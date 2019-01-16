@@ -11,6 +11,7 @@ import DesignDataStore from './store/DesignDataStore';
 import OrphanNode from './NodeView/OrphanNode';
 import { initConfig, initData } from './global';
 import { isValidData, check } from './helper';
+import Message from './Message';
 
 configure({
   enforceActions: 'observed'
@@ -76,6 +77,7 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
               height: this.uiStore.painterDim.h
             }}
           >
+            <Message />
             <Painter />
           </div>
           <OrphanNode />
