@@ -12,15 +12,17 @@ import {
   PPosition,
   PNodeId,
   PEdge,
-  SnappableGrid
+  SnappableGrid,
+  PEdgeId
 } from './index.type';
 import RectNode from './NodeView/RectNode';
 import CircleNode from './NodeView/CircleNode';
 import Rect from './Shape/Rect';
 import Circle from './Shape/Circle';
 import NodeText from './Shape/NodeText';
-import { distinct, flatten, subtractByKey } from './util';
+import { distinct, flatten, unpickAll, uniq, subtract } from './util';
 import DesignDataStore from './store/DesignDataStore';
+import { toJS } from 'mobx';
 
 export function isValidData(data: any) {
   return !!data && typeof data === 'object' && data.nodes;
@@ -266,8 +268,12 @@ export function getNodeInstance(
   };
 }
 
-interface Id2Level {
-  [pNodeId: number]: number;
+export function getNode(nodes: PNode[], id: PNodeId) {
+  return nodes.find(node => node.id === id);
+}
+
+export function getEdge(edges: PEdge[], id: PEdgeId) {
+  return edges.find(edge => edge.id === id);
 }
 
 // 重排
@@ -277,61 +283,199 @@ export function rearrange(
   startNode: PNode,
   hGap: number,
   vGap: number
-): PNode[] {
+): { nodes: PNode[]; edges: PEdge[] } {
+  // TODO: 检查孤立结点, 并禁止重排
+
   const centralAxisX = startNode.dim!.cx;
-  return [startNode, ..._rearrange([startNode], 0, { [startNode.id]: 0 })];
 
-  function _rearrange(
-    parentNodes: PNode[],
-    level: number,
-    id2Level: Id2Level
-  ): PNode[] {
-    const edgesStartFromParentNodess = parentNodes.map(({ id }) =>
-      edges.filter(edge => edge.from.id === id)
-    );
-    const edgesStartFromParentNodes = flatten(edgesStartFromParentNodess);
-    // 自动去重
-    let childrenId2Level = edgesStartFromParentNodes.reduce(
-      (acc, edge) => ({ ...acc, [edge.to.id]: level + 1 }),
-      {}
-    );
-    // 排除已经使用过的
-    childrenId2Level = subtractByKey(childrenId2Level, id2Level);
+  // level: [node-id, node-id]
+  // {0:[0], 1:[1,2], 2:[3], 4:[1000]}
+  // 必须确保算法, 第1层的节点不能同时出现在第2层上, 也就是不能重复
+  const level2NodeIds: { [level: number]: PNodeId[] } = getLevel2NodeIds(
+    1,
+    getChildrenNodeIds(startNode.id),
+    { 0: [startNode.id] }
+  );
 
-    if (Object.keys(childrenId2Level).length > 0) {
-      // 当前level上有哪些node
-      let childrenNodes = Object.keys(childrenId2Level).map(
-        id => nodes.find(node => node.id === parseInt(id))!
+  // 计算每层的高度(以最高的节点为准)
+  const level2Height: { [level: number]: number } = Object.keys(
+    level2NodeIds
+  ).reduce((acc: { number: number }, _level: string) => {
+    const level = parseInt(_level);
+    const height = maxHeightOfNodes(
+      level2NodeIds[level].map(id => getNode(nodes, id)!)
+    );
+    return { ...acc, [level]: height };
+  }, {});
+
+  const level2Cy: { [level: number]: number } = Object.keys(
+    level2Height
+  ).reduce((acc: { [level: number]: number }, _level: string) => {
+    const level = parseInt(_level);
+    const cy = getCyOnLevel(startNode.dim!.cy, level, level2Height);
+    return { ...acc, [level]: cy };
+  }, {});
+
+  // 计算每层的总宽度(宽度总和 + 总hgap)
+  const level2Width: { [level: number]: number } = Object.keys(
+    level2NodeIds
+  ).reduce((acc: { number: number }, _level: string) => {
+    const level = parseInt(_level);
+    const width = fullWidthOfNodes(
+      level2NodeIds[level].map(id => getNode(nodes, id)!)
+    );
+    return { ...acc, [level]: width };
+  }, {});
+
+  // 计算每个节点的cx & cy
+  const nodeId2cxcy: { [nodeId: number]: PPosition } = nodes.reduce(
+    (acc: { [nodeId: number]: PPosition }, node: PNode, i: number) => {
+      const level = findLevel(level2NodeIds, node.id);
+
+      if (level < 0) {
+        // 孤立节点, 直接返回
+        return { ...acc, [node.id]: { cx: node.dim!.cx, cy: node.dim!.cy } };
+      }
+
+      // 在同排中位于第几个
+      const index = level2NodeIds[level].findIndex(
+        nodeId => node.id === nodeId
       );
-      // 找到上一level的bottom y
-      const lastBottomY =
-        parentNodes[0].dim!.cy + maxHeightOfNodes(parentNodes) / 2;
-      // 当前level的cy
-      const cy = lastBottomY + vGap + maxHeightOfNodes(childrenNodes) / 2;
-
-      // 当前level所有node的全宽
-      const fullWidth =
-        fullWidthOfNodes(childrenNodes) + hGap * (childrenNodes.length - 1);
-
-      let currentLeft = centralAxisX - fullWidth / 2;
-      // 调整
-      childrenNodes.forEach(node => {
+      const leftestX =
+        centralAxisX -
+        level2Width[level] / 2 -
+        (level2NodeIds[level].length * hGap) / 2.0;
+      const cy = level2Cy[level];
+      const nodeIdsOnLeft = level2NodeIds[level].filter((v, i) => i < index);
+      const nodeWidthOnLeft = nodeIdsOnLeft.reduce((acc, nodeId) => {
+        const node = getNode(nodes, nodeId)!;
         const { w, h } = getNodeSize(node);
-        node.dim!.cx = currentLeft + w / 2;
-        currentLeft = currentLeft + w + hGap;
-        node.dim!.cy = cy;
-      });
+        return acc + w;
+      }, 0);
 
-      return [
-        ...childrenNodes,
-        ..._rearrange(childrenNodes, level + 1, {
-          ...id2Level,
-          ...childrenId2Level
-        })
-      ];
+      const cx =
+        leftestX + (index * hGap + nodeWidthOnLeft) + getNodeSize(node).w / 2;
+
+      return { ...acc, [node.id]: { cx, cy } };
+    },
+    {}
+  );
+
+  // 将cx/cy 附加到 node 上
+  const newNodes = nodes.map(node => {
+    const cxcy = nodeId2cxcy[node.id];
+    return { ...node, dim: { ...node.dim, ...cxcy } };
+  });
+
+  // 自动排列edges
+  const newEdges = edges.map(edge => ({
+    ...edge,
+    from: { ...edge.from, anchor: 'bc' as PAnchorType },
+    to: { ...edge.to, anchor: 'tc' as PAnchorType }
+  }));
+
+  return { nodes: newNodes, edges: newEdges };
+
+  // return [startNode, ..._rearrange([startNode], 0, { [startNode.id]: 0 })];
+
+  function findLevel(
+    level2NodeIds: { [level: number]: PNodeId[] },
+    nodeId: PNodeId
+  ): number {
+    return Object.keys(level2NodeIds).reduce((acc, _level) => {
+      const level = parseInt(_level);
+      return level2NodeIds[level].find(id => id === nodeId) !== undefined
+        ? level
+        : acc;
+    }, -1);
+  }
+
+  // 某级的cy
+  function getCyOnLevel(
+    startCy: number,
+    currentLevel: number,
+    levels2Height: { [level: number]: number }
+  ) {
+    const totalNodesH = Object.keys(levels2Height).reduce(
+      (acc: number, _level: string) => {
+        const level = parseInt(_level);
+        const h = levels2Height[level];
+        return level <= currentLevel ? acc + h : acc;
+      },
+      startCy
+    );
+
+    return (
+      totalNodesH -
+      levels2Height[0] / 2 -
+      levels2Height[currentLevel] / 2 +
+      vGap * currentLevel
+    );
+  }
+
+  // level 与 childrenIds 是对应的, prevLevel2NodeIds是level-1及以上的
+  function getLevel2NodeIds(
+    level: number,
+    childrenIds: PNodeId[],
+    prevLevel2NodeIds: { [level: number]: PNodeId[] }
+  ): {
+    [level: number]: PNodeId[];
+  } {
+    if (childrenIds.length <= 0) {
+      return prevLevel2NodeIds;
     } else {
-      return [];
+      // 计算下一循环的childrenIds(grandChildrenIds)
+      // 特例: 如果grandChild, 存在于prevLevel2NodeIds, 那么应从grandChildrenIds中排除
+      // 如下图, 这是一个循环图, 如果当前位于level=2也即C,  那么:
+      // level =2, childrenIds=[C], prevLevel2NodeIds=[A,B]
+      // 第一步: 检查C的下级, 发现是A, 而A已存在于[A,B]
+      // 显然 下次循环时, grandChildren=[] (不包含C)
+      //          A
+      //        /   \  (注意这个箭头指向A)
+      //       B    /
+      //        \  /
+      //         C    (注意这个箭头从C指向A)
+      const allPrevNodeIds = flatten(Object.values(prevLevel2NodeIds));
+      const grandChildrenIds = uniq(
+        edges
+          .filter(edge => childrenIds.indexOf(edge.from.id) >= 0)
+          .map(edge => edge.to.id)
+      ).filter(nodeId => allPrevNodeIds.indexOf(nodeId) < 0);
+
+      // 计算新的prevLevel2NodeIds
+      // 特例: 如果当前的child, 存在于prevLevel2NodeIds, 那么应从prevLevel2NodeIds中排除
+      // 如下图, 如果children=[C], prevLevel2NodeIds=[A,C,B], 第一步:新的prev=[A,B], 第二步:加上当前level: [A,B]+[C]
+      //       A
+      //     /  \
+      //    B   /
+      //     \ /
+      //      C
+      const _prevLevel2NodeIds = Object.keys(prevLevel2NodeIds).reduce(
+        (acc, _level) => {
+          const level = parseInt(_level);
+          return {
+            ...acc,
+            [level]: subtract(prevLevel2NodeIds[level], childrenIds)
+          };
+        },
+        {}
+      );
+      const newPrevLevel2NodeIds = {
+        ..._prevLevel2NodeIds,
+        ...{ [level]: childrenIds }
+      };
+
+      return {
+        ...prevLevel2NodeIds,
+        ...getLevel2NodeIds(level + 1, grandChildrenIds, newPrevLevel2NodeIds)
+      };
     }
+  }
+
+  function getChildrenNodeIds(nodeId: PNodeId): PNodeId[] {
+    return edges
+      .filter(edge => edge.from.id === nodeId)
+      .map(edge => edge.to.id);
   }
 
   function maxHeightOfNodes(nodes: PNode[]): number {

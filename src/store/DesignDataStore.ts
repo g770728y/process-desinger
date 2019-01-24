@@ -18,13 +18,23 @@ import {
   SnappableGrid,
   DesignerEvents
 } from '../index.type';
-import { observable, computed, action, toJS, extendObservable } from 'mobx';
+import {
+  observable,
+  computed,
+  action,
+  toJS,
+  extendObservable,
+  IObservableArray,
+  ObservableMap
+} from 'mobx';
 import ConfigStore from './ConfigStore';
 import {
   nodeAnchorXY,
   nodeAnchorXYByNodeId,
   edgeAnchorXY,
-  rearrange
+  rearrange,
+  getNode,
+  getEdge
 } from '../helper';
 import { flatten, distance } from '../util';
 import { GripSnapThreshold, StartId, EndId } from '../global';
@@ -46,21 +56,21 @@ export default class DesignDataStore {
   events: DesignerEvents;
 
   @observable
-  context: PContext = {
+  context: PContext = observable({
     snappableGrid: {
       xs: [],
       ys: []
-    }
-  };
+    },
+    selectedOrphanEdgeIds: [],
+    selectedNodeIds: [],
+    selectedEdgeIds: []
+  });
 
-  @observable
-  nodes: PNode[] = [];
+  nodes: IObservableArray<PNode> = observable([]);
 
-  @observable
-  edges: PEdge[] = [];
+  edges: IObservableArray<PEdge> = observable([]);
 
-  @observable
-  orphanEdges: OrphanEdge[] = [];
+  orphanEdges: IObservableArray<OrphanEdge> = observable([]);
 
   @computed
   get startNode(): PNode {
@@ -106,24 +116,26 @@ export default class DesignDataStore {
 
     const nodeTemplates = configStore.nodeTemplates;
 
-    this.nodes = (designData.nodes || [])
-      .sort((a, b) => a.id - b.id)
-      .map((node: PNode) => {
-        const { templateId } = node;
-        const tNode = nodeTemplates.find(({ id }) => id === templateId);
-        return {
-          id: node.id,
-          type: node.type,
-          label: node.label || tNode!.label,
-          shape: tNode!.shape,
-          templateId,
-          dim: {
-            ...tNode!.dim!,
-            ...node.dim!
-          }
-        };
-      });
-    this.edges = (designData.edges || []).sort((a, b) => a.id - b.id);
+    this.nodes.replace(
+      (designData.nodes || [])
+        .sort((a, b) => a.id - b.id)
+        .map((node: PNode) => {
+          const { templateId } = node;
+          const tNode = nodeTemplates.find(({ id }) => id === templateId);
+          return {
+            id: node.id,
+            type: node.type,
+            label: node.label || tNode!.label,
+            shape: tNode!.shape,
+            templateId,
+            dim: {
+              ...tNode!.dim!,
+              ...node.dim!
+            }
+          };
+        })
+    );
+    this.edges.replace((designData.edges || []).sort((a, b) => a.id - b.id));
   }
 
   //////////////////////////////////////////////  actions  /////////////////////////////////////////////////////
@@ -203,13 +215,21 @@ export default class DesignDataStore {
 
   @action
   moveAllNodes(pos0: [PNodeId, PPosition][], dx: number, dy: number) {
-    this.nodes = this.nodes.map(node => {
-      const [_, nodePosition] = pos0.find(([nodeId, _]) => nodeId === node.id)!;
-      return {
-        ...node,
-        dim: { ...node.dim, cx: nodePosition.cx + dx, cy: nodePosition.cy + dy }
-      };
-    });
+    this.nodes.replace(
+      this.nodes.map(node => {
+        const [_, nodePosition] = pos0.find(
+          ([nodeId, _]) => nodeId === node.id
+        )!;
+        return {
+          ...node,
+          dim: {
+            ...node.dim,
+            cx: nodePosition.cx + dx,
+            cy: nodePosition.cy + dy
+          }
+        };
+      })
+    );
   }
 
   // 增加孤立边
@@ -272,7 +292,7 @@ export default class DesignDataStore {
     // 要被删除的node
     const node = this.nodes.find(node => node.id === id)!;
 
-    this.nodes = this.nodes.filter(node => node.id !== id);
+    this.nodes.replace(this.nodes.filter(node => node.id !== id));
 
     this.delEdgeOnNode(id);
     if (node.templateId !== StartId && node.templateId !== EndId) {
@@ -282,21 +302,21 @@ export default class DesignDataStore {
 
   @action
   delEdge(id: PEdgeId) {
-    this.edges = this.edges.filter(edge => edge.id !== id);
+    this.edges.replace(this.edges.filter(edge => edge.id !== id));
   }
 
   // 删除特定node上的所有edge
   @action
   delEdgeOnNode(id: PNodeId) {
-    this.edges = this.edges.filter(
-      edge => edge.from.id !== id && edge.to.id !== id
+    this.edges.replace(
+      this.edges.filter(edge => edge.from.id !== id && edge.to.id !== id)
     );
   }
 
   @action
   delOrphanEdge(id: PEdgeId) {
-    this.orphanEdges = (this.orphanEdges || []).filter(
-      oedge => oedge.id !== id
+    this.orphanEdges.replace(
+      (this.orphanEdges || []).filter(oedge => oedge.id !== id)
     );
     this.context.selectedOrphanEdgeIds = (
       this.context.selectedOrphanEdgeIds || []
@@ -323,7 +343,15 @@ export default class DesignDataStore {
 
   @action rearrange() {
     const { hGap, vGap } = this.configStore.rearrange!;
-    this.nodes = rearrange(this.nodes, this.edges, this.startNode, hGap, vGap);
+    const { nodes, edges } = rearrange(
+      this.nodes,
+      this.edges,
+      this.startNode,
+      hGap,
+      vGap
+    );
+    this.nodes.replace(nodes);
+    this.edges.replace(edges);
   }
 
   //////////////////////////////////////////////  工具方法  /////////////////////////////////////////////////////
@@ -378,11 +406,11 @@ export default class DesignDataStore {
   }
 
   getNode(_id: PNodeId) {
-    return this.nodes.find(({ id }) => id === _id);
+    return getNode(this.nodes, _id);
   }
 
   getEdge(_id: PEdgeId) {
-    return this.edges.find(({ id }) => _id === id);
+    return getEdge(this.edges, _id);
   }
 
   getOrphanEdge(_id: PEdgeId) {

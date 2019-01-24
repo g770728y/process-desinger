@@ -22,7 +22,6 @@ export function activeEdge(
   );
 
   return dblclickEdge$.subscribe(({ x, y, dataType, dataId }) => {
-    console.log('x:', x, 'y:', y);
     const edge = dataStore!.getEdge(dataId!)!;
     // 从起点开始的边不允许双击
     if (edge.from.id === dataStore!.startNode.id) {
