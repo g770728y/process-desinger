@@ -83,6 +83,7 @@ export function getArcEdge(
       markerEnd={'url(#arrow)'}
       fill="none"
       stroke={stroke}
+      style={{ pointerEvents: 'none' }}
     />
   );
 
@@ -142,6 +143,7 @@ export function getBezierEdge(
       markerEnd={'url(#arrow'}
       fill="none"
       stroke={stroke}
+      style={{ pointerEvents: 'none' }}
     />
   );
   const bgBezier = (

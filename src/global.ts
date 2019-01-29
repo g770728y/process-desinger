@@ -59,7 +59,7 @@ export function isDraggableDataType(type?: string): boolean {
 export const DefaultGripRadius = 4;
 
 // 移动grip时, snap距离
-export const GripSnapThreshold = 5;
+export const GripSnapThreshold = 10;
 
 // 移动node时, 距离snap线多远会显示snap线
 export const ShowNodeSnapThreshold = 10;

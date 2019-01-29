@@ -13,7 +13,8 @@ const styles: React.CSSProperties = {
   top: 0,
   left: 0,
   padding: 5,
-  color: '#666'
+  color: '#666',
+  userSelect: 'none'
 };
 
 @inject(({ dataStore }) => ({ dataStore }))
