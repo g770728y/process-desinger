@@ -5,9 +5,10 @@ import DesignDataStore from '../store/DesignDataStore';
 import { EdgeClass } from '../global';
 import hoverable, { HoverableProps } from '../hoc/hoverable';
 import EdgeGripGroup from '../Grip/EdgeGripGroup';
-import { distance } from '../util';
+import { distance, coordinateTransform } from '../util';
 import NodeText from '../Shape/NodeText';
 import DeleteIcon from '../icons/DeleteIcon';
+import { getBezierEdge, getLineXY, getRotate, getLineEdge } from './helper';
 
 type IProps = {
   edge: PEdge;
@@ -28,59 +29,12 @@ class EdgeViewBase extends React.Component<IProps & HoverableProps> {
     const showGrip = isSelected;
     const hided = dataStore!.context.hidedEdgeId === id;
 
-    const xy = {
-      x1: 0,
-      y1: 0,
-      x2: distance({ x: fromXY.cx, y: fromXY.cy }, { x: toXY.cx, y: toXY.cy }),
-      y2: 0
-    };
+    const xy = getLineXY(fromXY, toXY);
 
-    const _rotate =
-      (Math.atan2(toXY.cy - fromXY.cy, toXY.cx - fromXY.cx) * 180) / Math.PI;
+    const _rotate = getRotate(fromXY, toXY);
     const rotate = (_rotate + 360) % 360;
 
     const stroke = hided ? '#dddddd' : '#999999';
-
-    // 线
-    const BgLayerLine = (
-      <line
-        {...xy}
-        data-type={ElementType.Edge}
-        data-id={id}
-        strokeWidth={10}
-        stroke="transparent"
-      />
-    );
-    const layerLine = (
-      <line
-        className={EdgeClass}
-        stroke={stroke}
-        markerEnd={'url(#arrow)'}
-        {...xy}
-        style={{ pointerEvents: 'none' }}
-      />
-    );
-
-    // 如果两个端点分别在两个节点的同侧, 则画为曲线
-    const BgLayerArc = (
-      <path
-        d={`M${xy.x1},${xy.y1} Q${xy.x2 / 2},${xy.x2 / 5},${xy.x2},${xy.y2}`}
-        data-type={ElementType.Edge}
-        data-id={id}
-        fill="none"
-        strokeWidth={10}
-        stroke="transparent"
-      />
-    );
-
-    const layerArc = (
-      <path
-        d={`M${xy.x1},${xy.y1} Q${xy.x2 / 2},${xy.x2 / 5},${xy.x2},${xy.y2}`}
-        markerEnd={'url(#arrow)'}
-        fill="none"
-        stroke={stroke}
-      />
-    );
 
     const flagText = !!flag && (
       <NodeText
@@ -93,17 +47,21 @@ class EdgeViewBase extends React.Component<IProps & HoverableProps> {
       />
     );
 
-    const isSameSide =
-      (from.anchor === 'lc' && to.anchor === 'lc') ||
-      (from.anchor === 'rc' && to.anchor === 'rc');
+    const { bgLayer, layer } =
+      fromXY.cx === toXY.cx || fromXY.cy === toXY.cy
+        ? getLineEdge(edge, dataStore!, stroke)
+        : getBezierEdge(edge, dataStore!, stroke);
+
     return (
       <g
         ref={_ref}
         transform={`translate(${fromXY.cx}, ${fromXY.cy}) rotate(${rotate})`}
         onClick={() => dataStore!.selectEdge(id)}
       >
-        {isSameSide ? BgLayerArc : BgLayerLine}
-        {isSameSide ? layerArc : layerLine}
+        {/* {isSameSide ? BgLayerArc : BgLayerLine}
+        {isSameSide ? layerArc : layerLine} */}
+        {bgLayer}
+        {layer}
         {flagText}
         {showGrip && <EdgeGripGroup edge={edge} />}
         {isSelected && (
