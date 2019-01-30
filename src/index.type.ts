@@ -36,6 +36,8 @@ export interface PNodeTemplate {
   shape: Shape;
   dim?: Partial<Dim>;
   branchFlags?: any[];
+  // 这个节点关联的data
+  data?: any;
 }
 
 export interface PNode {
@@ -46,6 +48,7 @@ export interface PNode {
   shape?: Shape;
   templateId?: number;
   dim?: Dim;
+  data?: any;
 }
 
 export type PElement = PNode | PEdge;
@@ -132,7 +135,7 @@ export interface DesignerEvents {
   onDelNode?: (id: PNodeId) => void;
 
   // 在图中添加节点时调用, 外部应同步添加 对应的 空业务对象
-  onAddNode?: (id: PNodeId) => void;
+  onAddNode?: (id: PNodeId, data: any) => void;
 }
 
 // 对angular, 可使用 controller = installProcessDesigner(...) 获取

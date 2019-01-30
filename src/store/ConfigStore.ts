@@ -1,6 +1,6 @@
 import { observable, computed } from 'mobx';
 import { PNodeTemplate, PConfig } from '../index.type';
-import { defaultNodeTemplates } from '../global';
+import { defaultNodeTemplates, StartId, EndId } from '../global';
 
 export default class ConfigStore {
   @observable canvas: { background?: string };
@@ -14,6 +14,13 @@ export default class ConfigStore {
       canvas: this.canvas,
       nodeTemplates: this.nodeTemplates
     };
+  }
+
+  // 返回全部节点, 排除 开始节点与结束节点
+  @computed get bizNodeTemplates(): PNodeTemplate[] {
+    return this.nodeTemplates.filter(
+      nodeTemplate => !~[StartId, EndId].indexOf(nodeTemplate.id)
+    );
   }
 
   constructor(config: PConfig) {

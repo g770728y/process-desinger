@@ -16,13 +16,13 @@ type IProps = {
 class NodeTemplatesPanel extends React.Component<IProps> {
   render() {
     const { configStore, dataStore } = this.props;
-    const { nodeTemplates } = configStore!;
+    const { bizNodeTemplates } = configStore!;
     return (
       <div
         className={styles['pd-node-templates-panel']}
         style={{ width: NodeTemplatesPanelWidth }}
       >
-        {nodeTemplates.map(nodeTemplate => (
+        {bizNodeTemplates.map(nodeTemplate => (
           <div
             className={styles['pd-node-template-item-wrapper']}
             key={nodeTemplate.id}

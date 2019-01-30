@@ -131,10 +131,12 @@ export default class DesignDataStore {
             dim: {
               ...tNode!.dim!,
               ...node.dim!
-            }
+            },
+            data: tNode!.data || {}
           };
         })
     );
+
     this.edges.replace((designData.edges || []).sort((a, b) => a.id - b.id));
   }
 
@@ -162,7 +164,7 @@ export default class DesignDataStore {
     this.selectNode(newNode.id);
 
     if (node.templateId !== StartId && node.templateId !== EndId) {
-      this.events.onAddNode!(newNode.id);
+      this.events.onAddNode!(newNode.id, newNode.data || {});
     }
   }
 

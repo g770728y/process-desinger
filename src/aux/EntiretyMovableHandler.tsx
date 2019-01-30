@@ -20,6 +20,7 @@ interface EventData {
   y?: number;
 }
 
+// 整个图形的中轴线, 可水平移动
 @inject(({ dataStore, uiStore }) => ({ dataStore, uiStore }))
 @observer
 class EntiretyMovableHandler extends React.Component<IProps> {

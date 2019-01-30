@@ -77,6 +77,12 @@ export const initData: DesignerData = {
       type: ElementType.Node,
       templateId: StartId,
       dim: { cx: 300, cy: 100, r: 30 }
+    },
+    {
+      id: EndId,
+      type: ElementType.Node,
+      templateId: EndId,
+      dim: { cx: 300, cy: 500, r: 30 }
     }
   ],
   edges: []
