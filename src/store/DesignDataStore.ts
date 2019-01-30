@@ -18,15 +18,7 @@ import {
   SnappableGrid,
   DesignerEvents
 } from '../index.type';
-import {
-  observable,
-  computed,
-  action,
-  toJS,
-  extendObservable,
-  IObservableArray,
-  ObservableMap
-} from 'mobx';
+import { observable, computed, action, toJS, IObservableArray } from 'mobx';
 import ConfigStore from './ConfigStore';
 import {
   nodeAnchorXY,
@@ -43,10 +35,12 @@ import { Omit } from 'ts-type-ext';
 function nextElementId(identities: Identity[]): number {
   if (!identities || identities.length === 0) return 1;
   return (
-    identities.reduce(
-      (acc: number, item: PNode) => (acc < item.id ? item.id : acc),
-      -10000
-    ) + 1
+    identities
+      .filter(x => x.id !== EndId)
+      .reduce(
+        (acc: number, item: PNode) => (acc < item.id ? item.id : acc),
+        -10000
+      ) + 1
   );
 }
 

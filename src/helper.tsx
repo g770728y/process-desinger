@@ -191,7 +191,7 @@ export function renderShape(node: PNode) {
   }
 }
 
-export function renderNodeTemplate(
+export function renderNodeTemplateToSvg(
   nodeTemplate: PNodeTemplate,
   ref: React.RefObject<SVGSVGElement>
 ) {

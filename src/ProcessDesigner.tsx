@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './styles.css';
-import { DesignerProps, DesignerController } from './index.type';
+import { DesignerProps, DesignerController, PNodeTemplate } from './index.type';
 import NodeTemplatesPanel from './NodeTemplatesPanel';
 import Painter from './Painter';
 import { configure, toJS } from 'mobx';
@@ -109,6 +109,8 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
 
   getController(): DesignerController {
     const ds = this.dataStore!;
+    const configStore = this.configStore;
+
     return {
       rearrange: ds.rearrange.bind(ds),
       getAllAssoc: () =>
@@ -120,7 +122,9 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
       check: () => check(ds),
       markNode: ds.patchNode.bind(ds),
       markEdge: ds.patchEdge.bind(ds),
-      getDesignerData: () => ({ nodes: toJS(ds.nodes), edges: toJS(ds.edges) })
+      getDesignerData: () => ({ nodes: toJS(ds.nodes), edges: toJS(ds.edges) }),
+      resetNodeTemplates: (nodeTemplates: PNodeTemplate[]) =>
+        configStore.resetNodeTemplates(nodeTemplates)
     };
   }
 }

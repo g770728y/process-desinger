@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { observer, inject } from 'mobx-react';
 import { PNodeTemplate, PNode, OrphanNodeInfo } from '../index.type';
-import { renderNodeTemplate } from '../helper';
+import { renderNodeTemplateToSvg } from '../helper';
 import { fromEvent, Subscription } from 'rxjs';
 import UIStore from '../store/UIStore';
 import DesignDataStore from '../store/DesignDataStore';
 import { dragTemplateNode } from '../Painter/events/dragTemplateNode';
+import styles from '../styles.css';
 
 type IProps = {
   uiStore?: UIStore;
@@ -16,7 +17,8 @@ type IProps = {
 @inject(({ uiStore, dataStore }) => ({ uiStore, dataStore }))
 @observer
 class NodeTemplateItem extends React.Component<IProps> {
-  ref = React.createRef<SVGSVGElement>();
+  // ref = React.createRef<SVGSVGElement>();
+  ref = React.createRef<HTMLDivElement>();
 
   dragSubs: Subscription;
 
@@ -58,11 +60,15 @@ class NodeTemplateItem extends React.Component<IProps> {
 
   render() {
     const { nodeTemplate } = this.props;
-    const { id } = nodeTemplate;
+    const { id, label } = nodeTemplate;
 
-    let svg: React.ReactNode = renderNodeTemplate(nodeTemplate, this.ref);
+    // let svg: React.ReactNode = renderNodeTemplateToSvg(nodeTemplate, this.ref);
 
-    return <div key={id}>{svg}</div>;
+    return (
+      <div className={styles['pd-node-template-item']} ref={this.ref} key={id}>
+        {label}
+      </div>
+    );
   }
 }
 

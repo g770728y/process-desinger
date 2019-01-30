@@ -17,20 +17,26 @@ class NodeTemplatesPanel extends React.Component<IProps> {
   render() {
     const { configStore, dataStore } = this.props;
     const { bizNodeTemplates } = configStore!;
+    const top = configStore!.ui.nodeTemplatesPanelTop || 0;
     return (
       <div
-        className={styles['pd-node-templates-panel']}
+        className={styles['pd-left-side-area']}
         style={{ width: NodeTemplatesPanelWidth }}
       >
-        {bizNodeTemplates.map(nodeTemplate => (
-          <div
-            className={styles['pd-node-template-item-wrapper']}
-            key={nodeTemplate.id}
-          >
-            <NodeTemplateItem nodeTemplate={nodeTemplate} />
-          </div>
-        ))}
-        <div style={{ flexGrow: 1 }} />
+        <div style={{ height: top, background: '#f2f2f2' }} />
+        <div
+          className={styles['pd-node-templates-panel']}
+          style={{
+            width: NodeTemplatesPanelWidth
+          }}
+        >
+          {bizNodeTemplates.map(nodeTemplate => (
+            <NodeTemplateItem
+              key={nodeTemplate.id}
+              nodeTemplate={nodeTemplate}
+            />
+          ))}
+        </div>
       </div>
     );
   }

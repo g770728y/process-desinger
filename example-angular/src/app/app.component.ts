@@ -6,7 +6,8 @@ import ProcessDesigner, {
   Shape,
   PNode,
   DesignerController,
-  PNodeId
+  PNodeId,
+  PConfig
 } from 'process-designer';
 
 const ProcessDesingerId = '__process_designer__';
@@ -19,7 +20,8 @@ export const nodeTemplates: PNodeTemplate[] = [
     shape: Shape.Rect,
     iconSrc: '/assets/repair_24x24.png',
     dim: { w: 100, h: 30 },
-    branchFlags: ['ok', 'fail']
+    branchFlags: ['ok', 'fail'],
+    data: { a: 1 }
   }
 ];
 
@@ -40,7 +42,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     const [designerController, uninstall] = installProcessDesigner({
       el: ProcessDesingerId,
-      config: { nodeTemplates },
+      config: { nodeTemplates, ui: { nodeTemplatesPanelTop: 30 } },
       events: {
         onActiveNode(nodeId: PNodeId) {
           console.log('nodeId:', nodeId);
@@ -50,8 +52,8 @@ export class AppComponent implements AfterViewInit, OnDestroy {
           console.log('delete node:', nodeId);
         },
 
-        onAddNode(nodeId: PNodeId) {
-          console.log('add node:', nodeId);
+        onAddNode(nodeId: PNodeId, data: any) {
+          console.log('add node:', nodeId, 'data:', data);
         }
       },
       data: null

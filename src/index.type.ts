@@ -83,6 +83,7 @@ export type PConfig = {
   canvas?: { background?: string };
   rearrange?: { hGap: number; vGap: number };
   nodeTemplates: PNodeTemplate[];
+  ui?: { nodeTemplatesPanelTop: number };
 };
 
 export type DesignerData = {
@@ -163,4 +164,7 @@ export interface DesignerController {
 
   // 获取全部设计数据
   getDesignerData: () => DesignerData;
+
+  // 重置 全部 nodeTemplates
+  resetNodeTemplates: (nodes: PNodeTemplate[]) => void;
 }
