@@ -44,8 +44,8 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       el: ProcessDesingerId,
       config: { nodeTemplates, ui: { nodeTemplatesPanelTop: 30 } },
       events: {
-        onActiveNode(nodeId: PNodeId) {
-          console.log('nodeId:', nodeId);
+        onActiveNode(nodeId?: PNodeId, data?: any) {
+          console.log('nodeId:', nodeId, data);
         },
 
         onDelNode(nodeId: PNodeId) {

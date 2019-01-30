@@ -242,23 +242,25 @@ export default class DesignDataStore {
   // 选择某个node
   @action
   selectNode(id: PNodeId) {
-    this.context.selectedEdgeIds = [];
-    this.context.selectedOrphanEdgeIds = [];
+    this.unselectAll();
     this.context.selectedNodeIds = [id];
+    const node = this.getNode(id)!;
+    if (node.templateId !== StartId && node.templateId !== EndId) {
+      this.events.onActiveNode &&
+        this.events.onActiveNode(id, toJS(node.data) || {});
+    }
   }
 
   @action
   selectEdge(id: PEdgeId) {
-    this.context.selectedOrphanEdgeIds = [];
-    this.context.selectedNodeIds = [];
+    this.unselectAll();
     this.context.selectedEdgeIds = [id];
   }
 
   @action
   selectOrphanEdge(id: PEdgeId) {
+    this.unselectAll();
     this.context.selectedOrphanEdgeIds = [id];
-    this.context.selectedNodeIds = [];
-    this.context.selectedEdgeIds = [];
   }
 
   @action
@@ -267,6 +269,7 @@ export default class DesignDataStore {
     this.context.selectedNodeIds = [];
     this.context.selectedEdgeIds = [];
     this.context.snappableGrid = { xs: [], ys: [] };
+    this.events.onActiveNode && this.events.onActiveNode();
   }
 
   @action
@@ -294,11 +297,13 @@ export default class DesignDataStore {
     if (node.templateId !== StartId && node.templateId !== EndId) {
       this.events.onDelNode!(id);
     }
+    this.unselectAll();
   }
 
   @action
   delEdge(id: PEdgeId) {
     this.edges.replace(this.edges.filter(edge => edge.id !== id));
+    this.unselectAll();
   }
 
   // 删除特定node上的所有edge

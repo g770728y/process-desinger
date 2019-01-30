@@ -130,7 +130,8 @@ export interface DesignerEvents {
   // 双击 或 点击node上的编辑按钮时 触发此事件
   // 回调方法将收到整个node节点, 可使用node节点的id, 查找对应的业务对象并弹出编辑框
   // 与markNode配套使用
-  onActiveNode?: (id: PNodeId) => void;
+  // 如果id不存在, 则相当于取消选择
+  onActiveNode?: (id?: PNodeId, data?: any) => void;
 
   // 在图中删除节点时调用, 外部应同步删除 对应的 业务对象
   onDelNode?: (id: PNodeId) => void;

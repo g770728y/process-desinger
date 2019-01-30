@@ -89,7 +89,8 @@ export default class Painter extends React.Component<IProps> {
 
     const dblclick$ = fromEvent(el, 'dblclick');
 
-    this.activeNode$ = activeNode(dblclick$, dataStore!);
+    // 由于现在不需要双击打开对话框, 而是全部改成单击, 故屏蔽之
+    // this.activeNode$ = activeNode(dblclick$, dataStore!);
 
     this.activeEdge$ = activeEdge(dblclick$, configStore!, dataStore!);
   }

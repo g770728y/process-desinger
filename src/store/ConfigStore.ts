@@ -38,7 +38,6 @@ export default class ConfigStore {
     this.nodeTemplates.replace(
       [...defaultNodeTemplates, ...nodeTemplates].sort((a, b) => a.id - b.id)
     );
-    console.log('this.nodeTemplate', toJS(this.nodeTemplates));
   }
 
   constructor(config: PConfig) {
