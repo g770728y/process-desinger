@@ -243,24 +243,39 @@ export default class DesignDataStore {
   @action
   selectNode(id: PNodeId) {
     this.unselectAll();
-    this.context.selectedNodeIds = [id];
-    const node = this.getNode(id)!;
-    if (node.templateId !== StartId && node.templateId !== EndId) {
-      this.events.onActiveNode &&
-        this.events.onActiveNode(id, toJS(node.data) || {});
-    }
+    setTimeout(
+      action(() => {
+        this.context.selectedNodeIds = [id];
+        const node = this.getNode(id)!;
+        if (node.templateId !== StartId && node.templateId !== EndId) {
+          this.events.onActiveNode &&
+            this.events.onActiveNode(id, toJS(node.data) || {});
+        }
+      }),
+      0
+    );
   }
 
   @action
   selectEdge(id: PEdgeId) {
     this.unselectAll();
-    this.context.selectedEdgeIds = [id];
+    setTimeout(
+      action(() => {
+        this.context.selectedEdgeIds = [id];
+      }),
+      0
+    );
   }
 
   @action
   selectOrphanEdge(id: PEdgeId) {
     this.unselectAll();
-    this.context.selectedOrphanEdgeIds = [id];
+    setTimeout(
+      action(() => {
+        this.context.selectedOrphanEdgeIds = [id];
+      }),
+      0
+    );
   }
 
   @action
