@@ -17,7 +17,9 @@ class DeleteIcon extends React.Component<IProps> {
     this.delHost = this.delHost.bind(this);
   }
 
-  delHost() {
+  delHost(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
     const { hostType, hostId, dataStore } = this.props;
     if (hostType === 'node') {
       dataStore!.delNode(hostId);

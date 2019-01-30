@@ -155,11 +155,11 @@ export default class DesignDataStore {
 
     this.nodes.push(newNode);
 
-    this.selectNode(newNode.id);
-
     if (node.templateId !== StartId && node.templateId !== EndId) {
       this.events.onAddNode!(newNode.id, newNode.data || {});
     }
+
+    this.selectNode(newNode.id);
   }
 
   @action
@@ -289,12 +289,15 @@ export default class DesignDataStore {
   delNode(id: PNodeId) {
     if (id === StartId) return;
     // 要被删除的node
+    console.log('del  node');
     const node = this.nodes.find(node => node.id === id)!;
+    const templateId = node.templateId;
+    console.log('templateId:', templateId);
 
     this.nodes.replace(this.nodes.filter(node => node.id !== id));
 
     this.delEdgeOnNode(id);
-    if (node.templateId !== StartId && node.templateId !== EndId) {
+    if (templateId !== StartId && templateId !== EndId) {
       this.events.onDelNode!(id);
     }
     this.unselectAll();
