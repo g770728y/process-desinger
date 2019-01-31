@@ -34,6 +34,6 @@ export function installProcessDesigner(args: {
   );
   return [
     ref.current!.getController(),
-    () => ReactDOM.unmountComponentAtNode(_el)
+    () => setTimeout(() => ReactDOM.unmountComponentAtNode(_el), 0)
   ];
 }
