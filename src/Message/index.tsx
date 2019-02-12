@@ -25,7 +25,7 @@ class Message extends React.Component<IProps> {
     const { selectedEdgeIds, selectedNodeIds } = dataStore!.context;
     return isEmpty(toJS(selectedEdgeIds)) &&
       isEmpty(toJS(selectedNodeIds)) ? null : (
-      <div style={styles}>提示: 双击编辑属性</div>
+      <div style={styles}>提示: 点击编辑属性</div>
     );
   }
 }

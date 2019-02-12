@@ -34,6 +34,8 @@ export function installProcessDesigner(args: {
   );
   return [
     ref.current!.getController(),
-    () => setTimeout(() => ReactDOM.unmountComponentAtNode(_el), 0)
+    // 异步时, 调用方可能先卸载, 然后再运行此方法, 导致出错
+    // () => setTimeout(() => ReactDOM.unmountComponentAtNode(_el), 0)
+    () => ReactDOM.unmountComponentAtNode(_el)
   ];
 }

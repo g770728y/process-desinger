@@ -99,7 +99,7 @@ export default class Painter extends React.Component<IProps> {
     this.dragNode$.unsubscribe();
     this.dragGrip$.unsubscribe();
     this.keydown$.unsubscribe();
-    this.activeNode$.unsubscribe();
+    // this.activeNode$.unsubscribe();
     this.activeEdge$.unsubscribe();
   }
 
