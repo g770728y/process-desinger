@@ -30,25 +30,37 @@ export type PEdgeId = number;
 
 export interface PNodeTemplate {
   id: PNodeId;
-  type: ElementType;
+  type?: ElementType;
   label: string;
   iconSrc?: string;
   shape: Shape;
   dim?: Partial<Dim>;
   branchFlags?: any[];
-  // 这个节点关联的data
-  data?: any;
+}
+
+export interface PNodeCandidate {
+  // id 由程序自动生成
+  id?: PNodeId;
+  type?: ElementType;
+  label?: string;
+  iconSrc?: string;
+  shape?: Shape;
+  templateId: number;
+  dim?: Partial<Dim>;
+  branchFlags?: any[];
+  data: any;
 }
 
 export interface PNode {
   id: PNodeId;
-  type: ElementType;
+  type?: ElementType;
   label?: string;
   iconSrc?: string;
   shape?: Shape;
-  templateId?: number;
+  templateId: number;
   dim?: Dim;
-  data?: any;
+  branchFlags?: any[];
+  data: any;
 }
 
 export type PElement = PNode | PEdge;
@@ -83,7 +95,8 @@ export type PConfig = {
   canvas?: { background?: string };
   rearrange?: { hGap: number; vGap: number };
   nodeTemplates: PNodeTemplate[];
-  ui?: { nodeTemplatesPanelTop: number };
+  nodeCandidates: PNodeCandidate[];
+  ui?: { nodeCandidatesPanelTop: number };
 };
 
 export type DesignerData = {
@@ -166,6 +179,6 @@ export interface DesignerController {
   // 获取全部设计数据
   getDesignerData: () => DesignerData;
 
-  // 重置 全部 nodeTemplates
-  resetNodeTemplates: (nodes: PNodeTemplate[]) => void;
+  // 重置 全部 nodeCandidates
+  resetNodeCandidates: (nodes: PNodeCandidate[]) => void;
 }

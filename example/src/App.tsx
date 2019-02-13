@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import './App.css';
-import { processData, nodeTemplates } from './data';
+import { processData, nodeTemplates, nodeCandidates } from './data';
 import ProcessDesigner from 'process-designer';
 
 class App extends Component {
   config = {
     canvas: { background: '#ffffff' },
-    nodeTemplates: nodeTemplates
+    nodeTemplates: nodeTemplates,
+    nodeCandidates: nodeCandidates
   };
 
   render() {

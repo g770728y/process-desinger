@@ -4,16 +4,39 @@ import {
   EndId,
   DesignerData,
   PNodeTemplate,
-  ElementType
+  ElementType,
+  PNodeCandidate
 } from 'process-designer';
 
 export const nodeTemplates: PNodeTemplate[] = [
   {
     id: 1,
-    type: ElementType.Node,
     label: '操作',
     shape: Shape.Rect,
-    dim: { w: 100, h: 30 }
+    iconSrc: '/assets/repair_24x24.png',
+    dim: { w: 100, h: 30 },
+    branchFlags: ['ok', 'fail']
+  }
+];
+
+export const nodeCandidates: PNodeCandidate[] = [
+  {
+    label: 'go go go',
+    shape: Shape.Rect,
+    iconSrc: '/assets/repair_24x24.png',
+    dim: { w: 100, h: 30 },
+    branchFlags: ['ok', 'fail'],
+    templateId: 1,
+    data: { a: 1 }
+  },
+  {
+    label: 'fighting',
+    shape: Shape.Rect,
+    iconSrc: '/assets/repair_24x24.png',
+    dim: { w: 100, h: 30 },
+    branchFlags: ['aha', 'cry'],
+    templateId: 1,
+    data: { a: 2 }
   }
 ];
 
@@ -21,35 +44,34 @@ export const processData: DesignerData = {
   nodes: [
     {
       id: StartId,
-      type: ElementType.Node,
       templateId: StartId,
-      dim: { cx: 300, cy: 100, r: 30 }
+      dim: { cx: 300, cy: 100, r: 30 },
+      data: { a: 1 }
     },
     {
       id: EndId,
-
-      type: ElementType.Node,
       templateId: EndId,
-      dim: { cx: 300, cy: 800, r: 30 }
+      dim: { cx: 300, cy: 800, r: 30 },
+      data: { a: 2 }
     },
     {
       id: 1,
-      type: ElementType.Node,
       label: '特殊名称',
       templateId: 1,
-      dim: { cx: 300, cy: 300, w: 100, h: 50 }
+      dim: { cx: 300, cy: 300, w: 100, h: 50 },
+      data: { a: 3 }
     },
     {
       id: 2,
-      type: ElementType.Node,
       templateId: 1,
-      dim: { cx: 300, cy: 500, w: 100, h: 50 }
+      dim: { cx: 300, cy: 500, w: 100, h: 50 },
+      data: { a: 3 }
     },
     {
       id: 3,
-      type: ElementType.Node,
       templateId: 1,
-      dim: { cx: 300, cy: 700, w: 100, h: 50 }
+      dim: { cx: 300, cy: 700, w: 100, h: 50 },
+      data: { a: 4 }
     }
   ],
 

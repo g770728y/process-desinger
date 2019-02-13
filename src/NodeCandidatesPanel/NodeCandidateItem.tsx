@@ -1,22 +1,22 @@
 import * as React from 'react';
 import { observer, inject } from 'mobx-react';
-import { PNodeTemplate, PNode, OrphanNodeInfo } from '../index.type';
-import { renderNodeTemplateToSvg } from '../helper';
+import { PNodeCandidate, PNode, OrphanNodeInfo } from '../index.type';
+import { renderNodeCandidateToSvg } from '../helper';
 import { fromEvent, Subscription } from 'rxjs';
 import UIStore from '../store/UIStore';
 import DesignDataStore from '../store/DesignDataStore';
-import { dragTemplateNode } from '../Painter/events/dragTemplateNode';
+import { dragNodeCandidate } from '../Painter/events/dragTemplateNode';
 import styles from '../styles.css';
 
 type IProps = {
   uiStore?: UIStore;
   dataStore?: DesignDataStore;
-  nodeTemplate: PNodeTemplate;
+  nodeCandidate: PNodeCandidate;
 };
 
 @inject(({ uiStore, dataStore }) => ({ uiStore, dataStore }))
 @observer
-class NodeTemplateItem extends React.Component<IProps> {
+class NodeCandidateItem extends React.Component<IProps> {
   // ref = React.createRef<SVGSVGElement>();
   ref = React.createRef<HTMLDivElement>();
 
@@ -37,20 +37,20 @@ class NodeTemplateItem extends React.Component<IProps> {
   }
 
   componentDidMount() {
-    const { uiStore, dataStore, nodeTemplate } = this.props;
+    const { uiStore, dataStore, nodeCandidate } = this.props;
     const el = this.ref.current!;
     const body = document.body;
     const mousedown$ = fromEvent(el, 'mousedown');
     const mousemove$ = fromEvent(body, 'mousemove');
     const mouseup$ = fromEvent(body, 'mouseup');
 
-    this.dragSubs = dragTemplateNode(
+    this.dragSubs = dragNodeCandidate(
       mousedown$,
       mousemove$,
       mouseup$,
       uiStore!,
       dataStore!,
-      nodeTemplate
+      nodeCandidate
     );
   }
 
@@ -59,17 +59,17 @@ class NodeTemplateItem extends React.Component<IProps> {
   }
 
   render() {
-    const { nodeTemplate } = this.props;
-    const { id, label } = nodeTemplate;
+    const { nodeCandidate } = this.props;
+    const { id, label } = nodeCandidate;
 
-    // let svg: React.ReactNode = renderNodeTemplateToSvg(nodeTemplate, this.ref);
+    // let svg: React.ReactNode = renderNodeCandidateToSvg(nodeCandidate, this.ref);
 
     return (
-      <div className={styles['pd-node-template-item']} ref={this.ref} key={id}>
+      <div className={styles['pd-node-candidate-item']} ref={this.ref} key={id}>
         {label}
       </div>
     );
   }
 }
 
-export default NodeTemplateItem;
+export default NodeCandidateItem;

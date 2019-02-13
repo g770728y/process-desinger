@@ -1,5 +1,5 @@
 import { observable, action, computed } from 'mobx';
-import { NodeTemplatesPanelWidth } from '../global';
+import { NodeCandidatesPanelWidth } from '../global';
 import { PNode, OrphanNodeInfo, PBox } from '../index.type';
 
 const defaultOrphanNodeInfo: OrphanNodeInfo = {
@@ -26,9 +26,9 @@ export default class UIStore {
 
   @computed.struct get painterDim() {
     return {
-      x: NodeTemplatesPanelWidth + this.painterContainerBox.x,
+      x: NodeCandidatesPanelWidth + this.painterContainerBox.x,
       y: this.painterContainerBox.y,
-      w: this.painterContainerBox.w - NodeTemplatesPanelWidth,
+      w: this.painterContainerBox.w - NodeCandidatesPanelWidth,
       h: this.painterContainerBox.h
     };
   }

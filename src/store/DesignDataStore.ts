@@ -9,7 +9,6 @@ import {
   PAnchorType,
   OrphanEdge,
   PEdgeId,
-  Identity,
   ElementType,
   PAnchor,
   Shape,
@@ -26,23 +25,12 @@ import {
   edgeAnchorXY,
   rearrange,
   getNode,
-  getEdge
+  getEdge,
+  nextElementId
 } from '../helper';
 import { flatten, distance } from '../util';
 import { GripSnapThreshold, StartId, EndId } from '../global';
 import { Omit } from 'ts-type-ext';
-
-function nextElementId(identities: Identity[]): number {
-  if (!identities || identities.length === 0) return 1;
-  return (
-    identities
-      .filter(x => x.id !== EndId)
-      .reduce(
-        (acc: number, item: PNode) => (acc < item.id ? item.id : acc),
-        -10000
-      ) + 1
-  );
-}
 
 export default class DesignDataStore {
   configStore: ConfigStore;
@@ -115,18 +103,11 @@ export default class DesignDataStore {
         .sort((a, b) => a.id - b.id)
         .map((node: PNode) => {
           const { templateId } = node;
-          const tNode = nodeTemplates.find(({ id }) => id === templateId);
+          const tNode = nodeTemplates.find(({ id }) => id === templateId)!;
           return {
-            id: node.id,
-            type: node.type,
-            label: node.label || tNode!.label,
-            shape: tNode!.shape,
-            templateId,
-            dim: {
-              ...tNode!.dim!,
-              ...node.dim!
-            },
-            data: tNode!.data || {}
+            ...tNode,
+            ...node,
+            dim: { ...tNode.dim!, cx: node.dim!.cx, cy: node.dim!.cy }
           };
         })
     );
@@ -156,7 +137,7 @@ export default class DesignDataStore {
     this.nodes.push(newNode);
 
     if (node.templateId !== StartId && node.templateId !== EndId) {
-      this.events.onAddNode!(newNode.id, newNode.data || {});
+      this.events.onAddNode!(newNode.id, toJS(newNode.data) || {});
     }
 
     this.selectNode(newNode.id);

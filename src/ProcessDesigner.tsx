@@ -1,7 +1,11 @@
 import React from 'react';
 import styles from './styles.css';
-import { DesignerProps, DesignerController, PNodeTemplate } from './index.type';
-import NodeTemplatesPanel from './NodeTemplatesPanel';
+import {
+  DesignerProps,
+  DesignerController,
+  PNodeCandidate
+} from './index.type';
+import NodeCandidatesPanel from './NodeCandidatesPanel';
 import Painter from './Painter';
 import { configure, toJS } from 'mobx';
 import { Provider, observer } from 'mobx-react';
@@ -10,7 +14,7 @@ import ConfigStore from './store/ConfigStore';
 import DesignDataStore from './store/DesignDataStore';
 import OrphanNode from './NodeView/OrphanNode';
 import { initConfig, initData } from './global';
-import { isValidData, check } from './helper';
+import { isValidData, check, condenseNodeData } from './helper';
 import Message from './Message';
 
 configure({
@@ -68,7 +72,7 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
         dataStore={this.dataStore}
       >
         <div ref={this.painterContainerRef} className={styles['pd-container']}>
-          <NodeTemplatesPanel />
+          <NodeCandidatesPanel />
           <div
             ref={this.painterWrapperRef}
             className={styles['pd-painter-wrapper']}
@@ -122,9 +126,12 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
       check: () => check(ds),
       markNode: ds.patchNode.bind(ds),
       markEdge: ds.patchEdge.bind(ds),
-      getDesignerData: () => ({ nodes: toJS(ds.nodes), edges: toJS(ds.edges) }),
-      resetNodeTemplates: (nodeTemplates: PNodeTemplate[]) =>
-        configStore.resetNodeTemplates(nodeTemplates)
+      getDesignerData: () => ({
+        nodes: toJS(ds.nodes).map(condenseNodeData),
+        edges: toJS(ds.edges)
+      }),
+      resetNodeCandidates: (nodeCandidates: PNodeCandidate[]) =>
+        configStore.resetNodeCandidates(nodeCandidates)
     };
   }
 }

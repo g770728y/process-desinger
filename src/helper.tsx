@@ -3,7 +3,7 @@ import * as React from 'react';
 import {
   PNode,
   PAnchorType,
-  PNodeTemplate,
+  PNodeCandidate,
   Shape,
   Dim,
   CircleSize,
@@ -13,7 +13,8 @@ import {
   PNodeId,
   PEdge,
   SnappableGrid,
-  PEdgeId
+  PEdgeId,
+  Identity
 } from './index.type';
 import RectNode from './NodeView/RectNode';
 import CircleNode from './NodeView/CircleNode';
@@ -23,9 +24,22 @@ import NodeText from './Shape/NodeText';
 import { distinct, flatten, unpickAll, uniq, subtract } from './util';
 import DesignDataStore from './store/DesignDataStore';
 import { toJS } from 'mobx';
+import { EndId } from './global';
 
 export function isValidData(data: any) {
   return !!data && typeof data === 'object' && data.nodes;
+}
+
+export function nextElementId(identities: Identity[]): number {
+  if (!identities || identities.length === 0) return 1;
+  return (
+    identities
+      .filter(x => x.id !== EndId)
+      .reduce(
+        (acc: number, item: PNode) => (acc < item.id ? item.id : acc),
+        -10000
+      ) + 1
+  );
 }
 
 export function xyOfCircleAnchor(dim: Dim, anchor: PAnchorType): PPosition {
@@ -191,22 +205,22 @@ export function renderShape(node: PNode) {
   }
 }
 
-export function renderNodeTemplateToSvg(
-  nodeTemplate: PNodeTemplate,
+export function renderNodeCandidateToSvg(
+  nodeCandidate: PNodeCandidate,
   ref: React.RefObject<SVGSVGElement>
 ) {
-  const { branchFlags, ..._nodeTemplate } = nodeTemplate;
-  const { id, shape, dim, label } = _nodeTemplate;
+  const { id, shape, dim, label } = nodeCandidate;
 
   let svg: React.ReactNode;
 
   if (shape === Shape.Circle) {
     const { r } = dim as CircleSize;
     const node: PNode = {
-      ..._nodeTemplate,
-      dim: { ...dim, cx: r!, cy: r! }
+      ...nodeCandidate,
+      dim: { ...dim, cx: r!, cy: r! },
+      id: -10000
     };
-    const vtext = <NodeText w={2 * r!} h={2 * r!} text={label} />;
+    const vtext = <NodeText w={2 * r!} h={2 * r!} text={label!} />;
     const vshape = renderShape(node);
     svg = wrapSvg(
       2 * r!,
@@ -220,10 +234,11 @@ export function renderNodeTemplateToSvg(
   } else if (shape === Shape.Rect) {
     const { w, h } = dim! as RectSize;
     const node: PNode = {
-      ..._nodeTemplate,
-      dim: { ...dim, cx: w! / 2, cy: h! / 2 }
+      ...nodeCandidate,
+      dim: { ...dim, cx: w! / 2, cy: h! / 2 },
+      id: -10000
     };
-    const vtext = <NodeText w={w!} h={h!} text={label} />;
+    const vtext = <NodeText w={w!} h={h!} text={label!} />;
     const vshape = renderShape(node);
     svg = wrapSvg(
       w!,
@@ -251,20 +266,19 @@ export function isBoxInRange(box: PBox, boxContainer: PBox): boolean {
   );
 }
 
-// 将nodeTemplate拖到画布时, 返回实例
+// 将nodeCandidate拖到画布时, 返回实例
 export function getNodeInstance(
-  nodeTemplate: PNodeTemplate,
+  nodeCandidate: PNodeCandidate,
   { cx, cy }: PPosition
 ): PNode {
-  const { branchFlags, ..._nodeTemplate } = nodeTemplate;
   return {
-    ..._nodeTemplate,
-    templateId: nodeTemplate.id,
+    ...nodeCandidate,
     dim: {
-      ...nodeTemplate.dim,
+      ...nodeCandidate.dim,
       cx,
       cy
-    }
+    },
+    id: -10000
   };
 }
 
@@ -530,4 +544,15 @@ export function check(ds: DesignDataStore): string | null | undefined {
       edges.map(edge => edge.to.id).includes(node.id);
     return !isValid;
   }
+}
+
+// 精简node, 去除不必要数据
+export function condenseNodeData(node: PNode): PNode {
+  return {
+    id: node.id,
+    label: node.label,
+    templateId: node.templateId,
+    data: node.data,
+    dim: node.dim
+  };
 }

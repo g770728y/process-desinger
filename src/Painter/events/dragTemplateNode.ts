@@ -11,7 +11,7 @@ import {
 } from 'rxjs/operators';
 import UIStore from '../../store/UIStore';
 import DesignDataStore from '../../store/DesignDataStore';
-import { PNodeTemplate, PNode, SnappableGrid } from '../../index.type';
+import { PNodeCandidate, PNode, SnappableGrid } from '../../index.type';
 import {
   getNodeInstance,
   getNodeSize,
@@ -32,13 +32,13 @@ interface EventData {
   finished?: boolean;
 }
 
-export function dragTemplateNode(
+export function dragNodeCandidate(
   mousedown$: Observable<Event>,
   mousemove$: Observable<Event>,
   mouseup$: Observable<Event>,
   uiStore: UIStore,
   dataStore: DesignDataStore,
-  nodeTemplate: PNodeTemplate
+  nodeCandidate: PNodeCandidate
 ): Subscription {
   const drag$ = mousedown$.pipe(
     map((e: MouseEvent) => ({
@@ -69,9 +69,9 @@ export function dragTemplateNode(
     )
   );
 
-  const dragTemplateNode$ = drag$.subscribe((attrs: EventData) => {
+  const dragNodeCandidate$ = drag$.subscribe((attrs: EventData) => {
     const { x: cx, y: cy } = uiStore!.clientXYToPainterXY(attrs.x!, attrs.y!);
-    const node = getNodeInstance(nodeTemplate, { cx, cy });
+    const node = getNodeInstance(nodeCandidate, { cx, cy });
     const { w, h } = getNodeSize(node);
     const newbox = {
       x: node.dim!.cx - w / 2,
@@ -91,7 +91,7 @@ export function dragTemplateNode(
       dataStore!.showSnappableGrid(sg);
       const pcbox = uiStore!.painterContainerBox;
       uiStore.showOrphanNode({
-        node: nodeTemplate as PNode,
+        node: nodeCandidate as PNode,
         cx: attrs.x! + dx - pcbox.x,
         cy: attrs.y! + dy - pcbox.y
       });
@@ -100,7 +100,7 @@ export function dragTemplateNode(
       uiStore.hideOrphanNode();
       const { painterDim } = uiStore!;
 
-      const floatingNode = getNodeInstance(nodeTemplate, {
+      const floatingNode = getNodeInstance(nodeCandidate, {
         cx: attrs.x!,
         cy: attrs.y!
       });
@@ -121,5 +121,5 @@ export function dragTemplateNode(
     }
   });
 
-  return dragTemplateNode$;
+  return dragNodeCandidate$;
 }

@@ -29,10 +29,7 @@ export function activeEdge(
     }
 
     const onActiveEdge = dataStore!.events!.onActiveEdge;
-    const templateId = dataStore!.getNode(edge.from.id)!.templateId!;
-    const flags = configStore!.nodeTemplates.find(
-      ({ id }) => templateId === id
-    )!.branchFlags;
+    const flags = dataStore!.getNode(edge.from.id)!.branchFlags!;
 
     if (onActiveEdge) {
       // 如果外界有传入回调方法, 那么执行之

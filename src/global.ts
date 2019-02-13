@@ -1,9 +1,10 @@
 import {
   Shape,
-  PNodeTemplate,
+  PNodeCandidate,
   ElementType,
   DesignerData,
-  PConfig
+  PConfig,
+  PNodeTemplate
 } from './index.type';
 
 // 开始节点id
@@ -12,23 +13,38 @@ export const StartId = 0;
 export const EndId = 1000000;
 
 // 左侧panel宽度
-export const NodeTemplatesPanelWidth = 200;
+export const NodeCandidatesPanelWidth = 200;
 
 // 开始与结束结点, 可以覆盖
 export const defaultNodeTemplates: PNodeTemplate[] = [
   {
     id: StartId,
-    type: ElementType.Node,
     label: '开始',
     shape: Shape.Circle,
     dim: { r: 30 }
   },
   {
     id: EndId,
-    type: ElementType.Node,
     label: '结束',
     shape: Shape.Circle,
     dim: { r: 30 }
+  }
+];
+
+export const defaultNodeCandidates: PNodeCandidate[] = [
+  {
+    id: StartId,
+    type: ElementType.Node,
+    dim: { r: 30 },
+    templateId: StartId,
+    data: {}
+  },
+  {
+    id: EndId,
+    type: ElementType.Node,
+    dim: { r: 30 },
+    templateId: EndId,
+    data: {}
   }
 ];
 
@@ -74,15 +90,15 @@ export const initData: DesignerData = {
   nodes: [
     {
       id: StartId,
-      type: ElementType.Node,
       templateId: StartId,
-      dim: { cx: 300, cy: 100, r: 30 }
+      dim: { cx: 300, cy: 100, r: 30 },
+      data: {}
     },
     {
       id: EndId,
-      type: ElementType.Node,
       templateId: EndId,
-      dim: { cx: 300, cy: 500, r: 30 }
+      dim: { cx: 300, cy: 500, r: 30 },
+      data: {}
     }
   ],
   edges: []

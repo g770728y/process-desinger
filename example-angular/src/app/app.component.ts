@@ -7,7 +7,8 @@ import ProcessDesigner, {
   PNode,
   DesignerController,
   PNodeId,
-  PConfig
+  PConfig,
+  PNodeCandidate
 } from 'process-designer';
 
 const ProcessDesingerId = '__process_designer__';
@@ -15,13 +16,32 @@ const ProcessDesingerId = '__process_designer__';
 export const nodeTemplates: PNodeTemplate[] = [
   {
     id: 1,
-    type: ElementType.Node,
     label: '操作',
     shape: Shape.Rect,
     iconSrc: '/assets/repair_24x24.png',
     dim: { w: 100, h: 30 },
+    branchFlags: ['ok', 'fail']
+  }
+];
+
+export const nodeCandidates: PNodeCandidate[] = [
+  {
+    label: 'go go go',
+    shape: Shape.Rect,
+    iconSrc: '/assets/repair_24x24.png',
+    dim: { w: 100, h: 30 },
     branchFlags: ['ok', 'fail'],
+    templateId: 1,
     data: { a: 1 }
+  },
+  {
+    label: 'fighting',
+    shape: Shape.Rect,
+    iconSrc: '/assets/repair_24x24.png',
+    dim: { w: 100, h: 30 },
+    branchFlags: ['aha', 'cry'],
+    templateId: 1,
+    data: { a: 2 }
   }
 ];
 
@@ -42,7 +62,11 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     const [designerController, uninstall] = installProcessDesigner({
       el: ProcessDesingerId,
-      config: { nodeTemplates, ui: { nodeTemplatesPanelTop: 30 } },
+      config: {
+        nodeTemplates,
+        nodeCandidates,
+        ui: { nodeCandidatesPanelTop: 30 }
+      },
       events: {
         onActiveNode(nodeId?: PNodeId, data?: any) {
           console.log('nodeId:', nodeId, data);
