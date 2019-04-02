@@ -1,11 +1,9 @@
 import * as React from 'react';
-import { PEdge, ElementType } from '../index.type';
+import { PEdge } from '../index.type';
 import { observer, inject } from 'mobx-react';
 import DesignDataStore from '../store/DesignDataStore';
-import { EdgeClass } from '../global';
 import hoverable, { HoverableProps } from '../hoc/hoverable';
 import EdgeGripGroup from '../Grip/EdgeGripGroup';
-import { distance, coordinateTransform } from '../util';
 import NodeText from '../Shape/NodeText';
 import DeleteIcon from '../icons/DeleteIcon';
 import { getBezierEdge, getLineXY, getRotate, getLineEdge } from './helper';
@@ -48,7 +46,8 @@ class EdgeViewBase extends React.Component<IProps & HoverableProps> {
     );
 
     const { bgLayer, layer } =
-      fromXY.cx === toXY.cx || fromXY.cy === toXY.cy
+      (fromXY.cx === toXY.cx || fromXY.cy === toXY.cy) &&
+      from.anchor !== to.anchor
         ? getLineEdge(edge, dataStore!, stroke)
         : getBezierEdge(edge, dataStore!, stroke);
 
