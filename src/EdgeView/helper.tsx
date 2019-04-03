@@ -140,7 +140,7 @@ export function getBezierEdge(
       d={`M${xy.x1} ${xy.y1} C${controlPoint1.x} ${controlPoint1.y} ${
         controlPoint2.x
       } ${controlPoint2.y} ${xy.x2} ${xy.y2}`}
-      markerEnd={'url(#arrow'}
+      markerEnd={'url(#arrow)'}
       fill="none"
       stroke={stroke}
       style={{ pointerEvents: 'none' }}

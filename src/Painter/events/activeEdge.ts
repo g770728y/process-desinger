@@ -6,6 +6,7 @@ import { ElementType } from '../../index.type';
 import ConfigStore from '../../store/ConfigStore';
 import installEdgeFlagInput from '../../EdgeFlagInput';
 import { DeleteFlag } from '../../global';
+import { toJS } from 'mobx';
 
 export function activeEdge(
   dblclick$: Observable<Event>,

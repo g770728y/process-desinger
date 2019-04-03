@@ -68,9 +68,9 @@ export class AppComponent implements AfterViewInit, OnDestroy {
         ui: { nodeCandidatesPanelTop: 30 }
       },
       events: {
-        onActiveNode(nodeId?: PNodeId, data?: any) {
-          console.log('nodeId:', nodeId, data);
-        },
+        // onActiveNode(nodeId?: PNodeId, data?: any) {
+        // console.log('nodeId:', nodeId, data);
+        // },
 
         onDelNode(nodeId: PNodeId) {
           console.log('delete node:', nodeId);

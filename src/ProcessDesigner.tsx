@@ -118,11 +118,13 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
     return {
       rearrange: ds.rearrange.bind(ds),
       getAllAssoc: () =>
-        ds.edges.map(edge => ({
-          fromNodeId: edge.from.id,
-          toNodeId: edge.to.id,
-          flag: edge.flag
-        })),
+        ds.edges
+          .map(edge => ({
+            fromNodeId: edge.from.id,
+            toNodeId: edge.to.id,
+            flag: edge.flag
+          }))
+          .slice(0),
       check: () => check(ds),
       markNode: ds.patchNode.bind(ds),
       markEdge: ds.patchEdge.bind(ds),

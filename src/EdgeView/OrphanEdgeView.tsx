@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { observer, inject } from 'mobx-react';
 import { OrphanEdge, ElementType } from '../index.type';
-import { EdgeClass } from '../global';
+import { EdgeClass, isIE } from '../global';
 import hoverable, { HoverableProps } from '../hoc/hoverable';
 import DesignDataStore from '../store/DesignDataStore';
 import OrphanEdgeGripGroup from '../Grip/OrphanEdgeGripGroup';
@@ -45,7 +45,7 @@ class OrphanEdgeViewBase extends React.Component<IProps & HoverableProps> {
           data-id={oedge.id}
           {...xy}
           stroke="#999999"
-          markerEnd={'url(#arrow)'}
+          markerEnd={isIE ? undefined : 'url(#arrow)'}
         />
         {showGrip && <OrphanEdgeGripGroup oedge={oedge} />}
       </g>

@@ -158,21 +158,22 @@ export default class DesignDataStore {
   @action
   patchNode(nodePatch: Partial<PNode>): void {
     const id = nodePatch.id!;
-    const node = this.getNode(id)!;
-    Object.assign(node, nodePatch);
+    const idx = this.nodes.findIndex(n => n.id === id);
+    this.nodes[idx] = { ...this.nodes[idx], ...nodePatch };
   }
 
   @action
   patchEdge(edgePatch: Partial<PEdge>): void {
     const id = edgePatch.id!;
-    const edge = this.getEdge(id)!;
-    Object.assign(edge, edgePatch);
+    const idx = this.edges.findIndex(e => e.id === id);
+    this.edges[idx] = { ...this.edges[idx], ...edgePatch };
   }
 
   @action
   resetEdgeFlag(edgeId: PEdgeId): void {
-    const edge = this.getEdge(edgeId)!;
-    delete edge.flag;
+    const idx = this.edges.findIndex(e => e.id === edgeId);
+    const { flag, ...newEdge } = this.edges[idx];
+    this.edges[idx] = newEdge;
   }
 
   // 移动节点或边
@@ -212,11 +213,11 @@ export default class DesignDataStore {
   // 增加孤立边
   @action
   upsetOrphanEdge(oedge: OrphanEdge) {
-    const oldOrphanEdge = this.getOrphanEdge(oedge.id);
-    if (!oldOrphanEdge) {
+    const idx = this.orphanEdges.findIndex(o => o.id === oedge.id);
+    if (idx < 0) {
       this.orphanEdges.push(oedge);
     } else {
-      Object.assign(oldOrphanEdge, oedge);
+      this.orphanEdges[idx] = { ...this.orphanEdges[idx], ...oedge };
     }
   }
 
@@ -285,10 +286,8 @@ export default class DesignDataStore {
   delNode(id: PNodeId) {
     if (id === StartId) return;
     // 要被删除的node
-    console.log('del  node');
     const node = this.nodes.find(node => node.id === id)!;
     const templateId = node.templateId;
-    console.log('templateId:', templateId);
 
     this.nodes.replace(this.nodes.filter(node => node.id !== id));
 
@@ -338,14 +337,14 @@ export default class DesignDataStore {
   }
 
   @action hideSnappableGrid() {
-    delete this.context.snappableGrid;
+    this.context.snappableGrid = {};
   }
 
   @action rearrange() {
     const { hGap, vGap } = this.configStore.rearrange!;
     const { nodes, edges } = rearrange(
-      this.nodes,
-      this.edges,
+      toJS(this.nodes),
+      toJS(this.edges),
       this.startNode,
       hGap,
       vGap

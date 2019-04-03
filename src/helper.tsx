@@ -358,7 +358,7 @@ export function rearrange(
       const leftestX =
         centralAxisX -
         level2Width[level] / 2 -
-        (level2NodeIds[level].length * hGap) / 2.0;
+        ((level2NodeIds[level].length - 1) * hGap) / 2.0;
       const cy = level2Cy[level];
       const nodeIdsOnLeft = level2NodeIds[level].filter((v, i) => i < index);
       const nodeWidthOnLeft = nodeIdsOnLeft.reduce((acc, nodeId) => {
