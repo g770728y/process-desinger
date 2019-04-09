@@ -35,7 +35,7 @@ export function activeEdge(
     if (onActiveEdge) {
       // 如果外界有传入回调方法, 那么执行之
       onActiveEdge!(dataId!, flags);
-    } else {
+    } else if (!configStore.hideEdgeFlagInput) {
       // 否则执行默认方法
       installEdgeFlagInput(flags, x, y, (flag: any) => {
         if (flag === DeleteFlag) {

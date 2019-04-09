@@ -22,6 +22,8 @@ export default class ConfigStore {
   nodeTemplates: IObservableArray<PNodeTemplate> = observable([]);
   nodeCandidates: IObservableArray<PNodeCandidate> = observable([]);
 
+  hideEdgeFlagInput: boolean;
+
   @computed get config(): PConfig {
     return {
       canvas: this.canvas,
@@ -87,5 +89,6 @@ export default class ConfigStore {
     this.resetNodeTemplates(config.nodeTemplates);
     this.resetNodeCandidates(config.nodeCandidates);
     this.ui = config.ui || { nodeCandidatesPanelTop: 0 };
+    this.hideEdgeFlagInput = config.hideEdgeFlagInput || false;
   }
 }

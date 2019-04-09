@@ -96,7 +96,6 @@ export function dragGrip(
   );
 
   const dragGrip$ = drag$.subscribe((attrs: EventData) => {
-    console.log('attrs:', JSON.stringify(attrs));
     const { orphanEdgeId, x0, y0, x, y, host, pos0, dataHost } = attrs;
     // 捕捉并修正x,y
     let newX = x,

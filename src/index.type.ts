@@ -97,6 +97,9 @@ export type PConfig = {
   nodeTemplates: PNodeTemplate[];
   nodeCandidates: PNodeCandidate[];
   ui?: { nodeCandidatesPanelTop: number };
+  // 是否隐藏 边的 flag 输入框 ?
+  // 默认为 false
+  hideEdgeFlagInput?: boolean;
 };
 
 export type DesignerData = {

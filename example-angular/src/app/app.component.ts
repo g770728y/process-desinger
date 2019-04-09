@@ -65,7 +65,8 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       config: {
         nodeTemplates,
         nodeCandidates,
-        ui: { nodeCandidatesPanelTop: 30 }
+        ui: { nodeCandidatesPanelTop: 30 },
+        hideEdgeFlagInput: true
       },
       events: {
         // onActiveNode(nodeId?: PNodeId, data?: any) {
