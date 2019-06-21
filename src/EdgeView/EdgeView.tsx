@@ -7,20 +7,23 @@ import EdgeGripGroup from '../Grip/EdgeGripGroup';
 import NodeText from '../Shape/NodeText';
 import DeleteIcon from '../icons/DeleteIcon';
 import { getBezierEdge, getLineXY, getRotate, getLineEdge } from './helper';
+import ConfigStore from '../store/ConfigStore';
 
 type IProps = {
   edge: PEdge;
   dataStore?: DesignDataStore;
+  configStore?: ConfigStore;
 };
 
-@inject(({ dataStore }) => ({ dataStore }))
+@inject(({ dataStore, configStore }) => ({ dataStore, configStore }))
 @observer
 class EdgeViewBase extends React.Component<IProps & HoverableProps> {
   render() {
-    const { edge, dataStore, hovered, _ref } = this.props;
+    const { edge, dataStore, hovered, _ref, configStore } = this.props;
     const { id, from, to, flag } = edge;
 
-    const isSelected = dataStore!.isSelectedEdge(id);
+    const isSelected =
+      dataStore!.isSelectedEdge(id) && configStore!.mode !== 'update';
 
     const { fromXY, toXY } = dataStore!.getEdgeEndPoints(id);
 

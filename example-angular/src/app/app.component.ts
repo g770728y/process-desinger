@@ -62,6 +62,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     const [designerController, uninstall] = installProcessDesigner({
       el: ProcessDesingerId,
+      mode: 'update',
       config: {
         nodeTemplates,
         nodeCandidates,

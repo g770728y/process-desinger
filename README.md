@@ -68,7 +68,8 @@ onActiveNode?: (id: PNodeId) => void;
         el: ProcessDesingerId,
         config: { nodeTemplates },
         events,
-        data: {}    // 可以是空对象, 也可以是上次存入数据库的内容
+        data: {}    // 可以是空对象, 也可以是上次存入数据库的内容,
+        hideEdgeFlagInput: boolean  <== 禁止双击边
       });
     }
 

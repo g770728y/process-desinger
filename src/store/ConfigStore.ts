@@ -19,6 +19,8 @@ export default class ConfigStore {
 
   @observable ui: { nodeCandidatesPanelTop: number };
 
+  @observable mode: 'update' | undefined;
+
   nodeTemplates: IObservableArray<PNodeTemplate> = observable([]);
   nodeCandidates: IObservableArray<PNodeCandidate> = observable([]);
 
@@ -29,7 +31,8 @@ export default class ConfigStore {
       canvas: this.canvas,
       nodeTemplates: this.nodeTemplates,
       nodeCandidates: this.nodeCandidates,
-      ui: this.ui
+      ui: this.ui,
+      mode: this.mode
     };
   }
 
@@ -90,5 +93,6 @@ export default class ConfigStore {
     this.resetNodeCandidates(config.nodeCandidates);
     this.ui = config.ui || { nodeCandidatesPanelTop: 0 };
     this.hideEdgeFlagInput = config.hideEdgeFlagInput || false;
+    this.mode = config.mode;
   }
 }

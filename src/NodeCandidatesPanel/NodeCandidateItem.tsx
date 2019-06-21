@@ -7,14 +7,20 @@ import UIStore from '../store/UIStore';
 import DesignDataStore from '../store/DesignDataStore';
 import { dragNodeCandidate } from '../Painter/events/dragTemplateNode';
 import styles from '../styles.css';
+import ConfigStore from '../store/ConfigStore';
 
 type IProps = {
   uiStore?: UIStore;
   dataStore?: DesignDataStore;
+  configStore?: ConfigStore;
   nodeCandidate: PNodeCandidate;
 };
 
-@inject(({ uiStore, dataStore }) => ({ uiStore, dataStore }))
+@inject(({ uiStore, dataStore, configStore }) => ({
+  uiStore,
+  dataStore,
+  configStore
+}))
 @observer
 class NodeCandidateItem extends React.Component<IProps> {
   // ref = React.createRef<SVGSVGElement>();
@@ -37,6 +43,8 @@ class NodeCandidateItem extends React.Component<IProps> {
   }
 
   componentDidMount() {
+    if (this.props.configStore!.mode === 'update') return;
+
     const { uiStore, dataStore, nodeCandidate } = this.props;
     const el = this.ref.current!;
     const body = document.body;
@@ -55,6 +63,8 @@ class NodeCandidateItem extends React.Component<IProps> {
   }
 
   componnetWillUnmount() {
+    if (this.props.configStore!.mode === 'update') return;
+
     this.dragSubs.unsubscribe();
   }
 

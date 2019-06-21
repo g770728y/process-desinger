@@ -21,7 +21,7 @@ class NodeCandidatesPanel extends React.Component<IProps> {
         className={styles['pd-left-side-area']}
         style={{ width: NodeCandidatesPanelWidth }}
       >
-        <div style={{ height: top, background: '#f2f2f2' }} />
+        <div style={{ height: top, background: '#f2f2f2', flex: 'none' }} />
         <div
           className={styles['pd-node-candidates-panel']}
           style={{

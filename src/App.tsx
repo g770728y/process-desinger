@@ -14,17 +14,19 @@ import { initConfig, initData } from './global';
 // 安装设计器到dom节点(注意仅用于 非react项目)
 export function installProcessDesigner(args: {
   el: string | HTMLElement;
+  mode?: 'update';
   config: Partial<PConfig>;
   events?: DesignerEvents;
   data?: DesignerData;
 }): [DesignerController, () => void] {
-  const { el, config, events, data } = args;
+  const { el, mode, config, events, data } = args;
   const _config = { ...initConfig, ...config } as PConfig;
   const _el = typeof el === 'string' ? document.getElementById(el) : el;
   if (!_el) throw new Error('安装节点不存在');
   const ref = React.createRef<ProcessDesigner>();
   ReactDOM.render(
     <ProcessDesigner
+      mode={mode}
       config={_config}
       data={data || initData}
       ref={ref}

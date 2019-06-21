@@ -36,7 +36,11 @@ class ProcessDesigner extends React.Component<DesignerProps, {}> {
 
     const { config, data, events } = this.props;
 
-    this.configStore = new ConfigStore({ ...initConfig, ...config });
+    this.configStore = new ConfigStore({
+      ...initConfig,
+      ...config,
+      mode: this.props.mode
+    });
 
     this.dataStore = new DesignDataStore(
       isValidData(data) ? data : initData,

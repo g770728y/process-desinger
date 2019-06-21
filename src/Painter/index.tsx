@@ -63,13 +63,17 @@ export default class Painter extends React.Component<IProps> {
 
   componentDidMount() {
     const { uiStore, configStore, dataStore } = this.props;
+
     const el = this.ref.current!;
-    const mousedown$ = fromEvent(el, 'mousedown');
-    const mousemove$ = fromEvent(document.body, 'mousemove');
-    const mouseup$ = fromEvent(document.body, 'mouseup');
     const keydown$ = fromEvent(document.body, 'keydown');
 
     this.keydown$ = keydown(keydown$, dataStore!);
+
+    if (configStore!.mode === 'update') return;
+
+    const mousedown$ = fromEvent(el, 'mousedown');
+    const mousemove$ = fromEvent(document.body, 'mousemove');
+    const mouseup$ = fromEvent(document.body, 'mouseup');
 
     this.dragNode$ = dragNode(
       mousedown$,
@@ -96,9 +100,12 @@ export default class Painter extends React.Component<IProps> {
   }
 
   componentWillUnmount() {
+    this.keydown$.unsubscribe();
+
+    if (this.props.configStore!.mode === 'update') return;
+
     this.dragNode$.unsubscribe();
     this.dragGrip$.unsubscribe();
-    this.keydown$.unsubscribe();
     // this.activeNode$.unsubscribe();
     this.activeEdge$.unsubscribe();
   }

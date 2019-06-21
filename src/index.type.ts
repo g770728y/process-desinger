@@ -92,6 +92,7 @@ export interface OrphanEdge {
 export type PAnchorType = 'tc' | 'bc' | 'lc' | 'rc' | '0' | '1';
 
 export type PConfig = {
+  mode: 'update' | undefined;
   canvas?: { background?: string };
   rearrange?: { hGap: number; vGap: number };
   nodeTemplates: PNodeTemplate[];
@@ -109,6 +110,7 @@ export type DesignerData = {
 
 export type DesignerProps = {
   config: PConfig;
+  mode: 'update' | undefined;
   data: DesignerData;
   events: DesignerEvents;
 };

@@ -8,13 +8,15 @@ import hoverable, { HoverableProps } from '../hoc/hoverable';
 import Rect from '../Shape/Rect';
 import NodeText from '../Shape/NodeText';
 import DeleteIcon from '../icons/DeleteIcon';
+import ConfigStore from '../store/ConfigStore';
 
 type IProps = {
   node: PNode;
   dataStore?: DesignDataStore;
+  configStore?: ConfigStore;
 };
 
-@inject(({ dataStore }) => ({ dataStore }))
+@inject(({ dataStore, configStore }) => ({ dataStore, configStore }))
 @observer
 class RectNodeBase extends React.Component<IProps & HoverableProps> {
   render() {
@@ -31,7 +33,11 @@ class RectNodeBase extends React.Component<IProps & HoverableProps> {
 
     const isStart = dataStore!.startNode && dataStore!.startNode.id === node.id;
     const isEnd = dataStore!.endNode && dataStore!.endNode.id === node.id;
-    const showDeleteIcon = !isStart && !isEnd && isSelected;
+    const showDeleteIcon =
+      !isStart &&
+      !isEnd &&
+      isSelected &&
+      this.props.configStore!.mode !== 'update';
 
     return (
       <g
