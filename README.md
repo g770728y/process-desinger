@@ -1,5 +1,5 @@
 # process-designer
-
+![效果图](https://github.com/g770728y/process-desinger/raw/master/doc//%E6%95%88%E6%9E%9C%E5%9B%BE.png)
 ## 介绍
 
 项目需要一款图形化流程定义工具. 由于流程定义工具通常作为流程引擎的附属, 相对项目而言过重. 一款较符合需求的 jsplumb 较庞大, 压缩体积 188KB(而且收费), 所以自己造了个新轮子.\
