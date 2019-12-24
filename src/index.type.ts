@@ -1,9 +1,9 @@
 // 将放在html上
 export enum ElementType {
-  Node = 'node',
-  Edge = 'edge',
-  OrphanEdge = 'oedge',
-  Grip = 'grip'
+  Node = "node",
+  Edge = "edge",
+  OrphanEdge = "oedge",
+  Grip = "grip"
 }
 
 export interface Identity {
@@ -36,6 +36,7 @@ export interface PNodeTemplate {
   shape: Shape;
   dim?: Partial<Dim>;
   branchFlags?: any[];
+  defaultFlag?: any;
 }
 
 export interface PNodeCandidate {
@@ -89,10 +90,10 @@ export interface OrphanEdge {
 }
 
 // 0, 1 表示 edge的起点或终点
-export type PAnchorType = 'tc' | 'bc' | 'lc' | 'rc' | '0' | '1';
+export type PAnchorType = "tc" | "bc" | "lc" | "rc" | "0" | "1";
 
 export type PConfig = {
-  mode: 'update' | undefined;
+  mode: "update" | undefined;
   canvas?: { background?: string };
   rearrange?: { hGap: number; vGap: number };
   nodeTemplates: PNodeTemplate[];
@@ -110,7 +111,7 @@ export type DesignerData = {
 
 export type DesignerProps = {
   config: PConfig;
-  mode: 'update' | undefined;
+  mode: "update" | undefined;
   data: DesignerData;
   events: DesignerEvents;
 };

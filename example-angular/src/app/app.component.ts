@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy } from "@angular/core";
 import ProcessDesigner, {
   installProcessDesigner,
   PNodeTemplate,
@@ -9,49 +9,50 @@ import ProcessDesigner, {
   PNodeId,
   PConfig,
   PNodeCandidate
-} from 'process-designer';
+} from "process-designer";
 
-const ProcessDesingerId = '__process_designer__';
+const ProcessDesingerId = "__process_designer__";
 
 export const nodeTemplates: PNodeTemplate[] = [
   {
     id: 1,
-    label: '操作',
+    label: "操作",
     shape: Shape.Rect,
-    iconSrc: '/assets/repair_24x24.png',
+    iconSrc: "/assets/repair_24x24.png",
     dim: { w: 100, h: 30 },
-    branchFlags: ['ok', 'fail']
+    branchFlags: ["ok", "fail"],
+    defaultFlag: "ok"
   }
 ];
 
 export const nodeCandidates: PNodeCandidate[] = [
   {
-    label: 'go go go',
+    label: "go go go",
     shape: Shape.Rect,
-    iconSrc: '/assets/repair_24x24.png',
+    iconSrc: "/assets/repair_24x24.png",
     dim: { w: 100, h: 30 },
-    branchFlags: ['ok', 'fail'],
+    branchFlags: ["ok", "fail"],
     templateId: 1,
     data: { a: 1 }
   },
   {
-    label: 'fighting',
+    label: "fighting",
     shape: Shape.Rect,
-    iconSrc: '/assets/repair_24x24.png',
+    iconSrc: "/assets/repair_24x24.png",
     dim: { w: 100, h: 30 },
-    branchFlags: ['aha', 'cry'],
+    branchFlags: ["aha", "cry"],
     templateId: 1,
     data: { a: 2 }
   }
 ];
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.css"]
 })
 export class AppComponent implements AfterViewInit, OnDestroy {
-  title = 'example-angular';
+  title = "example-angular";
   designerController: DesignerController;
   uninstall: () => void;
 
@@ -62,12 +63,12 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     const [designerController, uninstall] = installProcessDesigner({
       el: ProcessDesingerId,
-      mode: 'update',
+      // mode: 'update',
       config: {
         nodeTemplates,
         nodeCandidates,
         ui: { nodeCandidatesPanelTop: 30 },
-        hideEdgeFlagInput: true
+        hideEdgeFlagInput: false
       },
       events: {
         // onActiveNode(nodeId?: PNodeId, data?: any) {
@@ -75,11 +76,11 @@ export class AppComponent implements AfterViewInit, OnDestroy {
         // },
 
         onDelNode(nodeId: PNodeId) {
-          console.log('delete node:', nodeId);
+          console.log("delete node:", nodeId);
         },
 
         onAddNode(nodeId: PNodeId, data: any) {
-          console.log('add node:', nodeId, 'data:', data);
+          console.log("add node:", nodeId, "data:", data);
         }
       },
       data: null

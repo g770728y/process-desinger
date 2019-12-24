@@ -1,16 +1,16 @@
-import { observable, computed, action, IObservableArray, toJS } from 'mobx';
+import { observable, computed, action, IObservableArray, toJS } from "mobx";
 import {
   PNodeCandidate,
   PConfig,
   PNodeTemplate,
   ElementType
-} from '../index.type';
+} from "../index.type";
 import {
   defaultNodeTemplates,
   StartId,
   EndId,
   defaultNodeCandidates
-} from '../global';
+} from "../global";
 
 export default class ConfigStore {
   @observable canvas: { background?: string };
@@ -19,7 +19,7 @@ export default class ConfigStore {
 
   @observable ui: { nodeCandidatesPanelTop: number };
 
-  @observable mode: 'update' | undefined;
+  @observable mode: "update" | undefined;
 
   nodeTemplates: IObservableArray<PNodeTemplate> = observable([]);
   nodeCandidates: IObservableArray<PNodeCandidate> = observable([]);
@@ -42,6 +42,8 @@ export default class ConfigStore {
       nodeCandidate => !~[StartId, EndId].indexOf(nodeCandidate.templateId!)
     );
   }
+
+  getNodeTemplate = (id: number) => this.nodeTemplates.find(t => t.id === id)!;
 
   // 重置全部nodeTemplates
   @action
@@ -74,7 +76,7 @@ export default class ConfigStore {
             nodeTemplate => nodeTemplate.id === nodeCandidate.templateId
           );
           if (!tNode) {
-            throw new Error('nodeCandidate.templateId必须对应到nodeTemplate!');
+            throw new Error("nodeCandidate.templateId必须对应到nodeTemplate!");
           }
           return { ...tNode, ...nodeCandidate };
         })

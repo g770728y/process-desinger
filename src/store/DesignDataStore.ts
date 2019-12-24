@@ -16,9 +16,9 @@ import {
   CircleSize,
   SnappableGrid,
   DesignerEvents
-} from '../index.type';
-import { observable, computed, action, toJS, IObservableArray } from 'mobx';
-import ConfigStore from './ConfigStore';
+} from "../index.type";
+import { observable, computed, action, toJS, IObservableArray } from "mobx";
+import ConfigStore from "./ConfigStore";
 import {
   nodeAnchorXY,
   nodeAnchorXYByNodeId,
@@ -27,10 +27,10 @@ import {
   getNode,
   getEdge,
   nextElementId
-} from '../helper';
-import { flatten, distance } from '../util';
-import { GripSnapThreshold, StartId, EndId } from '../global';
-import { Omit } from 'ts-type-ext';
+} from "../helper";
+import { flatten, distance } from "../util";
+import { GripSnapThreshold, StartId, EndId } from "../global";
+import { Omit } from "ts-type-ext";
 
 export default class DesignDataStore {
   configStore: ConfigStore;
@@ -68,7 +68,7 @@ export default class DesignDataStore {
   @computed
   get anchors(): PAnchor[] {
     const anchorss = this.nodes.map(node => {
-      return ['lc', 'tc', 'rc', 'bc'].map((p: PAnchorType) => {
+      return ["lc", "tc", "rc", "bc"].map((p: PAnchorType) => {
         return {
           host: node,
           anchor: p,
@@ -144,12 +144,18 @@ export default class DesignDataStore {
   }
 
   @action
-  addEdge(edge: Omit<PEdge, 'id'>): void {
+  addEdge(edge: Omit<PEdge, "id">): void {
     const { from, to } = edge;
 
     if (from.id !== to.id && !this.findEdgeByStartAndEndNode(from.id, to.id)) {
       // 仅当两个node间没有edge时, 才创建新edge
-      const newEdge = { ...edge, id: nextElementId(this.edges) };
+      const startNode = this.getNode(from.id)!;
+      const template = this.configStore.getNodeTemplate(startNode.templateId);
+      const newEdge = {
+        ...edge,
+        id: nextElementId(this.edges),
+        flag: template.defaultFlag
+      };
       this.edges.push(newEdge);
       this.selectEdge(newEdge.id);
     }
